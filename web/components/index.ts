@@ -1,6 +1,0 @@
-export {default as CustomInput} from "./CustomInput"
-export {default as CustomButton} from "./CustomButton"
-export {default as VerifyProcessBar} from "./VerifyProcessBar"
-export {default as VerifyCodeField} from "./VerifyNumberField"
-export {default as UploadImageBox} from "./UploadImageBox"
-export {default as CustomAlert} from "./CustomAlert"
