@@ -4,38 +4,50 @@ interface ValidationResult {
   valid: boolean;
   message: string;
   severity: Severity;
-  name: string;
+  name?: string;
 }
 
-
-
-const phoneValidation = (data :string) :boolean =>{
-  const regex = /^(?:\+84|0)[3-9]\d{8}$/;
-  return regex.test(data);
-}
-
-const passValidation = (data :string) :boolean =>{
-  const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
-  return regex.test(data);
-}
-
-const emailValidation = (data :string) : boolean =>{
-  const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  return regex.test(data);
-}
-
-const validateInputs = (phoneNumber: string, password: string, email?: string ) : ValidationResult => {
-  if (!phoneNumber || !password || !email) {
-    return { valid: false, name: 'all', message: "Please fill out all fields' information completely!", severity: "warning" };
-  } else if (!phoneValidation(phoneNumber)) {
-    return { valid: false, name:'phoneNumber', message: "Please have the correct phone number format!", severity: "warning" };
-  } else if (!emailValidation(email)) {
-    return { valid: false, message: "Please have the correct email format!", severity: "warning", name: 'email'};
-  } else if (!passValidation(password)) {
-    return { valid: false, name: 'password', message: "Your password must have at least 8 characters, including uppercase letters, lowercase letters, numbers and special characters!", severity: "warning" };
-  } else {
-    return { valid: true, message: "Log in successfully!", severity: "success", name: 'success' };
-  }
+const validators: Record<string, (data: string) => boolean> = {
+  phoneNumber: (data: string) => /^(?:\+84|0)[3-9]\d{8}$/.test(data),
+  password: (data: string) =>
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/.test(data),
+  email: (data: string) => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(data),
 };
 
-export { validateInputs};
+const validateInputs = (data: Record<string, string>, requiredFields: string[]): ValidationResult => {
+  for (const field of requiredFields) {
+    if (!data[field]) {
+      return {
+        valid: false,
+        name: field,
+        message: `Please fill out the ${field} field!`,
+        severity: "warning",
+      };
+    }
+    if (validators[field] && !validators[field](data[field])) {
+      if(field === 'password' ){
+        return {
+          valid: false,
+          name: field,
+          message: `The ${field} is invalid, password must have at least 8 characters, including uppercase letters, lowercase letters, numbers and special characters!`,
+          severity: "warning",
+        };
+      }
+      return {
+        valid: false,
+        name: field,
+        message: `The ${field} is invalid!`,
+        severity: "warning",
+      };
+    }
+  }
+
+  return {
+    valid: true,
+    message: "Log in successfully!",
+    severity: "success",
+  };
+};
+
+
+export {validateInputs};

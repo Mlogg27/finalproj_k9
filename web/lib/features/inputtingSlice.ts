@@ -13,8 +13,12 @@ const inputtingSlice = createSlice({
     input: (state, action: PayloadAction<{ name: string; value: string }>) => {
       state[action.payload.name] = action.payload.value;
     },
-    reset: (state, action: PayloadAction<{ name: string }>) => {
-      state[action.payload.name] = '';
+    reset: (state, action: PayloadAction<{ name?: string }>) => {
+      if(action.payload.name){
+        state[action.payload.name] = '';
+      } else{
+        return initialState
+      }
     }
   },
 });

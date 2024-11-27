@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from "react-redux";
 import Link from "next/link";
 import { inputtingSlice } from "@/lib/features";
 import { getInputting } from "@/lib/selector";
-import { validateInputs } from "@plugins/validation";
+import  {validateInputs}  from "@plugins/validation";
 
 export default function LoginPage() {
   const [open, setOpen] = React.useState(false);
@@ -20,20 +20,23 @@ export default function LoginPage() {
 
   const handleClick = () => {
     const { phoneNumber, password } = inputtingValue;
-    const result = validateInputs(phoneNumber, password);
+    const result = validateInputs({phoneNumber, password}, ['phoneNumber', 'password']);
+    console.log(result);
 
     setAlertMessage(result.message);
     setAlertSeverity(result.severity);
     setOpen(true);
 
-    if (!result.valid) {
-      dispatch(inputtingSlice.actions.reset({ name: result.name }));
+    if(!result.valid && result.name){
+      dispatch(inputtingSlice.actions.reset({name: result.name}))
     }
+    if(result.valid){}
+      dispatch(inputtingSlice.actions.reset({}))
   };
 
   return (
     <div className="flex flex-col items-center w-[90%]">
-      <form className='w-[100%]'>
+      <form className='w-[100%] flex flex-col justify-center items-center'>
         <CustomInput
           label="Phone number"
           type="tel"
