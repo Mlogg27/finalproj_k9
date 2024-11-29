@@ -5,16 +5,18 @@ import CameraAltIcon from '@mui/icons-material/CameraAlt';
 
 interface UploadImageBoxProps {
   onChange: (imageURL : string)=> void ;
-  width: number;
-  height: number;
+  width: number | string;
+  height: number | string;
   image: string;
-  name: string;
+  name?: string;
+  label?: string;
+
 }
 
-const UploadImageBox: React.FC<UploadImageBoxProps> = ({ width, height, onChange, image, name }) => {
+const UploadImageBox: React.FC<UploadImageBoxProps> = ({ width, height, onChange, image, name, label }) => {
   const imageBox = {
     width: width,
-    height: height
+    height: height,
   }
   const handleFileChange =  (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -32,7 +34,8 @@ const UploadImageBox: React.FC<UploadImageBoxProps> = ({ width, height, onChange
     }
   };
   return (
-    <div className='flex flex-col justify-center items-center'>
+    <div className='flex flex-col justify-center items-center w-[100%]' >
+      <span  className='text-sm font-semibold mr-auto mb-[5px]'>{label}</span>
       <label
         htmlFor={`cameraInput ${name}`}
         style={imageBox}
@@ -42,7 +45,7 @@ const UploadImageBox: React.FC<UploadImageBoxProps> = ({ width, height, onChange
           <img
             src={image}
             alt="Preview Image"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover rounded-[6px]"
           />
         ) : (
           <span><CameraAltIcon/></span>

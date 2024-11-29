@@ -28,10 +28,13 @@ export default function LoginPage() {
     setOpen(true);
 
     if(!result.valid && result.name){
+      console.log(result.name);
       dispatch(inputtingSlice.actions.reset({name: result.name}))
     }
-    if(result.valid){}
+    if(result.valid){
       dispatch(inputtingSlice.actions.reset({}))
+    }
+
   };
 
   return (

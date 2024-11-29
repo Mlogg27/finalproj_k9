@@ -28,7 +28,7 @@ const CustomInput: React.FC<CustomInputProps> = ({ label, placeholder, isPasswor
   };
   return (
     <label className="relative flex flex-col w-[90%] justify-center mt-[25px]">
-      <span className="text-[10px] font-medium">{label}</span>
+      <span className="text-sm font-semibold">{label}</span>
       <input
         className="text-sm border rounded-[6px] outline-none px-[10px] py-[5px]"
         type={type === "password" && isPasswordVisible ? 'text' : type}
