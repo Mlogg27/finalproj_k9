@@ -2,11 +2,7 @@
 
 import { CustomInput, CustomButton, CustomAlert } from "@/components";
 import * as React from "react";
-import { useSelector, useDispatch } from "react-redux";
 import Link from "next/link";
-import { inputtingSlice } from "@/lib/features";
-import { getInputting } from "@/lib/selector";
-import  {validateInputs}  from "@plugins/validation";
 
 export default function LoginPage() {
   const [open, setOpen] = React.useState(false);
@@ -15,38 +11,16 @@ export default function LoginPage() {
     "success" | "warning" | "error"
   >("success");
 
-  const inputtingValue = useSelector(getInputting);
-  const dispatch : React.Dispatch<any> = useDispatch();
-
-  const handleClick = () => {
-    const { phoneNumber, password } = inputtingValue;
-    const result = validateInputs({phoneNumber, password}, ['phoneNumber', 'password']);
-    console.log(result);
-
-    setAlertMessage(result.message);
-    setAlertSeverity(result.severity);
-    setOpen(true);
-
-    if(!result.valid && result.name){
-      console.log(result.name);
-      dispatch(inputtingSlice.actions.reset({name: result.name}))
-    }
-    if(result.valid){
-      dispatch(inputtingSlice.actions.reset({}))
-    }
-
-  };
-
   return (
-    <div className="flex flex-col items-center w-[90%]">
+    <div className="flex flex-col items-center w-[100%]">
       <form className='w-[100%] flex flex-col justify-center items-center'>
         <CustomInput
-          label="Phone number"
-          type="tel"
-          placeholder="Your phone number"
+          label="Email"
+          type="email"
+          placeholder="Your email"
           isPassword={false}
-          name="phoneNumber"
-          autocomplete={'tel'}
+          name="email"
+          autocomplete={'email'}
         />
         <CustomInput
           label="Password"
@@ -62,7 +36,10 @@ export default function LoginPage() {
           name="Continue"
           bgColor="#2c2c2c"
           tColor="white"
-          onClick={handleClick}
+          setOpen={setOpen}
+          setAlertMessage={setAlertMessage}
+          setAlertSeverity={setAlertSeverity}
+          necessaryFields={['email', 'password']}
         />
       </div>
       <Link
@@ -71,9 +48,9 @@ export default function LoginPage() {
       >
         Forgot your password?
       </Link>
-      <div className="mt-[50vh] text-gray-500">
-        Don’t have an account?{" "}
-        <Link className="underline font-semibold" href="#">
+      <div className="mt-[50vh] flex gap-x-[5px] text-gray-500">
+        Don’t have an account?
+        <Link className="underline font-semibold" href="/driver/register">
           Register here
         </Link>
       </div>
