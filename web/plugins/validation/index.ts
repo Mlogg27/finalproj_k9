@@ -44,7 +44,7 @@ const validateInputs = (data: Record<string, string>, requiredFields: string[]):
 
   return {
     valid: true,
-    message: "Log in successfully!",
+    message: "Successfully!",
     severity: "success",
   };
 };
