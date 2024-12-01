@@ -1,33 +1,55 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DriverAcc } from '../driver/entity';
 import { Repository } from 'typeorm';
+import { DriverAcc } from '../driver/entity';
 import * as bcrypt from 'bcrypt';
-
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly jwtService: JwtService,
-              @InjectRepository(DriverAcc) protected driverAccRepository: Repository<DriverAcc>) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    @InjectRepository(DriverAcc)
+    private readonly driverAccRepository: Repository<DriverAcc>,
+    private configService: ConfigService  ) {}
 
   async login(user: any) {
-    const exstingAcc = await this.driverAccRepository.findOne({
-      where: {email: user.email}
-    })
-    const userHashPass = await bcrypt.hash(user.password, 10);
-    if(exstingAcc){
-      if(userHashPass === exstingAcc.password){
-        const payload = { email: user.email};
-        return {
-          access_token: this.jwtService.sign(payload),
-        }
-      }
-      else{
-        throw new Error('Password is wrong!')
-      }
-    } else {
-        throw new Error('Email is wrong!')
+    const existingAcc = await this.driverAccRepository.findOne({
+      where: { email: user.email },
+    });
+
+    if (!existingAcc) {
+      throw new UnauthorizedException('Invalid Email!');
+    }
+
+    const isPasswordMatch = await bcrypt.compare(user.password, existingAcc.password);
+
+    if (!isPasswordMatch) {
+      throw new UnauthorizedException('Invalid Password!');
+    }
+
+    const payload = { email: user.email}
+    return {
+      access_token: this.jwtService.sign(payload),
+      refresh_token: this.jwtService.sign(payload, {
+        secret:  this.configService.get<string>('JWT_SECRET_RF'),
+        expiresIn: '7d',
+      }),
+    };
+  }
+
+  async getAcTokenFormRfToken (user){
+    const existingAcc = await this.driverAccRepository.findOne({
+      where: { email: user.email },
+    });
+
+    if (!existingAcc || !user) {
+      throw new UnauthorizedException('Invalid Refresh Token!');
+    }
+    const payload = { email: user.email};
+    return {
+      access_token: this.jwtService.sign(payload)
     }
   }
 }
