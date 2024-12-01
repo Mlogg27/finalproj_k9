@@ -3,7 +3,7 @@ import {Base} from '../base/entity'
 
 
 @Entity()
-export class Account extends Base {
+export class DriverAcc extends Base {
   @Column({
     unique: true
   })
@@ -12,9 +12,9 @@ export class Account extends Base {
   @Column({
     unique: true,
   })
-  phoneNumber: number;
+  phoneNumber: string;
 
   @Column({
   })
-  password: number;
+  password: string;
 }

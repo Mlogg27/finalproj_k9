@@ -1,5 +1,5 @@
-drop table if exists UserAcc;
-create table if not exists UserAcc
+drop table if exists DriverAcc;
+create table if not exists DriverAcc
 (
     id          bigserial,
     phoneNumber  VARCHAR(15) not null ,
@@ -14,4 +14,4 @@ create table if not exists UserAcc
                               active      boolean                           DEFAULT TRUE,
                               constraint pkey_user primary key (id)
     );
-
+create index email_index on DriverAcc ('email')

@@ -2,8 +2,10 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AuthModule } from './user/module';
-import { Account } from './user/entity';
+import { DriverModule } from './driver/module';
+import { DriverAcc } from './driver/entity';
+import { AuthModule } from './auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -14,10 +16,11 @@ import { Account } from './user/entity';
       username: 'postgres',
       password: 'postgres',
       database: 'default',
-      entities: [Account],
+      entities: [DriverAcc],
       synchronize: true,
     }),
-    AuthModule
+    ConfigModule.forRoot(),
+    DriverModule, AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],
