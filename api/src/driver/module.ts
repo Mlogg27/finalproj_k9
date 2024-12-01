@@ -1,8 +1,9 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DriverAcc } from './entity';
 import { DriverService } from './service';
 import { DriverController } from './controller';
+import { LoggerMiddleware } from '../middleware/logger.middleware';
 
 
 @Module({
@@ -12,4 +13,10 @@ import { DriverController } from './controller';
   controllers: [DriverController],
   providers: [DriverService],
 })
-export class DriverModule {}
+export class DriverModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(LoggerMiddleware)
+      .forRoutes('driver/register');
+  }
+}

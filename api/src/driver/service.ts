@@ -20,5 +20,4 @@ export class DriverService {
       await this.driverAccRepository.save(account);
     }
   }
-
 }

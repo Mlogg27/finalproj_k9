@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -8,6 +8,7 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './jwt.stategy';
 import { RefreshTokenStategy } from './jwt-rft.stategy';
+import {LoggerMiddleware} from '../middleware/logger.middleware';
 
 @Module({
   imports: [
@@ -27,4 +28,10 @@ import { RefreshTokenStategy } from './jwt-rft.stategy';
   providers: [AuthService, JwtStrategy, RefreshTokenStategy],
   exports: [JwtModule, PassportModule],
 })
-export class AuthModule {}
+export class AuthModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(LoggerMiddleware)
+      .forRoutes('auth/login');
+  }
+}

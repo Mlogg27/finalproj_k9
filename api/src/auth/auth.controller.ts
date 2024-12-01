@@ -9,7 +9,6 @@ export class AuthController {
   @Post('login')
   login(@Request() req) {
     return this.authService.login(req.body);
-
   }
   @Post('rf-token')
   @UseGuards(JWTAuthRFTokenGuard)
