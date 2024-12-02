@@ -20,13 +20,13 @@ export class AuthService {
     });
 
     if (!existingAcc) {
-      throw new UnauthorizedException('Invalid Email!');
+      throw new UnauthorizedException('Incorrect Email!');
     }
 
     const isPasswordMatch = await bcrypt.compare(user.password, existingAcc.password);
 
     if (!isPasswordMatch) {
-      throw new UnauthorizedException('Invalid Password!');
+      throw new UnauthorizedException('Incorrect Password!');
     }
 
     const payload = { email: user.email}
