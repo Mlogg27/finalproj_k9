@@ -25,27 +25,22 @@ const CustomButton: React.FC<CustomButtonProps> = ({ name, bgColor, tColor, setA
   const dispatch: React.Dispatch<any> = useDispatch();
 
   const onClick = () => {
-    const { phoneNumber, password, email } = inputtingValue;
-    const result = validateInputs({ phoneNumber, password, email }, necessaryFields);
-    console.log(result);
+    const { phoneNumber, password, email, firstImg, secondImg } = inputtingValue;
+    const result = validateInputs({ phoneNumber, password, email, firstImg, secondImg}, necessaryFields);
 
     if (setAlertMessage) {
       setAlertMessage(result.message);
     }
-
     if (setAlertSeverity) {
       setAlertSeverity(result.severity);
     }
-
     if (setOpen) {
       setOpen(true);
     }
-
     if (!result.valid && result.name) {
       console.log(result.name);
       dispatch(inputtingSlice.actions.reset({ name: result.name }));
     }
-
     if (result.valid) {
       dispatch(inputtingSlice.actions.reset({}));
     }

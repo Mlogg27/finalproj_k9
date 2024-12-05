@@ -17,5 +17,4 @@ export class DriverAcc extends Base {
   @Column({
   })
   password: string;
-
 }

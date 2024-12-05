@@ -29,14 +29,16 @@ export class AuthService {
       throw new UnauthorizedException('Incorrect Password!');
     }
 
-    const payload = { email: user.email}
     return {
-      access_token: this.jwtService.sign(payload),
-      refresh_token: this.jwtService.sign(payload, {
-        secret:  this.configService.get<string>('JWT_SECRET_RF'),
-        expiresIn: '7d',
-      }),
-    };
+      status: true
+    }
+    // return {
+    //   access_token: this.jwtService.sign(payload),
+    //   refresh_token: this.jwtService.sign(payload, {
+    //     secret:  this.configService.get<string>('JWT_SECRET_RF'),
+    //     expiresIn: '7d',
+    //   }),
+    // };
   }
 
   async getAcTokenFormRfToken (user){

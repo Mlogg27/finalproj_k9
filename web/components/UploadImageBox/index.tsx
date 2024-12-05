@@ -1,6 +1,7 @@
 import {ChangeEvent} from "react";
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
-
+import { useDispatch } from "react-redux";
+import {inputtingSlice} from "@/lib/features";
 
 
 interface UploadImageBoxProps {
@@ -18,9 +19,13 @@ const UploadImageBox: React.FC<UploadImageBoxProps> = ({ width, height, onChange
     width: width,
     height: height,
   }
+  const dispatch = useDispatch();
   const handleFileChange =  (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
+
     if ( file) {
+      const {name, value} = event.target;
+      dispatch(inputtingSlice.actions.input({name, value}));
       const imageURL: string = URL.createObjectURL(file);
       onChange(imageURL);
       const reader = new FileReader();
@@ -29,7 +34,7 @@ const UploadImageBox: React.FC<UploadImageBoxProps> = ({ width, height, onChange
         const base64 =  reader.result;
         if( typeof base64 === 'string'){
           const imageBase64 = base64?.split(',')[1];
-          console.log(imageBase64);}
+        }
       }
     }
   };
@@ -51,7 +56,6 @@ const UploadImageBox: React.FC<UploadImageBoxProps> = ({ width, height, onChange
           <span><CameraAltIcon/></span>
         )}
       </label>
-      <span className='text-[#939393]'>{name}</span>
       <input
         type="file"
         id={`cameraInput ${name}`}
@@ -59,6 +63,7 @@ const UploadImageBox: React.FC<UploadImageBoxProps> = ({ width, height, onChange
         capture="environment"
         onChange={handleFileChange}
         className='hidden'
+        name={name}
       />
     </div>
   )

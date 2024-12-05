@@ -1,5 +1,4 @@
 type Severity = "success" | "warning" | "error";
-
 interface ValidationResult {
   valid: boolean;
   message: string;
@@ -7,11 +6,13 @@ interface ValidationResult {
   name?: string;
 }
 
+const isImage = (data: string) => /\.(jpg|jpeg|png|gif|bmp|webp|svg)$/i.test(data);
 const validators: Record<string, (data: string) => boolean> = {
   phoneNumber: (data: string) => /^(?:\+84|0)[3-9]\d{8}$/.test(data),
   password: (data: string) =>
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/.test(data),
-  email: (data: string) => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(data),
+  firstImg: isImage,
+  secondImg: isImage,
 };
 
 const validateInputs = (data: Record<string, string>, requiredFields: string[]): ValidationResult => {
