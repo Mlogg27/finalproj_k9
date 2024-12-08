@@ -16,6 +16,10 @@ export default function EmailVerifyPage() {
     }
   }, [count]);
 
+  const onClick = () =>{
+
+  }
+
   return (
     <div className='flex flex-col justify-center items-center'>
       <VerifyProcessBar process={33}
@@ -40,7 +44,7 @@ export default function EmailVerifyPage() {
       <CustomButton name={'Verify Code'}
                     bgColor={"#2c2c2c"}
                     tColor={'#fff'}
-                    necessaryFields={[]}/>
+                    onClick={onClick}/>
       <span className='mt-[95%] text-[#656565]'>Need help? <Link className='underline font-semibold' href={'#'}>Contact Support</Link></span>
     </div>
   );

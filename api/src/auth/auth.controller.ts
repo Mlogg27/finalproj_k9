@@ -1,11 +1,13 @@
-import { Body, Controller, HttpCode, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post, Request } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { JWTAuthRFTokenGuard } from './auth.guard';
 import {LoginDto} from './auth.dto';
+import { BlacklistService } from './blackList.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService,
+              private blackListService: BlacklistService
+  ) {}
 
   @Post('login')
   @HttpCode(200)
@@ -14,8 +16,18 @@ export class AuthController {
   }
 
   @Post('rf-token')
-  @UseGuards(JWTAuthRFTokenGuard)
-  GetNewAcToken(@Request() req) {
+  getNewAcToken(@Request() req) {
     return this.authService.getAcTokenFormRfToken(req.body);
+  }
+
+  @Post('logout')
+  @HttpCode(200)
+  logOut(@Request() req){
+    return this.blackListService.addToBlacklist(req)
+  }
+
+  @Get('/verifyStatus')
+  getVerifyStatus(@Request() req){
+    return this.authService.getVerifyStatus(req)
   }
 }

@@ -1,8 +1,8 @@
 type Severity = "success" | "warning" | "error";
 interface ValidationResult {
   valid: boolean;
-  message: string;
-  severity: Severity;
+  message?: string;
+  severity?: Severity;
   name?: string;
 }
 
@@ -11,6 +11,7 @@ const validators: Record<string, (data: string) => boolean> = {
   phoneNumber: (data: string) => /^(?:\+84|0)[3-9]\d{8}$/.test(data),
   password: (data: string) =>
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/.test(data),
+  email: (data :string) => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(data),
   firstImg: isImage,
   secondImg: isImage,
 };
@@ -44,9 +45,7 @@ const validateInputs = (data: Record<string, string>, requiredFields: string[]):
   }
 
   return {
-    valid: true,
-    message: "Successfully!",
-    severity: "success",
+    valid: true
   };
 };
 

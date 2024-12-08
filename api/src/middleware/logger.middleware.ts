@@ -18,8 +18,6 @@ export class LoggerMiddleware implements NestMiddleware {
     if(payload.phoneNumber && !phoneNumberRegex.test(payload.phoneNumber)){
       throw new UnauthorizedException('Invalid Phone Number!');
     }
-
-    console.log(req.body);
     next();
   }
 }

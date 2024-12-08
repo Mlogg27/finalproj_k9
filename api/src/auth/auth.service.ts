@@ -18,8 +18,7 @@ export class AuthService {
     const existingAcc = await this.driverAccRepository.findOne({
       where: { email: user.email },
     });
-
-    if (!existingAcc) {
+    if (!existingAcc || existingAcc.active === false) {
       throw new UnauthorizedException('Incorrect Email!');
     }
 
@@ -29,16 +28,15 @@ export class AuthService {
       throw new UnauthorizedException('Incorrect Password!');
     }
 
+    const payload  = {email: user.email}
     return {
-      status: true
-    }
-    // return {
-    //   access_token: this.jwtService.sign(payload),
-    //   refresh_token: this.jwtService.sign(payload, {
-    //     secret:  this.configService.get<string>('JWT_SECRET_RF'),
-    //     expiresIn: '7d',
-    //   }),
-    // };
+      access_token: this.jwtService.sign(payload),
+      refresh_token: this.jwtService.sign(payload, {
+        secret:  this.configService.get<string>('JWT_SECRET_RF'),
+        expiresIn: '7d',
+      }),
+      verify: existingAcc.verify
+    };
   }
 
   async getAcTokenFormRfToken (user){
@@ -46,12 +44,23 @@ export class AuthService {
       where: { email: user.email },
     });
 
-    if (!existingAcc || !user) {
+    if (!existingAcc || !user || existingAcc.active === false) {
       throw new UnauthorizedException('Invalid Refresh Token!');
     }
     const payload = { email: user.email};
     return {
       access_token: this.jwtService.sign(payload)
     }
+  }
+
+  async getVerifyStatus(req){
+    const userEmail = req['user'].email;
+    const existingAcc = await this.driverAccRepository.findOne({
+      where: { email: userEmail },
+    });
+    if (!existingAcc || existingAcc.active === false) {
+      throw new UnauthorizedException('Incorrect Email!');
+    }
+    return {verify: existingAcc.verify};
   }
 }

@@ -173,7 +173,7 @@ function OTP({
   );
 }
 
-export default function OTPInput() {
+function OTPInput() {
   const [otp, setOtp] = React.useState('');
   console.log(otp);
 
@@ -238,3 +238,5 @@ const InputElement = styled('input')(
   }
 `,
 );
+
+export default React.memo(OTPInput)

@@ -6,6 +6,9 @@ import { DriverModule } from './driver/module';
 import { DriverAcc } from './driver/entity';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
+import { BlacklistTokens } from './auth/blackList.entity';
+import { Images } from './images/entity';
+import { ImagesModule } from './images/module';
 
 @Module({
   imports: [
@@ -16,11 +19,13 @@ import { ConfigModule } from '@nestjs/config';
       username: 'postgres',
       password: 'postgres',
       database: 'default',
-      entities: [DriverAcc],
+      entities: [DriverAcc, BlacklistTokens, Images],
       synchronize: true,
     }),
-    ConfigModule.forRoot(),
-    DriverModule, AuthModule
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    DriverModule, AuthModule, ImagesModule
   ],
   controllers: [AppController],
   providers: [AppService],
