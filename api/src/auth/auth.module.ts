@@ -8,7 +8,7 @@ import { AuthController } from './auth.controller';
 import {LoggerMiddleware} from '../middleware/logger.middleware';
 import { BlacklistTokens } from './blackList.entity';
 import { BlacklistService } from './blackList.service';
-import { AuthMiddleware } from '../middleware/jwt.middleware';
+import { JwtMiddleware } from '../middleware/jwt.middleware';
 
 @Module({
   imports: [
@@ -32,7 +32,7 @@ export class AuthModule {
       .apply(LoggerMiddleware)
       .forRoutes('auth/login');
     consumer
-      .apply(AuthMiddleware)
-      .forRoutes('auth/verifyStatus');
+      .apply(JwtMiddleware)
+      .forRoutes('auth/verifyStatus', 'auth/rf-token');
   }
 }

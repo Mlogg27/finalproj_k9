@@ -16,27 +16,29 @@ export class BlacklistService {
   ) {}
 
   async addToBlacklist(req) {
-    const refreshToken = req.headers['authorization-rf']?.split(' ')[1];
+    const token = req.headers['authorization']?.split(' ')[1];
+    const tokenType = req.headers['x-type-token'];
 
-    if (!refreshToken) {
+    if (!token) {
       return { message: 'Logout Successfully' };
     }
+    const tokenSecret = tokenType === 'refresh' ? "JWT_SECRET_RF" : "JWT_SECRET"
 
     try {
-      const secretKeyRF = this.configService.get<string>('JWT_SECRET_RF');
-      const decodedRF = jwt.verify(refreshToken, secretKeyRF) as JwtPayload;
+      const secretKeyRF = this.configService.get<string>(tokenSecret);
+      const decodedRF = jwt.verify(token, secretKeyRF) as JwtPayload;
 
       await this.blacklistRepository.delete({
         expiresAt: LessThan(new Date()),
       });
-      const blacklistEntryRF = new BlacklistTokens();
-      blacklistEntryRF.token = refreshToken;
-      blacklistEntryRF.createdAt = new Date(decodedRF.iat*1000);
-      blacklistEntryRF.expiresAt = new Date(decodedRF.exp * 1000);
-      await this.blacklistRepository.save(blacklistEntryRF);
+      const blacklistEntry= new BlacklistTokens();
+      blacklistEntry.token = token;
+      blacklistEntry.createdAt = new Date(decodedRF.iat*1000);
+      blacklistEntry.expiresAt = new Date(decodedRF.exp * 1000);
+      await this.blacklistRepository.save(blacklistEntry);
       return { message: 'Logout Successfully' };
     } catch (error) {
-      return { message: 'Invalid or expired token and Logout Successfully', error: error.message };
+      return { message: 'Logout Successfully', error: error.message };
     }
   }
 

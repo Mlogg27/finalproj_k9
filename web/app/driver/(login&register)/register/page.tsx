@@ -3,6 +3,7 @@
 import { CustomAlert, CustomInput, CustomButton } from "@/components";
 import * as React from "react";
 import Link from "next/link";
+import fetchStatus from "@plugins/fetchStatus";
 
 export default function RegisterPage() {
   const [open, setOpen] = React.useState(false);
@@ -10,6 +11,14 @@ export default function RegisterPage() {
   const [alertSeverity, setAlertSeverity] = React.useState<
     "success" | "warning" | "error"
   >("success");
+
+  React.useEffect(() => {
+    fetchStatus().then((data) => console.log(data) )
+  }, []);
+
+  const onClick = ()=>{
+
+  }
   return (
     <>
       <CustomInput type={"email"}
@@ -38,11 +47,9 @@ export default function RegisterPage() {
       </div>
       <CustomButton tColor={"#fff"}
                     name={"Register"}
-                    setAlertSeverity={setAlertSeverity}
-                    setAlertMessage={setAlertMessage}
-                    setOpen={setOpen}
                     bgColor={"#2c2c2c"}
-                    necessaryFields={["email", "phoneNumber", "password"]} />
+                    onClick={onClick}
+                     />
       <CustomAlert
         setOpen={setOpen}
         alertSeverity={alertSeverity}

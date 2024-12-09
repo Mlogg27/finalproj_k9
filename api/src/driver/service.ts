@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { DriverAcc } from './entity';
 import {InjectRepository} from "@nestjs/typeorm";
@@ -13,11 +13,11 @@ export class DriverService {
     const exstingAcc = await this.driverAccRepository.findOne({
       where: {email: account.email}
     })
-    if(exstingAcc){
-      throw new UnauthorizedException('Email has been used');
-    } else if(!account.phoneNumber){
+    if (exstingAcc) {
+      throw new ConflictException('Email has been used');
+    } else if (!account.phoneNumber) {
       throw new UnauthorizedException('Invalid PhoneNumber');
-    } else{
+    } else {
       account.password = await bcrypt.hash(account.password, 10);
       await this.driverAccRepository.save(account);
     }

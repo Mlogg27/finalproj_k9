@@ -5,19 +5,21 @@ import * as React from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 import { getInputting } from "@/lib/selector";
-import { getVerifyStatus, login } from "@/ulties/axios";
+import {  login } from "@/ulties/axios";
 import { inputtingSlice } from "@/lib/features";
 import { validateInputs } from "@plugins/validation";
 import CircularProgress from "@mui/material/CircularProgress";
-import { useNavigateBasedOnVerification } from "@plugins/navigateBasedOnVerification";
 import Link from "next/link";
+import { useNavigateBasedOnVerification } from "@plugins/navigateBasedOnVerification";
+import fetchStatus from "@plugins/fetchStatus";
 
 export default function LoginPage() {
-  const routerOnVerifyStatus = useNavigateBasedOnVerification();
   const [open, setOpen] = React.useState(false);
   const [alertMessage, setAlertMessage] = React.useState<string>("");
   const [alertSeverity, setAlertSeverity] = React.useState<'success' | 'error' | 'info' | 'warning'>("success");
   const [loading, setLoading] = React.useState(false);
+  const routerOnVerifyStatus = useNavigateBasedOnVerification();
+
 
   const dispatch = useDispatch();
   const inputtingValue = useSelector(getInputting);
@@ -25,25 +27,7 @@ export default function LoginPage() {
 
 
   React.useEffect(() => {
-    const fetchStatus = async () => {
-      const isLogin = typeof window !== 'undefined' && localStorage.getItem('accessToken');
-      if (isLogin) {
-        const verifyStatus = localStorage.getItem('verifyStatus');
-        if (verifyStatus) {
-          routerOnVerifyStatus(verifyStatus);
-        } else {
-            const res = await getVerifyStatus();
-            const data = res.data;
-            if (res.status === 200) {
-              routerOnVerifyStatus(data['verify']);
-              localStorage.setItem('verifyStatus', data['verify']);
-            } else {
-              routerOnVerifyStatus('login');
-            }
-          }
-        }
-    };
-    fetchStatus();
+    fetchStatus().then((data) => console.log(data) )
   }, []);
 
 

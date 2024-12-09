@@ -15,13 +15,12 @@ export class AuthController {
     return this.authService.login(user);
   }
 
-  @Post('rf-token')
+  @Get('rf-token')
   getNewAcToken(@Request() req) {
     return this.authService.getAcTokenFormRfToken(req.body);
   }
 
-  @Post('logout')
-  @HttpCode(200)
+  @Get('logout')
   logOut(@Request() req){
     return this.blackListService.addToBlacklist(req)
   }

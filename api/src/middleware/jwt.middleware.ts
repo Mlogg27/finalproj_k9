@@ -1,36 +1,49 @@
-import { Injectable, NestMiddleware, UnauthorizedException } from '@nestjs/common';
-import { Request, Response, NextFunction } from 'express';
-import * as jwt from 'jsonwebtoken';
-import { ConfigService } from '@nestjs/config';
+import {
+  ForbiddenException,
+  Injectable,
+  NestMiddleware,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { BlacklistService } from '../auth/blackList.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
-export class AuthMiddleware implements NestMiddleware {
-  constructor(private configService: ConfigService,
-              private blackListSevice: BlacklistService) {}
+export class JwtMiddleware implements NestMiddleware {
+  constructor(
+    private readonly jwtService: JwtService,
+    private blackListService: BlacklistService,
+    private configService: ConfigService,
+  ) {}
 
-  async use(req: Request, res: Response, next: NextFunction) {
-    const authHeader = req.headers['authorization'];
+  async use(req: any, res: any, next: () => void) {
+    const authHeader = req.headers.authorization;
+    const tokenType = req.headers['x-type-token'];
 
     if (!authHeader) {
-      throw new UnauthorizedException('Token is missing');
-    }
-    const token = authHeader.split(' ')[1];
-    const isTokenInBlackList = await this.blackListSevice.isTokenBlacklisted(token);
-    if(isTokenInBlackList){
-      throw new UnauthorizedException('Token is in BlackList');
+      throw new UnauthorizedException('Authorization header is missing');
     }
 
+    const [format, token] = authHeader.split(' ');
+
+    if (format !== 'Bearer' || !token) {
+      throw new UnauthorizedException('Invalid or missing Bearer token');
+    }
+
+    const isTokenInBlackList = await this.blackListService.isTokenBlacklisted(token);
+    if (isTokenInBlackList) {
+      throw new ForbiddenException('Token is blacklisted');
+    }
+
+    const tokenSecret = tokenType === 'refresh' ? 'JWT_SECRET_RF' : 'JWT_SECRET';
     try {
-      const decoded = jwt.verify(token, this.configService.get<string>('JWT_SECRET'));
-      req['user'] = decoded;
+      const decoded = this.jwtService.verify(token, {
+        secret: this.configService.get<string>(tokenSecret),
+      });
+      req.user = decoded;
       next();
     } catch (err) {
-      if (err.name === 'TokenExpiredError') {
-        throw new UnauthorizedException('Token has expired');
-      } else {
-        throw new UnauthorizedException('Invalid token');
-      }
+      throw new ForbiddenException('Invalid or expired token', err);
     }
   }
 }

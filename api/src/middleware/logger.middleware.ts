@@ -1,4 +1,4 @@
-import { Injectable, NestMiddleware, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, NestMiddleware, UnauthorizedException } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 
 @Injectable()
@@ -10,13 +10,13 @@ export class LoggerMiddleware implements NestMiddleware {
     const phoneNumberRegex= /^(?:\+84|0)[3-9]\d{8}$/;
 
     if(!payload.email || !emailRegex.test(payload.email)){
-      throw new UnauthorizedException('Invalid Email!');
+      throw new BadRequestException('Invalid Email!');
     }
     if(!payload.password || !passRegex.test(payload.password)){
-      throw new UnauthorizedException('Invalid Password!');
+      throw new BadRequestException('Invalid Password!');
     }
     if(payload.phoneNumber && !phoneNumberRegex.test(payload.phoneNumber)){
-      throw new UnauthorizedException('Invalid Phone Number!');
+      throw new BadRequestException('Invalid Phone Number!');
     }
     next();
   }
