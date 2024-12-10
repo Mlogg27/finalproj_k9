@@ -1,5 +1,5 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule, JwtService } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DriverAcc } from '../driver/entity';
@@ -25,7 +25,7 @@ import { JwtMiddleware } from '../middleware/jwt.middleware';
   ],
   controllers: [AuthController],
   providers: [AuthService, BlacklistService],
-})
+  exports: [JwtModule, BlacklistService] })
 export class AuthModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
