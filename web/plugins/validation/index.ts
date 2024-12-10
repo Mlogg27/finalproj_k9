@@ -14,6 +14,7 @@ const validators: Record<string, (data: string) => boolean> = {
   email: (data :string) => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(data),
   firstImg: isImage,
   secondImg: isImage,
+  otp: (data: string) => /^\d{6}$/.test(data)
 };
 
 const validateInputs = (data: Record<string, string>, requiredFields: string[]): ValidationResult => {

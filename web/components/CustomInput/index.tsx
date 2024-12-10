@@ -4,6 +4,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import {useDispatch, useSelector} from "react-redux";
 import {inputtingSlice} from "@/lib/features";
 import {getInputting} from "@/lib/selector";
+import React from "react";
 
 
 interface CustomInputProps {
@@ -50,4 +51,4 @@ const CustomInput: React.FC<CustomInputProps> = ({ label, placeholder, isPasswor
   );
 };
 
-export default CustomInput;
+export default React.memo(CustomInput);

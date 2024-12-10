@@ -1,4 +1,4 @@
-import {ChangeEvent} from "react";
+import {ChangeEvent, memo} from "react";
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import { useDispatch } from "react-redux";
 import {inputtingSlice} from "@/lib/features";
@@ -69,4 +69,4 @@ const UploadImageBox: React.FC<UploadImageBoxProps> = ({ width, height, onChange
   )
 };
 
-export default UploadImageBox;
+export default memo(UploadImageBox);

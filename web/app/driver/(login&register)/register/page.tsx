@@ -17,7 +17,6 @@ export default function RegisterPage() {
   }, []);
 
   const onClick = ()=>{
-
   }
   return (
     <>

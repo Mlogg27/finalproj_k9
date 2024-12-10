@@ -1,6 +1,10 @@
 import * as React from 'react';
 import { Input as BaseInput } from '@mui/base/Input';
 import { Box, styled } from '@mui/system';
+import { useDispatch, useSelector } from "react-redux";
+import { inputtingSlice } from '@/lib/features';
+import { getInputting } from "@/lib/selector";
+import { useEffect } from "react";
 
 function OTP({
                separator,
@@ -142,7 +146,6 @@ function OTP({
       onChange(otpArray.join(''));
     }
   };
-
   return (
     <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
       {new Array(length).fill(null).map((_, index) => (
@@ -173,9 +176,17 @@ function OTP({
   );
 }
 
-function OTPInput() {
-  const [otp, setOtp] = React.useState('');
-  console.log(otp);
+interface Props{
+  otp: string;
+  setOtp: React.Dispatch<React.SetStateAction<string>>;
+}
+
+
+const OTPInput : React.FC<Props> = ( {otp, setOtp})=> {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(inputtingSlice.actions.input({name: 'otp', value: otp}))
+  }, [otp]);
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>

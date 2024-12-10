@@ -39,4 +39,4 @@ const CustomAlert : React.FC<CustomAlertProps> = ( { alertSeverity, alertMessage
   )
 }
 
-export default CustomAlert;
+export default React.memo(CustomAlert);
