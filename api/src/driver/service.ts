@@ -13,16 +13,18 @@ export class DriverService {
               private  mailerService: MailerService,
   ) {}
 
-  async register(account ){
+  async register(account:any ){
+    const NewEmail = account.email.toLowerCase()
     const exstingAcc = await this.driverAccRepository.findOne({
-      where: {email: account.email}
+      where: {email: NewEmail}
     })
     if (exstingAcc) {
       throw new ConflictException('Email has been used');
     } else if (!account.phoneNumber) {
       throw new UnauthorizedException('Invalid PhoneNumber');
     } else {
-      this.mailerService.sendMessage(account.email)
+      this.mailerService.sendMessage(NewEmail);
+      account.email = NewEmail;
       account.password = await bcrypt.hash(account.password, 10);
       await this.driverAccRepository.save(account);
     }
@@ -32,12 +34,11 @@ export class DriverService {
     const otp = this.mailerService.generateOtp();
     const userEmail = req['user'].email;
     const existingAcc = await this.driverAccRepository.findOne({
-      where: { email: userEmail },
+      where: { email: userEmail.toLowerCase() },
     });
     if (!existingAcc || existingAcc.active === false) {
       throw new UnauthorizedException('Incorrect Email!');
     }
-
     const expiresAt = Date.now() + 5 * 60 * 1000;
     this.otpStore.set(userEmail, { otp, expiresAt });
     return this.mailerService.sendOTP(userEmail, otp);
@@ -54,9 +55,9 @@ export class DriverService {
     }
 
     const otpDataSaved = this.otpStore.get(userEmail);
-    if (!otpDataSaved) throw new UnauthorizedException('Invalid OTP');
+    if (!otpDataSaved) throw new UnauthorizedException('Missing OTP. Please get a new one');
     const { otp, expiresAt } = otpDataSaved;
-    console.log(otp, body.otp)
+    console.log(otp, body.otp);
 
     if (Date.now() > expiresAt) {
       this.otpStore.delete(userEmail);
@@ -64,10 +65,10 @@ export class DriverService {
     }
     if (otp === body.otp) {
       this.otpStore.delete(userEmail);
-      return true;
+      existingAcc.verify = 'step2';
+      await this.driverAccRepository.save(existingAcc);
+      return {message: 'Verified OTP Successfully'};
     }
-    return false;
+    throw new UnauthorizedException('Invalid OTP')  ;
   }
-
-
 }

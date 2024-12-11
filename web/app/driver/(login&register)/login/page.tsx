@@ -11,6 +11,7 @@ import { validateInputs } from "@plugins/validation";
 import CircularProgress from "@mui/material/CircularProgress";
 import Link from "next/link";
 import { useNavigateBasedOnVerification } from "@plugins/navigateBasedOnVerification";
+import { useEffect } from "react";
 import fetchStatus from "@plugins/fetchStatus";
 
 export default function LoginPage() {
@@ -20,15 +21,9 @@ export default function LoginPage() {
   const [loading, setLoading] = React.useState(false);
   const routerOnVerifyStatus = useNavigateBasedOnVerification();
 
-
   const dispatch = useDispatch();
   const inputtingValue = useSelector(getInputting);
   const necessaryFields = ['email', 'password'];
-
-
-  React.useEffect(() => {
-    fetchStatus(routerOnVerifyStatus).then((data) => console.log(data) )
-  }, []);
 
 
   const onClick = async () => {
@@ -68,6 +63,11 @@ export default function LoginPage() {
       }
     }
   };
+
+  useEffect(() => {
+    const status = fetchStatus();
+    routerOnVerifyStatus(status);
+  }, []);
 
   return (
     <div className="flex flex-col items-center w-[100%] relative">

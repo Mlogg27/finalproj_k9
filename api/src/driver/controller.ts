@@ -1,4 +1,4 @@
-import {Body, Controller, Request, Post, Get} from "@nestjs/common";
+import { Body, Controller, Request, Post, Get, HttpCode } from '@nestjs/common';
 import {  RegisterDto } from './dto'
 import {DriverService} from "./service";
 
@@ -19,6 +19,7 @@ export class DriverController {
   }
 
   @Post('verifyOtp')
+  @HttpCode(200)
   async VerifyOtp(@Body() otp, @Request() req){
     return this.driverService.verifyOtp(otp, req)
   }

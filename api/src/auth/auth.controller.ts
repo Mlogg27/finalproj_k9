@@ -17,7 +17,7 @@ export class AuthController {
 
   @Get('rf-token')
   getNewAcToken(@Request() req) {
-    return this.authService.getAcTokenFormRfToken(req.body);
+    return this.authService.getAcTokenFormRfToken(req.user);
   }
 
   @Get('logout')
@@ -25,8 +25,4 @@ export class AuthController {
     return this.blackListService.addToBlacklist(req)
   }
 
-  @Get('/verifyStatus')
-  getVerifyStatus(@Request() req){
-    return this.authService.getVerifyStatus(req)
-  }
 }

@@ -12,9 +12,7 @@ export default function RegisterPage() {
     "success" | "warning" | "error"
   >("success");
 
-  React.useEffect(() => {
-    fetchStatus().then((data) => console.log(data) )
-  }, []);
+
 
   const onClick = ()=>{
   }

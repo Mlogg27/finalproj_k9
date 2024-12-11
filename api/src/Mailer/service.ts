@@ -17,7 +17,7 @@ export class MailerService {
         text: `Your OTP is: ${otp}`,
         html: `<p>Your OTP is: <b>${otp}</b></p>`,
       });
-      return 'Email send successfully';
+      return {message: 'Send OTP Successfully'};
     } catch (error) {
       throw new Error('Can`t send the email: ' + error.message);
     }
@@ -32,7 +32,7 @@ export class MailerService {
           '<p>Congratulations, you have successfully registered with email:</p>' +
           `<span><b>${email}</b></span>`
       });
-      return 'Email send successfully';
+      return {message: 'Send Message Successfully'};
     } catch (error) {
       throw new Error('Can`t send the email: ' + error.message);
     }

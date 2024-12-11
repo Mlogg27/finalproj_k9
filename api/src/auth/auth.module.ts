@@ -18,7 +18,7 @@ import { JwtMiddleware } from '../middleware/jwt.middleware';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: '15m' },
+        signOptions: { expiresIn: '3m' },
       }),
       inject: [ConfigService],
     })
@@ -33,6 +33,6 @@ export class AuthModule {
       .forRoutes('auth/login');
     consumer
       .apply(JwtMiddleware)
-      .forRoutes('auth/verifyStatus', 'auth/rf-token');
+      .forRoutes('auth/rf-token');
   }
 }

@@ -1,5 +1,6 @@
 "use client";
-import React, { useEffect } from "react";
+
+import React, { useCallback, useEffect } from "react";
 import { VerifyProcessBar, VerifyCodeField, CustomButton, CustomAlert, CountDown } from "@/components";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,6 +10,8 @@ import { inputtingSlice } from "@/lib/features";
 import CircularProgress from "@mui/material/CircularProgress";
 import fetchStatus from "@plugins/fetchStatus";
 import { useNavigateBasedOnVerification } from "@plugins/navigateBasedOnVerification";
+import { sendOtp, verifyOtp } from "@/ulties/axios";
+import checkAndRefreshToken from "@plugins/verifyAccessToken";
 
 export default function EmailVerifyPage() {
   const inputtingValue = useSelector(getInputting);
@@ -19,15 +22,18 @@ export default function EmailVerifyPage() {
   const [loading, setLoading] = React.useState(false);
   const dispatch = useDispatch();
   const routerOnVerifyStatus = useNavigateBasedOnVerification();
+  const status = fetchStatus();
 
-
-  React.useEffect(() => {
-    fetchStatus(routerOnVerifyStatus).then((data) => console.log(data) )
+  useEffect(() => {
+    routerOnVerifyStatus(status);
+  }, []);
+  useEffect(() => {
+    const isSendOtp = localStorage.getItem('sendOtp');
+    if(isSendOtp) return;
+    sendOtp();
   }, []);
 
-
-
-  const onClick = () => {
+  const onClick = async  () => {
     setLoading(true)
     const {otp} = inputtingValue;
     const resultValid = validateInputs({ otp }, ['otp']);
@@ -42,7 +48,13 @@ export default function EmailVerifyPage() {
     }
     if(resultValid.valid){
       setLoading(false);
-      console.log(otp);
+      const res = await verifyOtp(otp);
+      const data = res.data;
+      setOpen(true);
+      setAlertMessage(data.message);
+      setOtp('');
+      if(res.status === 401) setAlertSeverity('warning');
+      if(res.status === 200) setAlertSeverity('success');
     }
   };
 
@@ -53,7 +65,7 @@ export default function EmailVerifyPage() {
         Verify Email
       </h1>
       <span className="mb-[70px] flex justify-center items-center text-[#9E9E9E] text-sm">
-        Enter the 6-digit code we sent to *********
+        Enter the 6-digit code we sent to your email
       </span>
       <VerifyCodeField  otp={otpValue} setOtp={setOtp}/>
       <div className="mt-[50px] text-center text-sm mb-[25px]">
