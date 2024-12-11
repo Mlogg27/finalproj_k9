@@ -11,7 +11,6 @@ import CircularProgress from "@mui/material/CircularProgress";
 import fetchStatus from "@plugins/fetchStatus";
 import { useNavigateBasedOnVerification } from "@plugins/navigateBasedOnVerification";
 import { sendOtp, verifyOtp } from "@/ulties/axios";
-import checkAndRefreshToken from "@plugins/verifyAccessToken";
 
 export default function EmailVerifyPage() {
   const inputtingValue = useSelector(getInputting);
@@ -30,7 +29,7 @@ export default function EmailVerifyPage() {
   useEffect(() => {
     const isSendOtp = localStorage.getItem('sendOtp');
     if(isSendOtp) return;
-    sendOtp();
+    sendOtp().then();
   }, []);
 
   const onClick = async  () => {
@@ -54,7 +53,11 @@ export default function EmailVerifyPage() {
       setAlertMessage(data.message);
       setOtp('');
       if(res.status === 401) setAlertSeverity('warning');
-      if(res.status === 200) setAlertSeverity('success');
+      if(res.status === 200) {
+        setAlertSeverity('success');
+        localStorage.setItem('verifyStatus', 'step2');
+        routerOnVerifyStatus('step2');
+      }
     }
   };
 
@@ -72,7 +75,7 @@ export default function EmailVerifyPage() {
         <span>Didn’t receive a code?</span>
         <br />
         <span className="font-semibold">
-          <CountDown startPoint={3}/>
+          <CountDown setOpen={setOpen} setAlertSeverity={setAlertSeverity} setAlertMessage={setAlertMessage} startPoint={3}/>
         </span>
       </div>
       <CustomButton
