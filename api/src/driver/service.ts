@@ -3,7 +3,7 @@ import { Repository } from 'typeorm';
 import { DriverAcc } from './entity';
 import {InjectRepository} from "@nestjs/typeorm";
 import * as bcrypt from 'bcrypt';
-import { MailerService } from '../Mailer/service';
+import { MailerService } from '../mailer/service';
 
 
 @Injectable()

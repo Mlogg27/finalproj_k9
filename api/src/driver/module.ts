@@ -6,7 +6,7 @@ import { DriverController } from './controller';
 import { LoggerMiddleware } from '../middleware/logger.middleware';
 import { JwtMiddleware } from '../middleware/jwt.middleware';
 import { AuthModule } from '../auth/auth.module';
-import { MailModule } from '../Mailer/module';
+import { MailModule } from '../mailer/module';
 
 
 @Module({

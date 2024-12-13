@@ -9,7 +9,7 @@ import {LoggerMiddleware} from '../middleware/logger.middleware';
 import { BlacklistTokens } from './blackList.entity';
 import { BlacklistService } from './blackList.service';
 import { JwtMiddleware } from '../middleware/jwt.middleware';
-import { MailModule } from 'src/Mailer/module';
+import { MailModule } from 'src/mailer/module';
 
 @Module({
   imports: [

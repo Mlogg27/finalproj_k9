@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { DriverAcc } from '../driver/entity';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
-import { MailerService } from '../Mailer/service';
+import { MailerService } from '../mailer/service';
 
 @Injectable()
 export class AuthService {

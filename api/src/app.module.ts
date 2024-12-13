@@ -9,7 +9,7 @@ import { ConfigModule } from '@nestjs/config';
 import { BlacklistTokens } from './auth/blackList.entity';
 import { Images } from './images/entity';
 import { ImagesModule } from './images/module';
-import { MailModule } from './Mailer/module';
+import { MailModule } from './mailer/module';
 
 @Module({
   imports: [
