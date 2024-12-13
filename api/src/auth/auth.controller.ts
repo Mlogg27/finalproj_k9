@@ -1,6 +1,6 @@
-import { Body, Controller, Get, HttpCode, Post, Request } from '@nestjs/common';
+import { Body, Controller, HttpCode, Post, Request } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import {LoginDto} from './auth.dto';
+import {LoginDto, RefreshPassDto} from './auth.dto';
 import { BlacklistService } from './blackList.service';
 
 @Controller('auth')
@@ -15,14 +15,21 @@ export class AuthController {
     return this.authService.login(user);
   }
 
-  @Get('rf-token')
+  @Post('rf-token')
+  @HttpCode(200)
   getNewAcToken(@Request() req) {
     return this.authService.getAcTokenFormRfToken(req.user);
   }
 
-  @Get('logout')
+  @Post('logout')
+  @HttpCode(200)
   logOut(@Request() req){
     return this.blackListService.addToBlacklist(req)
   }
 
+  @Post('rf-pass')
+  @HttpCode(200)
+  getMailRFPass(@Body () user: RefreshPassDto){
+    return this.authService.reqRFPassword(user);
+  }
 }

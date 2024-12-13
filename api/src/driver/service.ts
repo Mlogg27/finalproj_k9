@@ -23,7 +23,7 @@ export class DriverService {
     } else if (!account.phoneNumber) {
       throw new UnauthorizedException('Invalid PhoneNumber');
     } else {
-      this.mailerService.sendMessage(NewEmail);
+      this.mailerService.sendRegisterMessage(NewEmail);
       account.email = NewEmail;
       account.password = await bcrypt.hash(account.password, 10);
       await this.driverAccRepository.save(account);
@@ -32,9 +32,9 @@ export class DriverService {
 
   async sendOTP(req){
     const otp = this.mailerService.generateOtp();
-    const userEmail = req['user'].email;
+    const userEmail = req['user'].email.toLowerCase();
     const existingAcc = await this.driverAccRepository.findOne({
-      where: { email: userEmail.toLowerCase() },
+      where: { email: userEmail},
     });
     if (!existingAcc || existingAcc.active === false) {
       throw new UnauthorizedException('Incorrect Email!');
@@ -45,7 +45,7 @@ export class DriverService {
   }
 
   async verifyOtp( body, req){
-    const userEmail = req['user'].email;
+    const userEmail = req['user'].email.toLowerCase();
 
     const existingAcc = await this.driverAccRepository.findOne({
       where: { email: userEmail },

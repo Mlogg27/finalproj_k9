@@ -100,4 +100,8 @@ const verifyOtp = async (otp : string ) =>{
   } else return false;
 };
 
+const renewPassowrd = async (newPass: string, token: string)=>{
+  console.log("hehe")
+}
+
 export {login, getNewAccessToken, register, sendOtp, verifyOtp};

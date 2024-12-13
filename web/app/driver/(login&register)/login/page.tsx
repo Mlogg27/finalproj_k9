@@ -99,16 +99,16 @@ export default function LoginPage() {
       </div>
       <Link
         className="text-gray-500 mt-5 w-full flex justify-center"
-        href="#"
+        href="/driver/reset_password"
       >
         Forgot your password?
       </Link>
-      <div className="mt-[50vh] flex gap-x-[5px] text-gray-500">
+      <span className="mt-[50vh] flex gap-x-[5px] text-gray-500">
         Don’t have an account?
         <Link className="underline font-semibold" href="/driver/register">
           Register here
         </Link>
-      </div>
+      </span>
       <CustomAlert
         setOpen={setOpen}
         alertSeverity={alertSeverity}

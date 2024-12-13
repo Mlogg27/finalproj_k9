@@ -1,5 +1,5 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
-import { JwtModule, JwtService } from '@nestjs/jwt';
+import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DriverAcc } from '../driver/entity';
@@ -9,6 +9,7 @@ import {LoggerMiddleware} from '../middleware/logger.middleware';
 import { BlacklistTokens } from './blackList.entity';
 import { BlacklistService } from './blackList.service';
 import { JwtMiddleware } from '../middleware/jwt.middleware';
+import { MailModule } from 'src/Mailer/module';
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { JwtMiddleware } from '../middleware/jwt.middleware';
         signOptions: { expiresIn: '3m' },
       }),
       inject: [ConfigService],
-    })
+    }),
+    MailModule
   ],
   controllers: [AuthController],
   providers: [AuthService, BlacklistService],

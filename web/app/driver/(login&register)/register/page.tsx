@@ -3,7 +3,6 @@
 import { CustomAlert, CustomInput, CustomButton } from "@/components";
 import * as React from "react";
 import Link from "next/link";
-import fetchStatus from "@plugins/fetchStatus";
 
 export default function RegisterPage() {
   const [open, setOpen] = React.useState(false);

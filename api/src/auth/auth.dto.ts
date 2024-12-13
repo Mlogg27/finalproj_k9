@@ -9,4 +9,9 @@ class LoginDto {
   password: string
 }
 
-export {LoginDto}
+class RefreshPassDto {
+  @ApiProperty()
+  email: string
+}
+
+export {LoginDto, RefreshPassDto}

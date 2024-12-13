@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { DriverAcc } from '../driver/entity';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
+import { MailerService } from '../Mailer/service';
 
 @Injectable()
 export class AuthService {
@@ -12,11 +13,13 @@ export class AuthService {
     private readonly jwtService: JwtService,
     @InjectRepository(DriverAcc)
     private readonly driverAccRepository: Repository<DriverAcc>,
-    private configService: ConfigService  ) {}
+    private configService: ConfigService,
+    private mailerService: MailerService) {}
 
-  async login(user: any) {
+  async login(user: {email: string, password: string}) {
+    const email = user.email.toLowerCase();
     const existingAcc = await this.driverAccRepository.findOne({
-      where: { email: user.email.toLowerCase() },
+      where: { email: email },
     });
     if (!existingAcc || existingAcc.active === false) {
       throw new UnauthorizedException('Incorrect Email!');
@@ -28,7 +31,7 @@ export class AuthService {
       throw new UnauthorizedException('Incorrect Password!');
     }
 
-    const payload  = {email: user.email}
+    const payload  = {email: email}
     return {
       access_token: this.jwtService.sign(payload),
       refresh_token: this.jwtService.sign(payload, {
@@ -39,18 +42,29 @@ export class AuthService {
     };
   }
 
-  async getAcTokenFormRfToken (user){
+  async getAcTokenFormRfToken (user : {email: string}){
+    const email = user.email.toLowerCase()
     const existingAcc = await this.driverAccRepository.findOne({
-      where: { email: user.email },
+      where: { email: email },
     });
     if (!existingAcc || !user || existingAcc.active === false) {
       throw new UnauthorizedException('Invalid Refresh Token!');
     }
-    const payload = { email: user.email.toLowerCase()};
+    const payload = { email: email};
     return {
       access_token: this.jwtService.sign(payload)
     }
   }
 
-
+  async reqRFPassword(user : {email: string}) {
+    const email = user.email.toLowerCase()
+    const existingAcc = await this.driverAccRepository.findOne({
+      where: { email: email },
+    });
+    if (!existingAcc || existingAcc.active === false) {
+      throw new UnauthorizedException('Incorrect Email!');
+    }
+    const token = this.jwtService.sign({email: email});
+    return this.mailerService.sendRFPassEmail(email, token);
+  }
 }
