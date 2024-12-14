@@ -2,33 +2,34 @@
 
 import { CustomInput, CustomButton, CustomAlert } from "@/components";
 import * as React from "react";
-
 import { useDispatch, useSelector } from "react-redux";
 import { getInputting } from "@/lib/selector";
-import {  login } from "@/ulties/axios";
+import { login } from "@/ulties/axios";
 import { inputtingSlice } from "@/lib/features";
 import { validateInputs } from "@plugins/validation";
 import CircularProgress from "@mui/material/CircularProgress";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useNavigateBasedOnVerification } from "@plugins/navigateBasedOnVerification";
-import { useEffect } from "react";
 import fetchStatus from "@plugins/fetchStatus";
 
 export default function LoginPage() {
-  const [open, setOpen] = React.useState(false);
-  const [alertMessage, setAlertMessage] = React.useState<string>("");
-  const [alertSeverity, setAlertSeverity] = React.useState<'success' | 'error' | 'info' | 'warning'>("success");
-  const [loading, setLoading] = React.useState(false);
-  const routerOnVerifyStatus = useNavigateBasedOnVerification();
-
+  const [open, setOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState<string>("");
+  const [alertSeverity, setAlertSeverity] = useState<'success' | 'error' | 'info' | 'warning'>("success");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const dispatch = useDispatch();
   const inputtingValue = useSelector(getInputting);
-  const necessaryFields = ['email', 'password'];
+  const necessaryFields = ["email", "password"];
+  const routerOnVerifyStatus = useNavigateBasedOnVerification();
 
-
-  const onClick = async () => {
+  const handleLogin = async () => {
     const { email, password } = inputtingValue;
     setLoading(true);
+
     const resultValid = validateInputs({ email, password }, necessaryFields);
 
     if (!resultValid.valid && resultValid.message && resultValid.severity && resultValid.name) {
@@ -39,39 +40,56 @@ export default function LoginPage() {
       dispatch(inputtingSlice.actions.reset({ name: resultValid.name }));
       return;
     }
-    if (resultValid.valid) {
-      const res = await login(email, password);
-      setLoading(false);
-      const data = res.data;
-      switch (res.status) {
-        case 200:
-          setOpen(true);
-          setAlertMessage('Login Successfully!');
-          setAlertSeverity('success');
-          localStorage.setItem('accessToken', data['access_token']);
-          localStorage.setItem('refreshToken', data['refresh_token']);
-          localStorage.setItem('verifyStatus', data['verify']);
-          routerOnVerifyStatus(data['verify']);
-          dispatch(inputtingSlice.actions.reset({}));
-          break;
-        case 401:
-          setOpen(true);
-          setAlertMessage(data.message);
-          setAlertSeverity('warning');
-          dispatch(inputtingSlice.actions.reset({}));
-          break;
-      }
+
+    const res = await login(email, password);
+    setLoading(false);
+
+    if (res.status === 200) {
+      setOpen(true);
+      setAlertMessage("Login Successfully!");
+      setAlertSeverity("success");
+
+      const { access_token, refresh_token, verify } = res.data;
+      localStorage.setItem("accessToken", access_token);
+      localStorage.setItem("refreshToken", refresh_token);
+      localStorage.setItem("verifyStatus", verify);
+
+      routerOnVerifyStatus(verify);
+      dispatch(inputtingSlice.actions.reset({}));
+    } else if (res.status === 401) {
+      setOpen(true);
+      setAlertMessage(res.data.message);
+      setAlertSeverity("warning");
+      dispatch(inputtingSlice.actions.reset({}));
     }
   };
 
   useEffect(() => {
+    const alertQuery = searchParams.get("alert");
+
     const status = fetchStatus();
-    routerOnVerifyStatus(status);
-  }, []);
+    if(status !== 'login') {
+      routerOnVerifyStatus(status);
+      return;
+    }
+
+    if (alertQuery === "true") {
+      setOpen(true);
+      setAlertMessage("Please log in to continue.");
+      setAlertSeverity("info");
+
+      const currentPath = window.location.pathname;
+      const restQueries = new URLSearchParams(searchParams.toString());
+      restQueries.delete("alert");
+
+      router.replace(`${currentPath}?${restQueries.toString()}`);
+    }
+  }, [searchParams, router]);
+
 
   return (
-    <div className="flex flex-col items-center w-[100%] relative">
-      <form className="w-[100%] flex flex-col justify-center items-center">
+    <div className="flex flex-col items-center w-full relative">
+      <form className="w-full flex flex-col justify-center items-center">
         <CustomInput
           label="Email"
           type="email"
@@ -94,17 +112,14 @@ export default function LoginPage() {
           name="Continue"
           bgColor="#2c2c2c"
           tColor="white"
-          onClick={onClick}
+          onClick={handleLogin}
         />
       </div>
-      <Link
-        className="text-gray-500 mt-5 w-full flex justify-center"
-        href="/driver/reset_password"
-      >
+      <Link className="text-gray-500 mt-5 w-full flex justify-center" href="/driver/reset_password">
         Forgot your password?
       </Link>
-      <span className="mt-[50vh] flex gap-x-[5px] text-gray-500">
-        Don’t have an account?
+      <span className="mt-[50vh] flex gap-x-1 text-gray-500">
+        Don’t have an account?{" "}
         <Link className="underline font-semibold" href="/driver/register">
           Register here
         </Link>
@@ -115,7 +130,6 @@ export default function LoginPage() {
         alertMessage={alertMessage}
         open={open}
       />
-
       {loading && (
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
           <CircularProgress style={{ color: "black" }} />

@@ -1,6 +1,7 @@
 const fetchStatus = () :string => {
-  const isLogin = typeof window !== 'undefined' && localStorage.getItem('accessToken');
-  if (isLogin) {
+  const accessToken = typeof window !== 'undefined' && localStorage.getItem('accessToken');
+
+  if (accessToken) {
     const verifyStatus = localStorage.getItem('verifyStatus');
     if (verifyStatus) {
       return verifyStatus;

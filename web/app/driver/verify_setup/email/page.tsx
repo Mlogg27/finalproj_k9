@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect } from "react";
+import React, { useEffect } from "react";
 import { VerifyProcessBar, VerifyCodeField, CustomButton, CustomAlert, CountDown } from "@/components";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
@@ -15,6 +15,7 @@ import { sendOtp, verifyOtp } from "@/ulties/axios";
 export default function EmailVerifyPage() {
   const inputtingValue = useSelector(getInputting);
   const [otpValue, setOtp] = React.useState('');
+  const [isSendEmail, setIsSendEmail]=  React.useState(false);
   const [open, setOpen] = React.useState(false);
   const [alertMessage, setAlertMessage] = React.useState<string>("");
   const [alertSeverity, setAlertSeverity] = React.useState<'success' | 'error' | 'info' | 'warning'>("success");
@@ -23,14 +24,20 @@ export default function EmailVerifyPage() {
   const routerOnVerifyStatus = useNavigateBasedOnVerification();
   const status = fetchStatus();
 
+
   useEffect(() => {
     routerOnVerifyStatus(status);
+    if(!isSendEmail){
+      sendOtp()
+        .then(()=> setIsSendEmail(true))
+        .catch(() => {
+          setOpen(true)
+          setAlertMessage('Failed to send OTP. Please click resend email');
+          setAlertSeverity('error');
+        });
+    } else return;
   }, []);
-  useEffect(() => {
-    const isSendOtp = localStorage.getItem('sendOtp');
-    if(isSendOtp) return;
-    sendOtp().then();
-  }, []);
+
 
   const onClick = async  () => {
     setLoading(true)
@@ -52,11 +59,14 @@ export default function EmailVerifyPage() {
       setOpen(true);
       setAlertMessage(data.message);
       setOtp('');
-      if(res.status === 401) setAlertSeverity('warning');
       if(res.status === 200) {
         setAlertSeverity('success');
         localStorage.setItem('verifyStatus', 'step2');
         routerOnVerifyStatus('step2');
+      } else{
+        setAlertSeverity('warning');
+        localStorage.clear();
+        routerOnVerifyStatus('login');
       }
     }
   };

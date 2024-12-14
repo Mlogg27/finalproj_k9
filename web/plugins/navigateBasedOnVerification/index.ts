@@ -3,7 +3,7 @@ import { useRouter } from 'next/navigation';
 export const useNavigateBasedOnVerification = () => {
   const router = useRouter();
 
-  return (verifyStatus:string) => {
+  return  (verifyStatus:string) => {
     switch (verifyStatus) {
       case 'unverified':
         router.push('/driver/verify_setup/email');
@@ -18,7 +18,7 @@ export const useNavigateBasedOnVerification = () => {
         router.push('/driver/home');
         break;
       default:
-        router.push('/driver/login');
+        router.push('/driver/login?alert=true');
         break;
     }
   };

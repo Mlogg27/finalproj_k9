@@ -1,5 +1,5 @@
 import axios from "axios";
-import checkAndRefreshToken from "@plugins/verifyAccessToken";
+import {checkAndRefreshToken} from "@plugins/verifyAccessToken";
 
 const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -33,7 +33,7 @@ const getNewAccessToken = async ()=>{
   const rfToken = localStorage.getItem('refreshToken');
   if(rfToken){
     try {
-      const res = await apiClient.get(
+      const res = await apiClient.post(
         '/auth/rf-token',
         {
           headers: {
@@ -66,7 +66,6 @@ const sendOtp = async ( ) =>{
           },
         }
       );
-      localStorage.setItem('sendOtp', 'true');
       return res;
     } catch (e) {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -100,8 +99,17 @@ const verifyOtp = async (otp : string ) =>{
   } else return false;
 };
 
-const renewPassowrd = async (newPass: string, token: string)=>{
-  console.log("hehe")
+const getMailRFPassowrd = async (email: string)=>{
+  try {
+    const res = await apiClient.post('auth/rf-pass', {
+      email: email
+    });
+    return res;
+  } catch(e){
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    return e.response
+  }
 }
 
 export {login, getNewAccessToken, register, sendOtp, verifyOtp};

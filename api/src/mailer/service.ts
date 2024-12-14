@@ -22,7 +22,7 @@ export class MailerService {
                   <h3 style="color: #000; background: #e9e9e9; padding: 10px; display: inline-block; border-radius: 5px;">${otp}</h3>
                   <p>This code is valid for the next 5 minutes. If you did not request this verification, please ignore this email.</p>
                   <p>Best regards,</p>
-                  <p><strong>The Scrap Plans Team</strong></p>
+                  <p><strong>The Scrap Plan Team</strong></p>
                 </div>`,
       });
       return {message: 'Send OTP Successfully'};
@@ -43,7 +43,7 @@ export class MailerService {
                    <p style="font-size: 16px; color: #000;"><strong>${email}</strong></p>
                    <p>We are excited to have you on board. Start exploring and enjoy the features we offer!</p>
                    <p>Best regards,</p>
-                   <p><strong>The Scrap Plans Team</strong></p>
+                   <p><strong>The Scrap Plan Team</strong></p>
                 </div>`
       });
       return {message: 'Send Message Successfully'};
@@ -65,7 +65,7 @@ export class MailerService {
         <p>Please click the button below to reset your password:</p>
         <p><a href="${url}" style="background-color: #4CAF50; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px;">Reset Password</a></p>
         <p>If you did not request a password reset, please ignore this email or contact our support team.</p>
-        <p>Best regards,<br/>The Scrap Plans Team</p>
+        <p>Best regards,<br/>The Scrap Plan Team</p>
       `,
       });
       return { message: 'Send Email Successfully' };
