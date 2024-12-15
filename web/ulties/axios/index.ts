@@ -1,5 +1,5 @@
 import axios from "axios";
-import {checkAndRefreshToken} from "@plugins/verifyAccessToken";
+import { checkAndRefreshToken } from "@plugins/verifyAccessToken";
 
 const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -7,10 +7,9 @@ const apiClient = axios.create({
     "Content-Type" : "application/json"
   }
 });
-const login = async  (email:string, password: string) =>{
+const login = async  (email: string, password:string) =>{
     try {
-      const res = await apiClient.post('/auth/login', { email, password });
-      return res;
+      return await apiClient.post('/auth/login', { email, password });
     } catch (e) {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-expect-error
@@ -20,8 +19,7 @@ const login = async  (email:string, password: string) =>{
 
 const register = async  (email:string, password: string, phoneNumber:  string) =>{
   try {
-    const res = await apiClient.post('/auth/login', { email, password, phoneNumber });
-    return res;
+    return apiClient.post('/auth/login', { email, password, phoneNumber });
   } catch (e) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
@@ -33,16 +31,15 @@ const getNewAccessToken = async ()=>{
   const rfToken = localStorage.getItem('refreshToken');
   if(rfToken){
     try {
-      const res = await apiClient.post(
+      return await apiClient.post(
         '/auth/rf-token',
         {
           headers: {
             Authorization: `Bearer ${rfToken}`,
-            'x-type-token' : 'refresh'
+            'x-type-token': 'refresh'
           },
         }
       );
-      return res;
     } catch (e) {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-expect-error
@@ -58,7 +55,7 @@ const sendOtp = async ( ) =>{
   const accessToken = await checkAndRefreshToken();
   if(accessToken){
     try {
-      const res = await apiClient.get(
+      return await apiClient.get(
         '/driver/sendOtp',
         {
           headers: {
@@ -66,7 +63,6 @@ const sendOtp = async ( ) =>{
           },
         }
       );
-      return res;
     } catch (e) {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-expect-error
@@ -79,7 +75,7 @@ const verifyOtp = async (otp : string ) =>{
   const accessToken = await checkAndRefreshToken();
   if(accessToken){
     try {
-      const res = await apiClient.post(
+      return await apiClient.post(
         '/driver/verifyOtp',
         {
           "otp": otp,
@@ -90,7 +86,6 @@ const verifyOtp = async (otp : string ) =>{
           },
         }
       );
-      return res;
     } catch (e) {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-expect-error
@@ -101,10 +96,9 @@ const verifyOtp = async (otp : string ) =>{
 
 const getMailRFPassowrd = async (email: string)=>{
   try {
-    const res = await apiClient.post('auth/rf-pass', {
+    return await apiClient.post('auth/rf-pass', {
       email: email
     });
-    return res;
   } catch(e){
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error

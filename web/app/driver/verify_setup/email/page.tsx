@@ -36,7 +36,7 @@ export default function EmailVerifyPage() {
           setAlertSeverity('error');
         });
     } else return;
-  }, []);
+  }, [routerOnVerifyStatus]);
 
 
   const onClick = async  () => {

@@ -5,14 +5,14 @@ import * as React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getInputting } from "@/lib/selector";
 import { login } from "@/ulties/axios";
-import { inputtingSlice } from "@/lib/features";
-import { validateInputs } from "@plugins/validation";
 import CircularProgress from "@mui/material/CircularProgress";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useNavigateBasedOnVerification } from "@plugins/navigateBasedOnVerification";
 import fetchStatus from "@plugins/fetchStatus";
+import handleSubmit from "@plugins/handleSubmit";
+import { inputtingSlice } from "@/lib/features";
 
 export default function LoginPage() {
   const [open, setOpen] = useState(false);
@@ -26,43 +26,33 @@ export default function LoginPage() {
   const necessaryFields = ["email", "password"];
   const routerOnVerifyStatus = useNavigateBasedOnVerification();
 
-  const handleLogin = async () => {
-    const { email, password } = inputtingValue;
-    setLoading(true);
-
-    const resultValid = validateInputs({ email, password }, necessaryFields);
-
-    if (!resultValid.valid && resultValid.message && resultValid.severity && resultValid.name) {
+  const handleLogin =async ()=>{
+    const {email, password} = inputtingValue;
+    const valid = await handleSubmit({email, password},
+                  necessaryFields,
+                  setLoading,
+                  setOpen,
+                  setAlertMessage,
+                  setAlertSeverity,
+                  dispatch);
+    if(valid){
+      const res = await login(email, password);
+      const {message, verify, access_token, refresh_token} = res.data;
       setLoading(false);
       setOpen(true);
-      setAlertMessage(resultValid.message);
-      setAlertSeverity(resultValid.severity);
-      dispatch(inputtingSlice.actions.reset({ name: resultValid.name }));
-      return;
-    }
-
-    const res = await login(email, password);
-    setLoading(false);
-
-    if (res.status === 200) {
-      setOpen(true);
-      setAlertMessage("Login Successfully!");
-      setAlertSeverity("success");
-
-      const { access_token, refresh_token, verify } = res.data;
-      localStorage.setItem("accessToken", access_token);
-      localStorage.setItem("refreshToken", refresh_token);
-      localStorage.setItem("verifyStatus", verify);
-
-      routerOnVerifyStatus(verify);
+      setAlertMessage(message);
       dispatch(inputtingSlice.actions.reset({}));
-    } else if (res.status === 401) {
-      setOpen(true);
-      setAlertMessage(res.data.message);
-      setAlertSeverity("warning");
-      dispatch(inputtingSlice.actions.reset({}));
+      if(res.status === 200){
+        localStorage.setItem('accessToken', access_token);
+        localStorage.setItem('refreshToken', refresh_token);
+        localStorage.setItem('verifyStatus', verify);
+        routerOnVerifyStatus(verify)
+      } else{
+        setAlertSeverity('warning');
+        if(res.status == 404) setAlertMessage('Server Not Found')
+      }
     }
-  };
+  }
 
   useEffect(() => {
     const alertQuery = searchParams.get("alert");
@@ -85,7 +75,6 @@ export default function LoginPage() {
       router.replace(`${currentPath}?${restQueries.toString()}`);
     }
   }, [searchParams, router]);
-
 
   return (
     <div className="flex flex-col items-center w-full relative">
