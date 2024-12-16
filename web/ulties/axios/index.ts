@@ -94,7 +94,7 @@ const verifyOtp = async (otp : string ) =>{
   } else return false;
 };
 
-const getMailRFPassowrd = async (email: string)=>{
+const getMailRFPassword = async (email: string)=>{
   try {
     return await apiClient.post('auth/rf-pass', {
       email: email
@@ -106,4 +106,4 @@ const getMailRFPassowrd = async (email: string)=>{
   }
 }
 
-export {login, getNewAccessToken, register, sendOtp, verifyOtp};
+export {login, getNewAccessToken, register, sendOtp, verifyOtp, getMailRFPassword};

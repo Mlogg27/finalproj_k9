@@ -26,6 +26,7 @@ export default function RfPassPage (){
       setAlertMessage,
       setAlertSeverity,
       dispatch);
+    console.log(valid);
 
     if(password !== confirmPassword){
       setLoading(false);
@@ -33,7 +34,7 @@ export default function RfPassPage (){
       setAlertMessage('Mismatch Password Error. Please try again');
       dispatch(inputtingSlice.actions.reset({name: 'confirmPassword'}));
     }
-    console.log(inputtingValue, valid);
+
   }
 
   return(
