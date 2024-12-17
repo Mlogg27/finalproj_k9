@@ -11,6 +11,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import fetchStatus from "@plugins/fetchStatus";
 import { useNavigateBasedOnVerification } from "@plugins/navigateBasedOnVerification";
 import { sendOtp, verifyOtp } from "@/ulties/axios";
+import handleSubmit from "@plugins/handleSubmit";
 
 export default function EmailVerifyPage() {
   const inputtingValue = useSelector(getInputting);
@@ -42,31 +43,26 @@ export default function EmailVerifyPage() {
   const onClick = async  () => {
     setLoading(true)
     const {otp} = inputtingValue;
-    const resultValid = validateInputs({ otp }, ['otp']);
-    if (!resultValid.valid && resultValid.message && resultValid.severity && resultValid.name) {
-      setLoading(false);
-      setOpen(true);
-      setAlertMessage(resultValid.message);
-      setAlertSeverity(resultValid.severity);
-      dispatch(inputtingSlice.actions.reset({name: 'otp'}));
-      setOtp('');
-      return;
-    }
-    if(resultValid.valid){
-      setLoading(false);
+    const valid = await handleSubmit({otp},
+      ['otp'],
+      setLoading,
+      setOpen,
+      setAlertMessage,
+      setAlertSeverity,
+      dispatch);
+    if(valid){
       const res = await verifyOtp(otp);
-      const data = res.data;
+      const {data, status} = res;
+      setLoading(false);
       setOpen(true);
       setAlertMessage(data.message);
-      setOtp('');
-      if(res.status === 200) {
+      if(status === 200) {
         setAlertSeverity('success');
         localStorage.setItem('verifyStatus', 'step2');
         routerOnVerifyStatus('step2');
       } else{
         setAlertSeverity('warning');
-        localStorage.clear();
-        routerOnVerifyStatus('login');
+        if(res.status == 404) setAlertMessage('Server Not Found')
       }
     }
   };

@@ -12,7 +12,6 @@ export class DriverAcc extends Base {
   email: string;
 
   @Column({
-    unique: true,
     nullable: false
   })
   phoneNumber: string;

@@ -43,6 +43,7 @@ export default function LoginPage() {
       setAlertMessage(message);
       dispatch(inputtingSlice.actions.reset({}));
       if(res.status === 200){
+        setAlertSeverity('success');
         localStorage.setItem('accessToken', access_token);
         localStorage.setItem('refreshToken', refresh_token);
         localStorage.setItem('verifyStatus', verify);

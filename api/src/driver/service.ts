@@ -26,7 +26,8 @@ export class DriverService {
       this.mailerService.sendRegisterMessage(NewEmail);
       account.email = NewEmail;
       account.password = await bcrypt.hash(account.password, 10);
-      await this.driverAccRepository.save(account);
+      this.driverAccRepository.save(account);
+      return {message : 'Register Successfully'}
     }
   }
 

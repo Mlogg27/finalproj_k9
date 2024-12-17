@@ -38,7 +38,8 @@ export class AuthService {
         secret:  this.configService.get<string>('JWT_SECRET_RF'),
         expiresIn: '7d',
       }),
-      verify: existingAcc.verify
+      verify: existingAcc.verify,
+      message: 'Login Successfully'
     };
   }
 
@@ -57,14 +58,18 @@ export class AuthService {
   }
 
   async reqRFPassword(user : {email: string}) {
-    const email = user.email.toLowerCase()
-    const existingAcc = await this.driverAccRepository.findOne({
-      where: { email: email },
-    });
-    if (!existingAcc || existingAcc.active === false) {
-      throw new UnauthorizedException('Incorrect Email!');
+    const email = user.email.toLowerCase();
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    if(emailRegex.test(email)){
+      const existingAcc = await this.driverAccRepository.findOne({
+        where: { email: email },
+      });
+      if (!existingAcc || existingAcc.active === false) {
+        throw new UnauthorizedException('Incorrect Email!');
+      }
+      const token = this.jwtService.sign({email: email});
+      return this.mailerService.sendRFPassEmail(email, token);
     }
-    const token = this.jwtService.sign({email: email});
-    return this.mailerService.sendRFPassEmail(email, token);
+    throw new UnauthorizedException('Invalid Email!');
   }
 }

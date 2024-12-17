@@ -8,38 +8,48 @@ import { useDispatch, useSelector } from "react-redux";
 import { getInputting } from "@/lib/selector";
 import { useNavigateBasedOnVerification } from "@plugins/navigateBasedOnVerification";
 import CircularProgress from "@mui/material/CircularProgress";
-import { validateInputs } from "@plugins/validation";
+import handleSubmit from "@plugins/handleSubmit";
+import { register } from "@/ulties/axios";
 import { inputtingSlice } from "@/lib/features";
 
 export default function RegisterPage() {
   const [open, setOpen] = React.useState(false);
   const [alertMessage, setAlertMessage] = React.useState<string>("");
   const [alertSeverity, setAlertSeverity] = React.useState<
-    "success" | "warning" | "error"
+    "success" | "warning" | "error" | "info"
   >("success");
   const [loading, setLoading] = useState(false);
   const inputtingValue = useSelector(getInputting);
-  const necessaryFields = ["email", "password"];
+  const necessaryFields = ["email", "password", 'phoneNumber'];
   const dispatch = useDispatch();
   const routerOnVerifyStatus = useNavigateBasedOnVerification();
 
 
 
-
-  const onClick = ()=>{
+  const onClick = async () => {
+    setLoading(true);
     const {phoneNumber, email, password} = inputtingValue;
-    const resultValid = validateInputs({ email, password, phoneNumber }, necessaryFields);
-
-    if (!resultValid.valid && resultValid.message && resultValid.severity && resultValid.name) {
+    const valid = await handleSubmit({email, password, phoneNumber},
+      necessaryFields,
+      setLoading,
+      setOpen,
+      setAlertMessage,
+      setAlertSeverity,
+      dispatch);
+    if(valid) {
+      const res = await register(email, phoneNumber, password);
+      const {message} = res.data;
       setLoading(false);
       setOpen(true);
-      setAlertMessage(resultValid.message);
-      setAlertSeverity(resultValid.severity);
-      dispatch(inputtingSlice.actions.reset({ name: resultValid.name }));
-      return;
+      setAlertMessage(message);
+      dispatch(inputtingSlice.actions.reset({}));
+      if(res.status === 201) {
+        setAlertSeverity('success');
+      } else{
+        setAlertSeverity('warning');
+        if( res.status ===400) setAlertMessage('Server Not Found');
+      }
     }
-    setLoading(true);
-
   }
 
   return (

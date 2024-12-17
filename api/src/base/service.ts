@@ -23,8 +23,13 @@ export class BaseService {
     return query.getRawMany();
   }
 
-  create(data) {
-    return this.repository.createQueryBuilder().insert().values(data).execute()
+  async create(data) {
+    const result = await this.repository
+      .createQueryBuilder()
+      .insert()
+      .values(data)
+      .execute()
+    return result.identifiers[0];
   }
 
   updateOne(id, data) {

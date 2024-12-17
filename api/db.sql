@@ -27,3 +27,5 @@ create table if not exists blacklisttokens
     constraint pkey_tokenBlackList primary key (id)
     );
 create index token_index on blacklistTokens (token);
+
+VACUUM FULL

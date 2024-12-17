@@ -10,7 +10,6 @@ export class ImagesController {
 
   @Get('/')
   getImg (@Query('path') path: string) {
-    // path = images/b9e2a59b-bb59-4474-b2c4-8ab7b852b27a.png
     const file = createReadStream(path)
     return new StreamableFile(file)
   }
