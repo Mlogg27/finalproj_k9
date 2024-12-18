@@ -8,8 +8,9 @@ import { AuthController } from './auth.controller';
 import {LoggerMiddleware} from '../middleware/logger.middleware';
 import { BlacklistTokens } from './blackList.entity';
 import { BlacklistService } from './blackList.service';
-import { JwtMiddleware } from '../middleware/jwt.middleware';
+import { AccessTokenMiddleware } from '../middleware/accessToken.middleware';
 import { MailModule } from 'src/mailer/module';
+import { RFTokenMiddleware } from '../middleware/rfToken.middleware';
 
 @Module({
   imports: [
@@ -34,7 +35,10 @@ export class AuthModule {
       .apply(LoggerMiddleware)
       .forRoutes('auth/login');
     consumer
-      .apply(JwtMiddleware)
-      .forRoutes('auth/rf-token');
+      .apply(AccessTokenMiddleware)
+      .forRoutes('auth/rf-pass');
+    consumer
+      .apply(RFTokenMiddleware)
+      .forRoutes('auth/rf-token')
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { BaseService } from '../base/service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Images } from './entity';
@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { VisionService } from './vision.service';
 import { writeFile } from 'fs'
 import {v4} from "uuid";
+
 
 type CitizenInfo = {
   "Có giá trị đến / Date of expiry": string;
@@ -57,12 +58,14 @@ export class ImagesService extends BaseService{
     const payload = image.payload.split(',')[1];
     let info = {};
 
+    if(payload === ''){
+      throw new BadRequestException('Invalid Image');
+    }
 
     if (image.isNeedDetect) {
       const rawText = await this.visionService.annotateImage(payload);
       info = this.parseCitizenInfo(rawText[0].description);
     }
-
     const path = `imagesStorage/${v4()}.png`
     writeFile(path, payload, 'base64', (e) => {
       console.log(e)

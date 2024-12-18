@@ -3,24 +3,24 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Images } from './entity';
 import { ImagesService } from './service';
 import { ImagesController  } from './controller';
-// import { AuthMiddleware } from '../middleware/jwt.middleware';
-import { BlacklistService } from '../auth/blackList.service';
-import { BlacklistTokens } from '../auth/blackList.entity';
 import { VisionService } from './vision.service';
+import { AuthModule } from '../auth/auth.module';
+import { AccessTokenMiddleware } from '../middleware/accessToken.middleware';
 
 
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Images, BlacklistTokens]),
+    TypeOrmModule.forFeature([Images]),
+    AuthModule,
   ],
   controllers: [ImagesController],
-  providers: [ImagesService, BlacklistService, VisionService],
+  providers: [ImagesService, VisionService],
 })
 export class ImagesModule {
-  // configure(consumer: MiddlewareConsumer) {
-  //   consumer
-  //     .apply(AuthMiddleware)
-  //     .forRoutes('*');
-  // }
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(AccessTokenMiddleware)
+      .forRoutes('*');
+  }
 }

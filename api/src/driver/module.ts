@@ -4,7 +4,7 @@ import { DriverAcc } from './entity';
 import { DriverService } from './service';
 import { DriverController } from './controller';
 import { LoggerMiddleware } from '../middleware/logger.middleware';
-import { JwtMiddleware } from '../middleware/jwt.middleware';
+import { AccessTokenMiddleware } from '../middleware/accessToken.middleware';
 import { AuthModule } from '../auth/auth.module';
 import { MailModule } from '../mailer/module';
 
@@ -24,7 +24,7 @@ export class DriverModule {
       .apply(LoggerMiddleware)
       .forRoutes('driver/register');
     consumer
-      .apply(JwtMiddleware)
+      .apply(AccessTokenMiddleware)
       .forRoutes('driver/sendOtp', 'driver/verifyOtp' );
   }
 

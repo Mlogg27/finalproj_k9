@@ -1,5 +1,4 @@
 import {
-  ForbiddenException,
   Injectable,
   NestMiddleware,
   UnauthorizedException,
@@ -9,7 +8,7 @@ import { BlacklistService } from '../auth/blackList.service';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
-export class JwtMiddleware implements NestMiddleware {
+export class RFTokenMiddleware implements NestMiddleware {
   constructor(
     private readonly jwtService: JwtService,
     private blackListService: BlacklistService,
@@ -18,7 +17,6 @@ export class JwtMiddleware implements NestMiddleware {
 
   async use(req: any, res: any, next: () => void) {
     const authHeader = req.headers.authorization;
-    const tokenType = req.headers['x-type-token'];
 
     if (!authHeader) {
       throw new UnauthorizedException('Authorization header is missing');
@@ -32,18 +30,17 @@ export class JwtMiddleware implements NestMiddleware {
 
     const isTokenInBlackList = await this.blackListService.isTokenBlacklisted(token);
     if (isTokenInBlackList) {
-      throw new ForbiddenException('Token is blacklisted');
+      throw new UnauthorizedException('Token is blacklisted');
     }
 
-    const tokenSecret = tokenType === 'refresh' ? 'JWT_SECRET_RF' : 'JWT_SECRET';
     try {
       const decoded = this.jwtService.verify(token, {
-        secret: this.configService.get<string>(tokenSecret),
+        secret: this.configService.get<string>( 'JWT_SECRET_RF'),
       });
       req.user = decoded;
       next();
     } catch (err) {
-      throw new ForbiddenException('Invalid or expired token', err);
+      throw new UnauthorizedException('Invalid or expired refresh token', err);
     }
   }
 }

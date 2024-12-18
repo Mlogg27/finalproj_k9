@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { DriverAcc } from './entity';
 import {InjectRepository} from "@nestjs/typeorm";
@@ -21,7 +21,7 @@ export class DriverService {
     if (exstingAcc) {
       throw new ConflictException('Email has been used');
     } else if (!account.phoneNumber) {
-      throw new UnauthorizedException('Invalid PhoneNumber');
+      throw new BadRequestException('Missing PhoneNumber');
     } else {
       this.mailerService.sendRegisterMessage(NewEmail);
       account.email = NewEmail;
