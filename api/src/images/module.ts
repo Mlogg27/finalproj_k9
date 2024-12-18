@@ -21,6 +21,6 @@ export class ImagesModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(AccessTokenMiddleware)
-      .forRoutes('*');
+      .forRoutes('images/*');
   }
 }

@@ -28,6 +28,8 @@ export default function EmailVerifyPage() {
 
   useEffect(() => {
     routerOnVerifyStatus(status);
+  }, [routerOnVerifyStatus]);
+  useEffect(() => {
     if(!isSendEmail){
       sendOtp()
         .then(()=> setIsSendEmail(true))
@@ -37,7 +39,7 @@ export default function EmailVerifyPage() {
           setAlertSeverity('error');
         });
     } else return;
-  }, [routerOnVerifyStatus]);
+  }, []);
 
 
   const onClick = async  () => {
@@ -56,6 +58,7 @@ export default function EmailVerifyPage() {
       setLoading(false);
       setOpen(true);
       setAlertMessage(data.message);
+      dispatch(inputtingSlice.actions.reset({}));
       if(status === 200) {
         setAlertSeverity('success');
         localStorage.setItem('verifyStatus', 'step2');

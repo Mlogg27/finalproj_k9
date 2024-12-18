@@ -13,8 +13,8 @@ export default function IdentityInfor(){
           <CustomInput type={'text'} label={'State'} isPassword={false} name={'state'} placeholder={'Your state'}/>
         </div>
 
-          <CustomButton name={'Correct'} bgColor={'#2c2c2c'} tColor={'#fff'} necessaryFields={[]}/>
-          <CustomButton name={'Retake'} bgColor={'#EEEFF3'} tColor={'#000'} necessaryFields={[]}/>
+          {/*<CustomButton name={'Correct'} bgColor={'#2c2c2c'} tColor={'#fff'} necessaryFields={[]}/>*/}
+          {/*<CustomButton name={'Retake'} bgColor={'#EEEFF3'} tColor={'#000'} necessaryFields={[]}/>*/}
       </>
 )
 }

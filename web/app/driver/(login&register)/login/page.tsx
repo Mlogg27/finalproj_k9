@@ -27,6 +27,7 @@ export default function LoginPage() {
   const routerOnVerifyStatus = useNavigateBasedOnVerification();
 
   const handleLogin =async ()=>{
+    setLoading(true);
     const {email, password} = inputtingValue;
     const valid = await handleSubmit({email, password},
                   necessaryFields,

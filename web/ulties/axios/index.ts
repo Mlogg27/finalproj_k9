@@ -38,7 +38,6 @@ const getNewAccessToken = async ()=>{
         {
           headers: {
             Authorization: `Bearer ${rfToken}`,
-            'x-type-token': 'refresh'
           },
         }
       );

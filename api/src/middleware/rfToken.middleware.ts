@@ -18,6 +18,7 @@ export class RFTokenMiddleware implements NestMiddleware {
   async use(req: any, res: any, next: () => void) {
     const authHeader = req.headers.authorization;
 
+
     if (!authHeader) {
       throw new UnauthorizedException('Authorization header is missing');
     }
@@ -35,7 +36,7 @@ export class RFTokenMiddleware implements NestMiddleware {
 
     try {
       const decoded = this.jwtService.verify(token, {
-        secret: this.configService.get<string>( 'JWT_SECRET_RF'),
+        secret: this.configService.get<string>('JWT_SECRET_RF'),
       });
       req.user = decoded;
       next();

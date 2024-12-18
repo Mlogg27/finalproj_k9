@@ -3,7 +3,7 @@
 import { CustomAlert, CustomInput, CustomButton } from "@/components";
 import * as React from "react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getInputting } from "@/lib/selector";
 import { useNavigateBasedOnVerification } from "@plugins/navigateBasedOnVerification";
@@ -11,6 +11,8 @@ import CircularProgress from "@mui/material/CircularProgress";
 import handleSubmit from "@plugins/handleSubmit";
 import { register } from "@/ulties/axios";
 import { inputtingSlice } from "@/lib/features";
+import fetchStatus from "@plugins/fetchStatus";
+import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
   const [open, setOpen] = React.useState(false);
@@ -23,8 +25,11 @@ export default function RegisterPage() {
   const necessaryFields = ["email", "password", 'phoneNumber'];
   const dispatch = useDispatch();
   const routerOnVerifyStatus = useNavigateBasedOnVerification();
+  const router = useRouter();
 
-
+  useEffect(() => {
+    const status = fetchStatus();
+  }, []);
 
   const onClick = async () => {
     setLoading(true);
@@ -45,6 +50,7 @@ export default function RegisterPage() {
       dispatch(inputtingSlice.actions.reset({}));
       if(res.status === 201) {
         setAlertSeverity('success');
+        router.push('driver/login')
       } else{
         setAlertSeverity('warning');
         if( res.status ===400) setAlertMessage('Server Not Found');

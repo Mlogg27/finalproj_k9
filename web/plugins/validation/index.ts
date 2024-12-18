@@ -6,7 +6,7 @@ interface ValidationResult {
   name?: string;
 }
 
-const isImage = (data: string) => /\.(jpg|jpeg|png|gif|bmp|webp|svg)$/i.test(data);
+const isImage = (data: string) =>  /^data:image\/(jpeg|png|gif);base64,[A-Za-z0-9+/=]+$/.test(data);
 const validators: Record<string, (data: string) => boolean> = {
   phoneNumber: (data: string) => /^(?:\+84|0)[3-9]\d{8}$/.test(data),
   password: (data: string) =>

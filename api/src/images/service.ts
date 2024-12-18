@@ -7,7 +7,6 @@ import { VisionService } from './vision.service';
 import { writeFile } from 'fs'
 import {v4} from "uuid";
 
-
 type CitizenInfo = {
   "Có giá trị đến / Date of expiry": string;
   "Họ và tên / Full name": string;
@@ -18,6 +17,7 @@ type CitizenInfo = {
   "Ngày sinh / Date of birth": string;
   "Số / No.": string;
 };
+
 @Injectable()
 export class ImagesService extends BaseService{
   constructor(
@@ -29,18 +29,17 @@ export class ImagesService extends BaseService{
   }
 
   parseCitizenInfo(input: string): CitizenInfo {
-      const expiryMatch = input.match(/Có giá trị đến:(\d{6,8})/);
-      const nameMatch = input.match(/ Full name:\s*([\p{L} ]+)/u);
-      const sexMatch = input.match(/Sex:\s*(\w+)/);
-      const nationalityMatch = input.match(/Nationality:\s*([\p{L} ]+)/u);
-      const originMatch = input.match(/ Place of origin:\s*([\p{L}, .]+)/u);
-      const dobMatch = input.match(/ Date of birth:\s*(\d{1,2}\/\d{1,2}\/\d{4})/)
-      const residenceMatch = input.match(/ Place of residence:\s*([\s\S]+)/);
-      const noMatch = input.match(/No\.\s*:\s*(\d+)/);
-
+    const expiryMatch = input.match(/(?<=Có giá trị đến:\s*)\d+/);
+    const nameMatch = input.match(/ Full name:\s*([\p{L} ]+)/u);
+    const sexMatch = input.match(/Sex:\s*(\w+)/);
+    const nationalityMatch = input.match(/Nationality:\s*([\p{L} ]+)/u);
+    const originMatch = input.match(/ Place of origin:\s*([\p{L}, .]+)/u);
+    const dobMatch = input.match(/ Date of birth:\s*(\d{1,2}\/\d{1,2}\/\d{4})/)
+    const residenceMatch = input.match(/ Place of residence:\s*([\s\S]+)/);
+    const noMatch = input.match(/No\.\s*:\s*(\d+)/);
 
     const result: CitizenInfo = {
-      "Có giá trị đến / Date of expiry": expiryMatch ? expiryMatch[1] : "" ,
+      "Có giá trị đến / Date of expiry": expiryMatch ? expiryMatch[0] : "" ,
       "Họ và tên / Full name": nameMatch ? nameMatch[1].trim() : "",
       "Giới tính / Sex": sexMatch ? sexMatch[1].trim() : "",
       "Quốc tịch / Nationality": nationalityMatch ? nationalityMatch[1].trim() : "",
@@ -50,7 +49,7 @@ export class ImagesService extends BaseService{
       "Số / No.": noMatch ? noMatch[1] : "",
 
     };
-
+    console.log(result);
     return result;
   }
 
@@ -61,10 +60,14 @@ export class ImagesService extends BaseService{
     if(payload === ''){
       throw new BadRequestException('Invalid Image');
     }
-
+    //test by vietnamese identity card
     if (image.isNeedDetect) {
       const rawText = await this.visionService.annotateImage(payload);
-      info = this.parseCitizenInfo(rawText[0].description);
+      if(rawText[0].description.includes('SOCIALIST REPUBLIC OF VIET NAM')){
+        info = this.parseCitizenInfo(rawText[0].description);
+      } else{
+        throw new BadRequestException('Invalid Identity Card Image');
+      }
     }
     const path = `imagesStorage/${v4()}.png`
     writeFile(path, payload, 'base64', (e) => {
@@ -89,7 +92,5 @@ export class ImagesService extends BaseService{
        message: "Verify Image Successfully"
      }
    }
-
   }
-
 }
