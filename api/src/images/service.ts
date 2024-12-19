@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { BaseService } from '../base/service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Images } from './entity';
@@ -6,67 +6,67 @@ import { Repository } from 'typeorm';
 import { VisionService } from './vision.service';
 import { writeFile } from 'fs'
 import {v4} from "uuid";
+import { DriverAcc } from '../driver/entity';
 
-type CitizenInfo = {
-  "Có giá trị đến / Date of expiry": string;
-  "Họ và tên / Full name": string;
-  "Giới tính / Sex": string;
-  "Quốc tịch / Nationality": string;
-  "Quê quán / Place of origin": string;
-  "Nơi thường trú / Place of residence": string;
-  "Ngày sinh / Date of birth": string;
-  "Số / No.": string;
-};
 
 @Injectable()
 export class ImagesService extends BaseService{
   constructor(
     @InjectRepository(Images)
     private imagesRepository: Repository<Images>,
+    @InjectRepository(DriverAcc) protected driverAccRepository: Repository<DriverAcc>,
     private visionService: VisionService
   ) {
     super(imagesRepository)
   }
 
-  parseCitizenInfo(input: string): CitizenInfo {
+  parseCitizenInfo(input: string) {
     const expiryMatch = input.match(/(?<=Có giá trị đến:\s*)\d+/);
     const nameMatch = input.match(/ Full name:\s*([\p{L} ]+)/u);
     const sexMatch = input.match(/Sex:\s*(\w+)/);
-    const nationalityMatch = input.match(/Nationality:\s*([\p{L} ]+)/u);
-    const originMatch = input.match(/ Place of origin:\s*([\p{L}, .]+)/u);
     const dobMatch = input.match(/ Date of birth:\s*(\d{1,2}\/\d{1,2}\/\d{4})/)
     const residenceMatch = input.match(/ Place of residence:\s*([\s\S]+)/);
     const noMatch = input.match(/No\.\s*:\s*(\d+)/);
 
-    const result: CitizenInfo = {
-      "Có giá trị đến / Date of expiry": expiryMatch ? expiryMatch[0] : "" ,
-      "Họ và tên / Full name": nameMatch ? nameMatch[1].trim() : "",
-      "Giới tính / Sex": sexMatch ? sexMatch[1].trim() : "",
-      "Quốc tịch / Nationality": nationalityMatch ? nationalityMatch[1].trim() : "",
-      "Quê quán / Place of origin": originMatch ? originMatch[1].trim() : "",
-      "Nơi thường trú / Place of residence": residenceMatch ? residenceMatch[1].replace(/\n/g, ' ').trim() : "",
-      "Ngày sinh / Date of birth": dobMatch ? dobMatch[1] : "",
-      "Số / No.": noMatch ? noMatch[1] : "",
-
+    const result = {
+      "expiryDate": expiryMatch ? expiryMatch[0] : "" ,
+      "name": nameMatch ? nameMatch[1].trim() : "",
+      "sex": sexMatch ? sexMatch[1].trim() : "",
+      "placeOfResidence": residenceMatch ? residenceMatch[1].replace(/\n/g, ' ').trim() : "",
+      "dob": dobMatch ? dobMatch[1] : "",
+      "id": noMatch ? noMatch[1] : "",
     };
     console.log(result);
     return result;
   }
 
-  async createImg(image: any) {
+  async createImg(image: any, req: any) {
+
+    const userEmail = req['user'].email.toLowerCase();
+
+    const existingAcc = await this.driverAccRepository.findOne({
+      where: { email: userEmail },
+    });
+    if (!existingAcc || existingAcc.active === false) {
+      throw new UnauthorizedException('Incorrect Email!');
+    }
+
     const payload = image.payload.split(',')[1];
     let info = {};
 
-    if(payload === ''){
+    const base64ImgRegex = /^data:image\/(png|jpeg|jpg);base64,[A-Za-z0-9+/=]+$/;
+    if(payload === '' || !base64ImgRegex.test(image.payload)){
       throw new BadRequestException('Invalid Image');
     }
+
     //test by vietnamese identity card
     if (image.isNeedDetect) {
-      const rawText = await this.visionService.annotateImage(payload);
-      if(rawText[0].description.includes('SOCIALIST REPUBLIC OF VIET NAM')){
-        info = this.parseCitizenInfo(rawText[0].description);
+      const rawData = await this.visionService.annotateImage(payload);
+      const rawText = rawData[0].description;
+      if(rawText.includes('SOCIALIST REPUBLIC OF VIET NAM') || rawText.includes('Personal identification')){
+        info = this.parseCitizenInfo(rawText);
       } else{
-        throw new BadRequestException('Invalid Identity Card Image');
+        throw new BadRequestException('Invalid Identity Card Image, Please Retake');
       }
     }
     const path = `imagesStorage/${v4()}.png`

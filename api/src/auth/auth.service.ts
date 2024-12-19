@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -22,13 +22,13 @@ export class AuthService {
       where: { email: email },
     });
     if (!existingAcc || existingAcc.active === false) {
-      throw new UnauthorizedException('Incorrect Email!');
+      throw new BadRequestException('Incorrect Email!');
     }
 
     const isPasswordMatch = await bcrypt.compare(user.password, existingAcc.password);
 
     if (!isPasswordMatch) {
-      throw new UnauthorizedException('Incorrect Password!');
+      throw new BadRequestException('Incorrect Password!');
     }
 
     const payload  = {email: email}
@@ -65,11 +65,11 @@ export class AuthService {
         where: { email: email },
       });
       if (!existingAcc || existingAcc.active === false) {
-        throw new UnauthorizedException('Incorrect Email!');
+        throw new BadRequestException('Incorrect Email!');
       }
       const token = this.jwtService.sign({email: email});
       return this.mailerService.sendRFPassEmail(email, token);
     }
-    throw new UnauthorizedException('Invalid Email!');
+    throw new BadRequestException('Invalid Email!');
   }
 }

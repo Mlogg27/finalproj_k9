@@ -5,6 +5,7 @@ import {BlacklistTokens} from './blackList.entity';
 import * as jwt from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
 import { JwtPayload } from 'jsonwebtoken';
+import { JwtService } from '@nestjs/jwt';
 
 
 @Injectable()
@@ -17,15 +18,12 @@ export class BlacklistService {
 
   async addToBlacklist(req) {
     const token = req.headers['authorization']?.split(' ')[1];
-    const tokenType = req.headers['x-type-token'];
 
     if (!token) {
       return { message: 'Logout Successfully' };
     }
-    const tokenSecret = tokenType === 'refresh' ? "JWT_SECRET_RF" : "JWT_SECRET"
-
     try {
-      const secretKeyRF = this.configService.get<string>(tokenSecret);
+      const secretKeyRF = this.configService.get<string>('JWT_SECRET_RF');
       const decodedRF = jwt.verify(token, secretKeyRF) as JwtPayload;
 
       await this.blacklistRepository.delete({

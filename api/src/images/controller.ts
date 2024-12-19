@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query, StreamableFile } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, StreamableFile, Request } from '@nestjs/common';
 import { ImagesService } from './service';
 import { createReadStream } from 'fs';
 import {UploadImage} from './dto';
@@ -15,7 +15,8 @@ export class ImagesController {
   }
 
   @Post('/')
-  create(@Body() image: UploadImage) {
-    return this.imagesService.createImg(image)
+  create(@Body() image: UploadImage, @Request() req: any) {
+
+    return this.imagesService.createImg(image, req)
   }
 }

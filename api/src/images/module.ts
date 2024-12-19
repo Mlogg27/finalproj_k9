@@ -6,12 +6,13 @@ import { ImagesController  } from './controller';
 import { VisionService } from './vision.service';
 import { AuthModule } from '../auth/auth.module';
 import { AccessTokenMiddleware } from '../middleware/accessToken.middleware';
+import { DriverAcc } from '../driver/entity';
 
 
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Images]),
+    TypeOrmModule.forFeature([Images, DriverAcc]),
     AuthModule,
   ],
   controllers: [ImagesController],
@@ -21,6 +22,6 @@ export class ImagesModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(AccessTokenMiddleware)
-      .forRoutes('images/*');
+      .forRoutes('images/');
   }
 }

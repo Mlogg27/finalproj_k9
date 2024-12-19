@@ -62,7 +62,7 @@ export class DriverService {
 
     if (Date.now() > expiresAt) {
       this.otpStore.delete(userEmail);
-      throw new UnauthorizedException('Invalid OTP');
+      throw new BadRequestException('Invalid OTP');
     }
     if (otp === body.otp) {
       this.otpStore.delete(userEmail);
@@ -70,6 +70,6 @@ export class DriverService {
       await this.driverAccRepository.save(existingAcc);
       return {message: 'Verified OTP Successfully'};
     }
-    throw new UnauthorizedException('Invalid OTP')  ;
+    throw new BadRequestException('Invalid OTP')  ;
   }
 }
