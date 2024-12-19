@@ -111,4 +111,26 @@ const getMailRFPassword = async (email: string)=>{
   }
 }
 
-export {login, getNewAccessToken, register, sendOtp, verifyOtp, getMailRFPassword};
+const uploadImg = async (payload: string, isNeedDetect: boolean)=>{
+  const accessToken = await checkAndRefreshToken();
+
+  if(accessToken){
+    try {
+      const res= await apiClient.post('images/', {
+        payload: payload,
+        isNeedDetect: isNeedDetect
+      }, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      return res;
+    } catch(e){
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      return e.response
+    }
+  }
+}
+
+export {login, getNewAccessToken, register, sendOtp, verifyOtp, getMailRFPassword, uploadImg};

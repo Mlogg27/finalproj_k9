@@ -5,7 +5,7 @@ import { getInputting } from "@/lib/selector";
 import CircularProgress from "@mui/material/CircularProgress";
 import * as React from "react";
 import { useState } from "react";
-import handleSubmit from "@plugins/handleSubmit";
+import handleSubmit from "../../plugins/handleCheck";
 import { inputtingSlice } from "@/lib/features";
 
 export default function RfPassPage (){

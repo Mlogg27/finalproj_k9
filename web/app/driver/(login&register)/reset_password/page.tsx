@@ -6,10 +6,12 @@ import SendIcon from '@mui/icons-material/Send';
 import { useDispatch, useSelector } from "react-redux";
 import { getInputting } from "@/lib/selector";
 import { getMailRFPassword } from "@/ulties/axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
-import handleSubmit from "@plugins/handleSubmit";
 import { inputtingSlice } from "@/lib/features";
+import handleSubmit from "@/plugins/handleSubmit";
+import fetchStatus from "@plugins/fetchStatus";
+import { useNavigateBasedOnVerification } from "@plugins/navigateBasedOnVerification";
 
 
 export default function ResetPassPage() {
@@ -21,38 +23,40 @@ export default function ResetPassPage() {
   const [loading, setLoading] = useState(false);
   const inputtingValue = useSelector(getInputting);
   const dispatch = useDispatch();
+  const routerOnVerifyStatus = useNavigateBasedOnVerification();
+
+
+  useEffect(() => {
+    const status = fetchStatus();
+    if(status !== 'login') routerOnVerifyStatus(status);
+  }, []);
 
   const onSubmitResendEmail = () => {
     setOpenAlert(true);
     setOpen(false);
   };
 
-  const onSubmitGetEmail = async () => {
-    setLoading(true)
-    const {email} = inputtingValue;
+  const onSubmitGetEmail =async ()=>{
+    const { email } = inputtingValue;
 
-    const valid = await handleSubmit({email},
-      ['email'],
-      setLoading,
-      setOpen,
-      setAlertMessage,
-      setAlertSeverity,
-      dispatch);
-    if(valid) {
-      const res = await getMailRFPassword(email);
-      setOpen(true);
-      setLoading(false);
-      setAlertMessage(res.data.message);
-      dispatch(inputtingSlice.actions.reset({}));
-      if( res.status === 200) {
-        setAlertSeverity('success');
-        setIsFillEmail(true);
-      } else {
-        setAlertSeverity('warning');
-        if (res.status === 404) setAlertMessage('Server Not Found');
-      }
-    }
-  };
+    await handleSubmit({
+      apiCall: (payload : any) => getMailRFPassword(payload.email),
+      payload: { email },
+      necessaryFields: ['email'],
+      setStateHandlers: { setLoading, setOpen, setAlertMessage, setAlertSeverity},
+      dispatch,
+      handlers: {
+        onSuccess: (res : any) => {
+          setIsFillEmail(true)
+          dispatch(inputtingSlice.actions.reset({}));
+        },
+        onError: (res: any) =>{
+          const {data}=res;
+          dispatch(inputtingSlice.actions.reset({name: data.reset}));
+        }
+      },
+    });
+  }
 
   if (isFillEmail) {
     return (

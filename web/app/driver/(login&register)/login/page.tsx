@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useNavigateBasedOnVerification } from "@plugins/navigateBasedOnVerification";
 import fetchStatus from "@plugins/fetchStatus";
-import handleSubmit from "@plugins/handleSubmit";
+import handleSubmit from "@/plugins/handleSubmit";
 import { inputtingSlice } from "@/lib/features";
 
 export default function LoginPage() {
@@ -23,37 +23,32 @@ export default function LoginPage() {
   const searchParams = useSearchParams();
   const dispatch = useDispatch();
   const inputtingValue = useSelector(getInputting);
-  const necessaryFields = ["email", "password"];
   const routerOnVerifyStatus = useNavigateBasedOnVerification();
 
   const handleLogin =async ()=>{
-    setLoading(true);
-    const {email, password} = inputtingValue;
-    const valid = await handleSubmit({email, password},
-                  necessaryFields,
-                  setLoading,
-                  setOpen,
-                  setAlertMessage,
-                  setAlertSeverity,
-                  dispatch);
-    if(valid){
-      const res = await login(email, password);
-      const {message, verify, access_token, refresh_token} = res.data;
-      setLoading(false);
-      setOpen(true);
-      setAlertMessage(message);
-      dispatch(inputtingSlice.actions.reset({}));
-      if(res.status === 200){
-        setAlertSeverity('success');
-        localStorage.setItem('accessToken', access_token);
-        localStorage.setItem('refreshToken', refresh_token);
-        localStorage.setItem('verifyStatus', verify);
-        routerOnVerifyStatus(verify)
-      } else{
-        setAlertSeverity('warning');
-        if(res.status == 404) setAlertMessage('Server Not Found')
-      }
-    }
+    const { email, password } = inputtingValue;
+
+    await handleSubmit({
+      apiCall: (payload : any) => login(payload.email, payload.password),
+      payload: { email, password },
+      necessaryFields: ['email', 'password'],
+      setStateHandlers: { setLoading, setOpen, setAlertMessage, setAlertSeverity},
+      dispatch,
+      handlers: {
+        onSuccess: (res : any) => {
+          const {data}=res;
+          localStorage.setItem('accessToken', data.access_token);
+          localStorage.setItem('refreshToken', data.refresh_token);
+          localStorage.setItem('verifyStatus', data.verify);
+          dispatch(inputtingSlice.actions.reset({}))
+          routerOnVerifyStatus(data.verify);
+        },
+        onError: (res: any) =>{
+          const {data}=res;
+          dispatch(inputtingSlice.actions.reset({name: data.reset}));
+        }
+      },
+    });
   }
 
   useEffect(() => {

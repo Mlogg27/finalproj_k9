@@ -33,7 +33,7 @@ export abstract class BaseJwtMiddleware {
         secret: this.configService.get<string>(secretKey),
       });
     } catch (err) {
-      throw new UnauthorizedException('Invalid or expired access token', err);
+      throw new UnauthorizedException('Invalid or expired token', err);
     }
   }
 }

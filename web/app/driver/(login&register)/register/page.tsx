@@ -8,11 +8,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { getInputting } from "@/lib/selector";
 import { useNavigateBasedOnVerification } from "@plugins/navigateBasedOnVerification";
 import CircularProgress from "@mui/material/CircularProgress";
-import handleSubmit from "@plugins/handleSubmit";
 import { register } from "@/ulties/axios";
 import { inputtingSlice } from "@/lib/features";
 import fetchStatus from "@plugins/fetchStatus";
 import { useRouter } from "next/navigation";
+import handleSubmit from "@/plugins/handleSubmit";
 
 export default function RegisterPage() {
   const [open, setOpen] = React.useState(false);
@@ -22,40 +22,35 @@ export default function RegisterPage() {
   >("success");
   const [loading, setLoading] = useState(false);
   const inputtingValue = useSelector(getInputting);
-  const necessaryFields = ["email", "password", 'phoneNumber'];
   const dispatch = useDispatch();
   const routerOnVerifyStatus = useNavigateBasedOnVerification();
   const router = useRouter();
 
   useEffect(() => {
     const status = fetchStatus();
+    if(status !== 'login')routerOnVerifyStatus(status);
   }, []);
 
-  const onClick = async () => {
-    setLoading(true);
-    const {phoneNumber, email, password} = inputtingValue;
-    const valid = await handleSubmit({email, password, phoneNumber},
-      necessaryFields,
-      setLoading,
-      setOpen,
-      setAlertMessage,
-      setAlertSeverity,
-      dispatch);
-    if(valid) {
-      const res = await register(email, phoneNumber, password);
-      const {message} = res.data;
-      setLoading(false);
-      setOpen(true);
-      setAlertMessage(message);
-      dispatch(inputtingSlice.actions.reset({}));
-      if(res.status === 201) {
-        setAlertSeverity('success');
-        router.push('driver/login')
-      } else{
-        setAlertSeverity('warning');
-        if( res.status ===400) setAlertMessage('Server Not Found');
-      }
-    }
+  const onClick =async ()=>{
+    const { email, password, phoneNumber } = inputtingValue;
+
+    await handleSubmit({
+      apiCall: (payload : any) => register(payload.email, payload.phoneNumber,payload.password),
+      payload: { email, password, phoneNumber },
+      necessaryFields: ['email', 'password', 'phoneNumber'],
+      setStateHandlers: { setLoading, setOpen, setAlertMessage, setAlertSeverity},
+      dispatch,
+      handlers: {
+        onSuccess: (res : any) => {
+          dispatch(inputtingSlice.actions.reset({}));
+          router.push('/driver/login');
+        },
+        onError: (res: any) =>{
+          const {data}=res;
+          dispatch(inputtingSlice.actions.reset({name: data.reset}));
+        }
+      },
+    });
   }
 
   return (

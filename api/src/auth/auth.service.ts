@@ -22,13 +22,19 @@ export class AuthService {
       where: { email: email },
     });
     if (!existingAcc || existingAcc.active === false) {
-      throw new BadRequestException('Incorrect Email!');
+      throw new BadRequestException({
+        message: 'Incorrect Email',
+        reset: 'email'
+      });
     }
 
     const isPasswordMatch = await bcrypt.compare(user.password, existingAcc.password);
 
     if (!isPasswordMatch) {
-      throw new BadRequestException('Incorrect Password!');
+      throw new BadRequestException({
+        message: 'Incorrect password',
+        reset: 'password'
+      });
     }
 
     const payload  = {email: email}

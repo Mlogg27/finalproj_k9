@@ -5,13 +5,12 @@ import { VerifyProcessBar, VerifyCodeField, CustomButton, CustomAlert, CountDown
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
 import { getInputting } from "@/lib/selector";
-import { validateInputs } from "@plugins/validation";
 import { inputtingSlice } from "@/lib/features";
 import CircularProgress from "@mui/material/CircularProgress";
 import fetchStatus from "@plugins/fetchStatus";
 import { useNavigateBasedOnVerification } from "@plugins/navigateBasedOnVerification";
-import { sendOtp, verifyOtp } from "@/ulties/axios";
-import handleSubmit from "@plugins/handleSubmit";
+import {  sendOtp, verifyOtp } from "@/ulties/axios";
+import handleSubmit from "@/plugins/handleSubmit";
 
 export default function EmailVerifyPage() {
   const inputtingValue = useSelector(getInputting);
@@ -42,33 +41,33 @@ export default function EmailVerifyPage() {
   }, []);
 
 
-  const onClick = async  () => {
-    setLoading(true)
-    const {otp} = inputtingValue;
-    const valid = await handleSubmit({otp},
-      ['otp'],
-      setLoading,
-      setOpen,
-      setAlertMessage,
-      setAlertSeverity,
-      dispatch);
-    if(valid){
-      const res = await verifyOtp(otp);
-      const {data, status} = res;
-      setLoading(false);
-      setOpen(true);
-      setAlertMessage(data.message);
-      dispatch(inputtingSlice.actions.reset({}));
-      if(status === 200) {
-        setAlertSeverity('success');
-        localStorage.setItem('verifyStatus', 'step2');
-        routerOnVerifyStatus('step2');
-      } else{
-        setAlertSeverity('warning');
-        if(res.status == 404) setAlertMessage('Server Not Found')
-      }
-    }
-  };
+  const onClick =async ()=>{
+    const { otp } = inputtingValue;
+
+    await handleSubmit({
+      apiCall: (payload : any) => verifyOtp(payload.otp),
+      payload: { otp },
+      necessaryFields: ['email', 'password'],
+      setStateHandlers: { setLoading, setOpen, setAlertMessage, setAlertSeverity},
+      dispatch,
+      handlers: {
+        onSuccess: (res : any) => {
+          const {data}=res;
+          dispatch(inputtingSlice.actions.reset({}));
+          localStorage.setItem('verifyStatus', 'step2');
+          routerOnVerifyStatus(data.verify);
+        },
+        onError: (res: any) =>{
+          const {status, data}=res;
+          dispatch(inputtingSlice.actions.reset({name: data.reset}));
+          if(status === 401){
+            localStorage.clear();
+            routerOnVerifyStatus('login');
+          }
+        }
+      },
+    });
+  }
 
   return (
     <div className="flex flex-col justify-center items-center relative">
