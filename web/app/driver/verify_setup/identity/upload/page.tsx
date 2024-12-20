@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getInputting } from "@/lib/selector";
 import CircularProgress from "@mui/material/CircularProgress";
 import { inputtingSlice } from "@/lib/features";
-import { uploadImg} from "@/ulties/axios";
+import { getNewAccessToken, uploadImg} from "@/ulties/axios";
 import { useNavigateBasedOnVerification } from "@plugins/navigateBasedOnVerification";
 import fetchStatus from "@plugins/fetchStatus";
 import handleSubmit from "@/plugins/handleSubmit";
@@ -30,35 +30,33 @@ export default function UploadIdentityPage () {
   }, []);
 
 
-  // const onSubmit =async ()=>{
-  //   const { firstImg, secondImg } = inputtingValue;
-  //
-  //   await handleSubmit({
-  //     apiCall: async (payload : any)=> {
-  //       const res1 =await uploadImg(payload.firstImg, true);
-  //       const res2 = await uploadImg(payload.secondImg, true);
-  //       console.log(res1, res2);
-  //       return res1;
-  //     },
-  //     payload: { firstImg, secondImg },
-  //     necessaryFields: ['firstImg', 'secondImg'],
-  //     setStateHandlers: { setLoading, setOpen, setAlertMessage, setAlertSeverity},
-  //     dispatch,
-  //     handlers: {
-  //       onSuccess: (res : any) => {
-  //         console.log(res.data)
-  //       },
-  //       onError: (res: any) =>{
-  //         const {status, data}=res;
-  //         dispatch(inputtingSlice.actions.reset({name: data.reset}));
-  //         if(status === 401){
-  //           localStorage.clear();
-  //           routerOnVerifyStatus('login');
-  //         }
-  //       }
-  //     },
-  //   });
-  // }
+  const onSubmit =async ()=>{
+    const { firstImg, secondImg } = inputtingValue;
+
+    await handleSubmit({
+      apiCall: ()=> uploadImg([{payload: firstImg, isIdentity: true}, {payload: secondImg, isIdentity: true}]),
+      payload: { firstImg, secondImg },
+      necessaryFields: ['firstImg', 'secondImg'],
+      setStateHandlers: { setLoading, setOpen, setAlertMessage, setAlertSeverity},
+      dispatch,
+      handlers: {
+        onSuccess: (res : any) => {
+          console.log(res.data);
+
+        },
+        onError: (res: any) =>{
+          const {status, data}=res;
+          dispatch(inputtingSlice.actions.reset({name: data.reset}));
+          setBackImg('');
+          setFrontImg('');
+          if(status === 401){
+            localStorage.clear();
+            routerOnVerifyStatus('login');
+          }
+        }
+      },
+    });
+  }
 
 
   return (
@@ -74,7 +72,7 @@ export default function UploadIdentityPage () {
           <span >Back Side</span>
         </div>
       </div>
-      <CustomButton onClick={()=> console.log('hehe')}
+      <CustomButton onClick={onSubmit}
                     name={'Verify ID card'}
                     bgColor={'#2C2C2C'}
                     tColor={'#fff'}

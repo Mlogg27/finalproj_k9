@@ -5,7 +5,9 @@ const checkAndRefreshToken = async () => {
   if (isTokenValid) {
     return localStorage.getItem("accessToken");
   } else {
-    return await getNewAccessToken();
+    const res = await getNewAccessToken();
+    if(res.status === 200) localStorage.setItem('accessToken', res.data['access_token']);
+    return res.data['access_token'];
   }
 };
 

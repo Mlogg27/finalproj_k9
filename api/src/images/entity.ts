@@ -10,9 +10,4 @@ export class Images extends Base {
     unique: true
   })
   path: string
-
-  @Column({
-    nullable: true
-  })
-  url: string
 }

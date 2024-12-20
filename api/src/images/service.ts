@@ -40,9 +40,9 @@ export class ImagesService extends BaseService{
     return result;
   }
 
-  async createImg(image: any, req: any) {
-
+  async createImg(images: any, req: any) {
     const userEmail = req['user'].email.toLowerCase();
+    console.log(images);
 
     const existingAcc = await this.driverAccRepository.findOne({
       where: { email: userEmail },
@@ -51,46 +51,60 @@ export class ImagesService extends BaseService{
       throw new UnauthorizedException('Incorrect Email!');
     }
 
-    const payload = image.payload.split(',')[1];
-    let info = {};
-
-    const base64ImgRegex = /^data:image\/(png|jpeg|jpg);base64,[A-Za-z0-9+/=]+$/;
-    if(payload === '' || !base64ImgRegex.test(image.payload)){
-      throw new BadRequestException('Invalid Image');
-    }
-
-    //test by vietnamese identity card
-    if (image.isNeedDetect) {
-      const rawData = await this.visionService.annotateImage(payload);
-      const rawText = rawData[0].description;
-      if(rawText.includes('SOCIALIST REPUBLIC OF VIET NAM') || rawText.includes('Personal identification')){
-        info = this.parseCitizenInfo(rawText);
-      } else{
-        throw new BadRequestException('Invalid Identity Card Image, Please Retake');
+    const validImages = [];
+    for (const image of images) {
+      const payload = image.payload.split(',')[1];
+      const base64ImgRegex = /^data:image\/(png|jpeg|jpg);base64,[A-Za-z0-9+/=]+$/;
+      if (payload === '' || !base64ImgRegex.test(image.payload)) {
+        throw new BadRequestException('Invalid Image');
       }
+
+      let info = null;
+      let name = null;
+
+      if (image.isIdentity) {
+        const rawData = await this.visionService.annotateImage(payload);
+        const rawText = rawData[0].description;
+        if (rawText.includes('SOCIALIST REPUBLIC OF VIET NAM')) {
+          info = this.parseCitizenInfo(rawText);
+          name = 'frontSide';
+        } else if (rawText.includes('Personal identification')){
+          info = null;
+          name = 'backSide';
+        }
+        else {
+          throw new BadRequestException('Invalid Identity Card Image, Please Retake');
+        }
+      }
+      validImages.push({ image, info, name });
     }
-    const path = `imagesStorage/${v4()}.png`
-    writeFile(path, payload, 'base64', (e) => {
-      console.log(e)
-    })
+    if (validImages.length !== images.length) {
+      throw new BadRequestException('Not all images are valid.');
+    }
 
-    const savedImg = await super.create({
-      path: path,
-      url: null
-    })
+    const results = [];
+    for (const validImage of validImages) {
+      const { image, info } = validImage;
+      const payload = image.payload.split(',')[1];
+      const path = `imagesStorage/${v4()}.png`;
 
-   if(image.isNeedDetect) return {
-     frontID: savedImg.id,
-     info: info,
-     path: path,
-     message: "Verify Image Successfully"
-   }
-   else{
-     return {
-       id: savedImg,
-       path: path,
-       message: "Verify Image Successfully"
-     }
-   }
+      writeFile(path, payload, 'base64', (e) => {
+        if (e) {
+          console.error('Error writing file:', e);
+        }
+      });
+
+      const savedImg = await super.create({
+        path: path,
+      });
+
+      results.push({
+        id: savedImg.id,
+        info: info,
+        path: path,
+      });
+    }
+
+    return results;
   }
 }

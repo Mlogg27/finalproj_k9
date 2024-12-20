@@ -15,8 +15,7 @@ export class ImagesController {
   }
 
   @Post('/')
-  create(@Body() image: UploadImage, @Request() req: any) {
-
-    return this.imagesService.createImg(image, req)
+  create(@Body('images') images: UploadImage[], @Request() req: any) {
+    return this.imagesService.createImg(images, req)
   }
 }

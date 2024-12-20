@@ -34,7 +34,7 @@ const getNewAccessToken = async ()=>{
   if(rfToken){
     try {
       const res= await apiClient.post(
-        '/auth/rf-token',
+        '/auth/rf-token',{},
         {
           headers: {
             Authorization: `Bearer ${rfToken}`,
@@ -111,19 +111,22 @@ const getMailRFPassword = async (email: string)=>{
   }
 }
 
-const uploadImg = async (payload: string, isNeedDetect: boolean)=>{
+const uploadImg = async (images: {payload: string, isIdentity: boolean}[])=>{
   const accessToken = await checkAndRefreshToken();
 
   if(accessToken){
     try {
-      const res= await apiClient.post('images/', {
-        payload: payload,
-        isNeedDetect: isNeedDetect
-      }, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
+      const res = await apiClient.post(
+        'images/',
+        {
+          images: images
         },
-      });
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            },
+        }
+      );
       return res;
     } catch(e){
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment

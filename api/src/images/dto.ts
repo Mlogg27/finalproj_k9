@@ -10,7 +10,7 @@ class UploadImage {
   @ApiProperty({
     default: false
   })
-  isNeedDetect: boolean
+  isIdentity: boolean
 }
 
 export {UploadImage}

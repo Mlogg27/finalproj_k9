@@ -1,7 +1,5 @@
 import handleCheck from "@plugins/handleCheck";
 import React, { SetStateAction } from "react";
-import { isResSent } from "next/dist/shared/lib/utils";
-
 
 type ApiCall = (payload: any) => any;
 
@@ -47,13 +45,13 @@ const handleSubmit = async ({
 
   if(isValid){
       const res = await apiCall(payload);
-
-      const { data, status } = res;
+      console.log(res)
+      const { status, data } = res;
       setLoading(false);
       setOpen(true);
       setAlertMessage(data.message || 'Action completed successfully');
 
-      if (status === 200 || status === 201) {
+      if (status === 200 || status === 201 ) {
         setAlertSeverity('success');
         onSuccess(res);
       } else {
