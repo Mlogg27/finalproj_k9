@@ -11,6 +11,7 @@ import fetchStatus from "@plugins/fetchStatus";
 import { useNavigateBasedOnVerification } from "@plugins/navigateBasedOnVerification";
 import {  sendOtp, verifyOtp } from "@/ulties/axios";
 import handleSubmit from "@/plugins/handleSubmit";
+import { useRouter } from "next/navigation";
 
 export default function EmailVerifyPage() {
   const inputtingValue = useSelector(getInputting);
@@ -23,6 +24,7 @@ export default function EmailVerifyPage() {
   const dispatch = useDispatch();
   const routerOnVerifyStatus = useNavigateBasedOnVerification();
   const status = fetchStatus();
+  const router = useRouter();
 
 
   useEffect(() => {
@@ -55,7 +57,7 @@ export default function EmailVerifyPage() {
           const {data}=res;
           dispatch(inputtingSlice.actions.reset({}));
           localStorage.setItem('verifyStatus', 'step2');
-          routerOnVerifyStatus(data.verify);
+          router.push('/driver/verify_setup/identity/upload');
         },
         onError: (res: any) =>{
           const {status, data}=res;

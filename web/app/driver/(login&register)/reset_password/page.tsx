@@ -58,6 +58,11 @@ export default function ResetPassPage() {
     });
   }
 
+  const handleAgree =() => {
+    setOpenAlert(false);
+    setIsFillEmail(false);
+  }
+
   if (isFillEmail) {
     return (
       <div className="flex flex-col gap-y-[15px] w-[100%] justify-center items-center">
@@ -90,7 +95,7 @@ export default function ResetPassPage() {
                      content={""}
                      open={openAlert}
                      setOpen={setOpenAlert}
-                     setState={setIsFillEmail} />
+                     handleAgree={handleAgree}/>
       </div>
     );
   }

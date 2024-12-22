@@ -1,6 +1,6 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DriverAcc } from './entity';
+import { DriverAcc, DriverInfo } from './entity';
 import { DriverService } from './service';
 import { DriverController } from './controller';
 import { LoggerMiddleware } from '../middleware/logger.middleware';
@@ -11,7 +11,7 @@ import { MailModule } from '../mailer/module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([DriverAcc]),
+    TypeOrmModule.forFeature([DriverAcc, DriverInfo]),
     AuthModule,
     MailModule
   ],
@@ -25,7 +25,7 @@ export class DriverModule {
       .forRoutes('driver/register');
     consumer
       .apply(AccessTokenMiddleware)
-      .forRoutes('driver/sendOtp', 'driver/verifyOtp' );
+      .forRoutes('driver/sendOtp', 'driver/verifyOtp', 'driver/verifyInfo' );
   }
 
 }

@@ -11,18 +11,14 @@ import DialogTitle from '@mui/material/DialogTitle';
 interface Props {
   open: boolean;
   setOpen: React.Dispatch<SetStateAction<boolean>>;
-  setState : React.Dispatch<SetStateAction<boolean>>;
   title: string;
   content?: string;
+  handleAgree: () => void;
 }
 
-const AlertDialog : React.FC<Props> = ({open, setOpen, setState, title, content}) =>{
+const AlertDialog : React.FC<Props> = ({open, setOpen, title, content, handleAgree}) =>{
   const handleDisagree =() => {
     setOpen(false);
-  }
-  const handleAgree =() => {
-    setOpen(false);
-    setState(false);
   }
   return (
     <>

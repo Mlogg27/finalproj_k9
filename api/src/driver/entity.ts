@@ -28,3 +28,49 @@ export class DriverAcc extends Base {
   })
   verify: 'unverified' | 'step2' | 'step3' | 'verified';
 }
+
+@Entity({
+  name: 'driver'
+})
+export class DriverInfo extends Base {
+  @Column({
+    nullable: false,
+    unique: true,
+  })
+  identity_id: string;
+
+  @Column({
+    nullable: false
+  })
+  name: string;
+
+  @Column({
+    nullable: false
+  })
+  dob: Date;
+
+  @Column({
+    nullable: false,
+  })
+  address: string;
+
+  @Column({
+    nullable: false,
+  })
+  city: string;
+
+  @Column({
+    nullable: false,
+  })
+  country: string;
+
+  @Column({
+    nullable: false,
+  })
+  frond_id: string;
+
+  @Column({
+    nullable: false,
+  })
+  back_id: string;
+}

@@ -3,13 +3,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DriverModule } from './driver/module';
-import { DriverAcc } from './driver/entity';
+import { DriverAcc, DriverInfo } from './driver/entity';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { BlacklistTokens } from './auth/blackList.entity';
 import { Images } from './images/entity';
 import { ImagesModule } from './images/module';
 import { MailModule } from './mailer/module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -20,12 +21,13 @@ import { MailModule } from './mailer/module';
       username: 'postgres',
       password: 'postgres',
       database: 'default',
-      entities: [DriverAcc, BlacklistTokens, Images],
+      entities: [DriverAcc, BlacklistTokens, Images, DriverInfo],
       synchronize: true,
     }),
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    ScheduleModule.forRoot(),
     DriverModule, AuthModule, ImagesModule, MailModule
   ],
   controllers: [AppController],

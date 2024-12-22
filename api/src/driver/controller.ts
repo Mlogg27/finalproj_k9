@@ -20,7 +20,14 @@ export class DriverController {
 
   @Post('verifyOtp')
   @HttpCode(200)
-  async VerifyOtp(@Body() otp, @Request() req){
+  async verifyOtp(@Body() otp, @Request() req){
     return this.driverService.verifyOtp(otp, req)
   }
+
+  @Post('verifyInfo')
+  @HttpCode(200)
+  async verifyInfo(@Body() body, @Request() req){
+    return this.driverService.verifyInfo(body, req);
+  }
+
 }

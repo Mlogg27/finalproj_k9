@@ -6,10 +6,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { getInputting } from "@/lib/selector";
 import CircularProgress from "@mui/material/CircularProgress";
 import { inputtingSlice } from "@/lib/features";
-import { getNewAccessToken, uploadImg} from "@/ulties/axios";
+import {  uploadImg} from "@/ulties/axios";
 import { useNavigateBasedOnVerification } from "@plugins/navigateBasedOnVerification";
 import fetchStatus from "@plugins/fetchStatus";
 import handleSubmit from "@/plugins/handleSubmit";
+import { useRouter } from "next/navigation";
 
 export default function UploadIdentityPage () {
   const [frontImg, setFrontImg] = React.useState('');
@@ -23,6 +24,7 @@ export default function UploadIdentityPage () {
   const inputtingValue = useSelector(getInputting);
   const dispatch = useDispatch();
   const routerOnVerifyStatus = useNavigateBasedOnVerification();
+  const router = useRouter();
 
   useEffect(() => {
     const status = fetchStatus();
@@ -41,8 +43,23 @@ export default function UploadIdentityPage () {
       dispatch,
       handlers: {
         onSuccess: (res : any) => {
-          console.log(res.data);
-
+          const {status, data}=res;
+          if(status === 401){
+            localStorage.clear();
+            routerOnVerifyStatus('login');
+          }
+          const frontSideIdentityInfo = data.results.find((imageDetail: any) => imageDetail.name === 'frontSide');
+          const backSideIdentityInfo = data.results.find((imageDetail: any) => imageDetail.name === 'backSide');
+          router.push('/driver/verify_setup/identity/information');
+          dispatch(inputtingSlice.actions.reset({name: data.reset}));
+          setBackImg('');
+          setFrontImg('');
+          if (frontSideIdentityInfo) {
+            localStorage.setItem('frontInfo', JSON.stringify(frontSideIdentityInfo));
+          }
+          if (backSideIdentityInfo) {
+            localStorage.setItem('backInfo', JSON.stringify(backSideIdentityInfo));
+          }
         },
         onError: (res: any) =>{
           const {status, data}=res;

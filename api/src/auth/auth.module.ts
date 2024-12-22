@@ -19,7 +19,7 @@ import { RFTokenMiddleware } from '../middleware/rfToken.middleware';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: '3m' },
+        signOptions: { expiresIn: '15m' },
       }),
       inject: [ConfigService],
     }),

@@ -14,17 +14,17 @@ export class DriverService {
   ) {}
 
   async register(account:any ){
-    const NewEmail = account.email.toLowerCase()
+    const userEmail = account.email.toLowerCase()
     const exstingAcc = await this.driverAccRepository.findOne({
-      where: {email: NewEmail}
+      where: {email: userEmail}
     })
     if (exstingAcc) {
       throw new ConflictException('Email has been used');
     } else if (!account.phoneNumber) {
       throw new BadRequestException('Missing PhoneNumber');
     } else {
-      this.mailerService.sendRegisterMessage(NewEmail);
-      account.email = NewEmail;
+      this.mailerService.sendRegisterMessage(userEmail);
+      account.email = userEmail;
       account.password = await bcrypt.hash(account.password, 10);
       this.driverAccRepository.save(account);
       return {message : 'Register Successfully'}
@@ -77,5 +77,17 @@ export class DriverService {
       message: 'Invalid OTP',
       reset: 'otp'
     });
+  }
+
+  async verifyInfo (body, req){
+    const userEmail = req['user'].email.toLowerCase();
+    const existingAcc = await this.driverAccRepository.findOne({
+      where: { email: userEmail},
+    });
+    if (!existingAcc || existingAcc.active === false) {
+      throw new UnauthorizedException('Incorrect Email!');
+    }
+    console.log(body)
+    return null;
   }
 }

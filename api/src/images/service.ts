@@ -7,6 +7,7 @@ import { VisionService } from './vision.service';
 import { writeFile } from 'fs'
 import {v4} from "uuid";
 import { DriverAcc } from '../driver/entity';
+import { getStrippedPath } from 'tsconfig-paths/lib/try-path';
 
 
 @Injectable()
@@ -84,7 +85,7 @@ export class ImagesService extends BaseService{
 
     const results = [];
     for (const validImage of validImages) {
-      const { image, info } = validImage;
+      const { image, info, name } = validImage;
       const payload = image.payload.split(',')[1];
       const path = `imagesStorage/${v4()}.png`;
 
@@ -93,18 +94,27 @@ export class ImagesService extends BaseService{
           console.error('Error writing file:', e);
         }
       });
-
+      //   status: 'pending' | 'approved' | 'rejected';
+      let status = 'pending';
+      if(!image.isIdentity){
+        status = 'approved'
+      }
       const savedImg = await super.create({
         path: path,
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        status: status
       });
-
       results.push({
         id: savedImg.id,
         info: info,
         path: path,
+        name: name
       });
     }
 
-    return results;
+    return {
+      results,
+      message: 'Upload Successfully'
+    };
   }
 }

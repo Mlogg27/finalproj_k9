@@ -136,4 +136,29 @@ const uploadImg = async (images: {payload: string, isIdentity: boolean}[])=>{
   }
 }
 
-export {login, getNewAccessToken, register, sendOtp, verifyOtp, getMailRFPassword, uploadImg};
+const verifyInfo= async (payload :any)=>{
+  const accessToken = await checkAndRefreshToken();
+
+  if(accessToken){
+    try {
+      const res = await apiClient.post(
+        'driver/verifyInfo',
+        {
+          payload: payload,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      return res;
+    } catch(e){
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      return e.response
+    }
+  }
+}
+
+export {login, getNewAccessToken, register, sendOtp, verifyOtp, getMailRFPassword, uploadImg, verifyInfo};

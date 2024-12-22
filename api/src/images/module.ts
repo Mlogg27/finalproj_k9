@@ -7,6 +7,7 @@ import { VisionService } from './vision.service';
 import { AuthModule } from '../auth/auth.module';
 import { AccessTokenMiddleware } from '../middleware/accessToken.middleware';
 import { DriverAcc } from '../driver/entity';
+import { ImagesCron } from './cron';
 
 
 
@@ -16,7 +17,7 @@ import { DriverAcc } from '../driver/entity';
     AuthModule,
   ],
   controllers: [ImagesController],
-  providers: [ImagesService, VisionService],
+  providers: [ImagesService, VisionService, ImagesCron],
 })
 export class ImagesModule {
   configure(consumer: MiddlewareConsumer) {
