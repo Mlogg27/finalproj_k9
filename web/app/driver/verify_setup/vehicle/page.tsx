@@ -2,10 +2,17 @@
 
 import { UploadImageBox, CustomButton, CustomInput, VerifyProcessBar } from "@/components";
 import React from "react";
+import { useSelector } from "react-redux";
+import { getInputting } from "@/lib/selector";
 
 export default function UploadIdentityPage () {
   const [vehicleImg, setVehicleImg] = React.useState('');
-  const [vehicleImgRC, setvehicleImgRC] = React.useState('');
+  const inputtingValue = useSelector(getInputting);
+
+  const onSubmit = () =>{
+
+    console.log(inputtingValue)
+  }
 
   return (
     <div className='flex flex-col justify-center items-center '>
@@ -16,13 +23,13 @@ export default function UploadIdentityPage () {
       <span className="mb-[40px] text-center flex justify-center items-center text-[#9E9E9E] text-sm">
         Please upload information of you vehicle
       </span>
-      <CustomInput type={'text'} label={'Vehicle Plate Number'} isPassword={false} name={'vehiclePlateNumber'}/>
-      <CustomInput type={'text'} label={'Color'} isPassword={false} name={'vehicleColor'}/>
-      <div className='flex flex-col justify-center items-center mt-[25px] gap-y-[10px] w-[90%] mx-auto mb-[40px]'>
-        <UploadImageBox onChange={setVehicleImg} width={'100%'} height={150} image={vehicleImg} label={'Vehicle`s image'}/>
-        <UploadImageBox onChange={setvehicleImgRC} width={'100%'} height={150} image={vehicleImgRC} label={'Vehicle`s RC image'}/>
+      <CustomInput type={'text'} label={'Vehicle Plate Number'} isPassword={false} name={'plateNumber'} placeholder={'Your Vehicle Plate Number'}/>
+      <CustomInput type={'text'} label={'Color'} isPassword={false} name={'color'} placeholder={'Your Vehicle Color'}/>
+      <CustomInput type={'text'} label={'Vehicle RC Number'} isPassword={false} name={'rc_number'} placeholder={'Your Vehicle RC Number'}/>
+      <div className='flex flex-col gap-y-[20px] justify-center items-center w-full mt-[25px]'>
+        <UploadImageBox onChange={setVehicleImg} width={'90%'} height={200} image={vehicleImg} name={'firstImg'}/>
+        <CustomButton name={'Save & Continue'} bgColor={'#2c2c2c'} tColor={'#fff'} onClick={onSubmit}/>
       </div>
-      <CustomButton name={'Save & Continue'} bgColor={'#2c2c2c'} tColor={'#fff'}/>
     </div>
   )
 }
