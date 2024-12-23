@@ -22,6 +22,11 @@ export class DriverAcc extends Base {
   password: string;
 
   @Column({
+    nullable: true,
+  })
+  driver_id: number;
+
+  @Column({
     type: 'enum',
     enum: [ 'step2', 'step3', 'verified', 'unverified'],
     default: 'unverified'

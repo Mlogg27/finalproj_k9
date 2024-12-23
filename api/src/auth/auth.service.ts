@@ -1,79 +1,85 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { DriverAcc } from '../driver/entity';
 import * as bcrypt from 'bcrypt';
-import { ConfigService } from '@nestjs/config';
+import { DriverAcc } from '../driver/entity';
 import { MailerService } from '../mailer/service';
 
 @Injectable()
 export class AuthService {
+  private readonly accountRepositories: Record<string, Repository<any>>;
+
   constructor(
     private readonly jwtService: JwtService,
     @InjectRepository(DriverAcc)
     private readonly driverAccRepository: Repository<DriverAcc>,
-    private configService: ConfigService,
-    private mailerService: MailerService) {}
+    // @InjectRepository(VendorAcc)
+    // private readonly vendorAccRepository: Repository<VendorAcc>,
+    // @InjectRepository(AdminAcc)
+    // private readonly adminAccRepository: Repository<AdminAcc>,
 
-  async login(user: {email: string, password: string}) {
-    const email = user.email.toLowerCase();
-    const existingAcc = await this.driverAccRepository.findOne({
-      where: { email: email },
-    });
-    if (!existingAcc || existingAcc.active === false) {
-      throw new BadRequestException({
-        message: 'Incorrect Email',
-        reset: 'email'
-      });
-    }
-
-    const isPasswordMatch = await bcrypt.compare(user.password, existingAcc.password);
-
-    if (!isPasswordMatch) {
-      throw new BadRequestException({
-        message: 'Incorrect password',
-        reset: 'password'
-      });
-    }
-
-    const payload  = {email: email}
-    return {
-      access_token: this.jwtService.sign(payload),
-      refresh_token: this.jwtService.sign(payload, {
-        secret:  this.configService.get<string>('JWT_SECRET_RF'),
-        expiresIn: '7d',
-      }),
-      verify: existingAcc.verify,
-      message: 'Login Successfully'
+    private mailerService: MailerService
+  ) {
+    this.accountRepositories = {
+      driver: this.driverAccRepository,
+      // vendor: this.vendorAccRepository,
+      // admin: this.adminAccRepository,
     };
   }
 
-  async getAcTokenFormRfToken (user : {email: string}){
-    const email = user.email.toLowerCase()
-    const existingAcc = await this.driverAccRepository.findOne({
-      where: { email: email },
-    });
-    if (!existingAcc || !user || existingAcc.active === false) {
-      throw new UnauthorizedException('Invalid Refresh Token!');
+  async validateUser(email: string, accountType: string) {
+    const repository = this.accountRepositories[accountType];
+    if (!repository) {
+      throw new BadRequestException('Invalid account type');
     }
-    const payload = { email: email};
+
+    const emailLower = email.toLowerCase();
+    const account = await repository.findOne({ where: { email: emailLower } });
+    if (!account || !account.active) {
+      throw new BadRequestException('Incorrect email or inactive account');
+    }
+    return account;
+  }
+
+  generateTokens(payload: object) {
+    return {
+      access_token: this.jwtService.sign(payload),
+      refresh_token: this.jwtService.sign(payload, {
+        expiresIn: '7d',
+      }),
+    };
+  }
+
+  async login(email: string, password: string, accountType: string) {
+    const user = await this.validateUser(email, accountType);
+
+    const isPasswordMatch = await bcrypt.compare(password, user.password);
+    if (!isPasswordMatch) {
+      throw new BadRequestException('Incorrect password');
+    }
+
+    const payload = { email: user.email };
+    return {
+      ...this.generateTokens(payload),
+      message: 'Login successfully',
+      verify: user.verify
+    };
+  }
+
+  async getAcTokenFormRfToken (email: string, accountType: string){
+    const user = await this.validateUser(email, accountType);
+    const payload = { email: user.email};
     return {
       access_token: this.jwtService.sign(payload)
     }
   }
 
-  async reqRFPassword(user : {email: string}) {
-    const email = user.email.toLowerCase();
+  async reqRFPassword(email: string, accountType: string) {
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
     if(emailRegex.test(email)){
-      const existingAcc = await this.driverAccRepository.findOne({
-        where: { email: email },
-      });
-      if (!existingAcc || existingAcc.active === false) {
-        throw new BadRequestException('Incorrect Email!');
-      }
-      const token = this.jwtService.sign({email: email});
+      const user = await this.validateUser(email, accountType);
+      const token = this.jwtService.sign({email: user.email});
       return this.mailerService.sendRFPassEmail(email, token);
     }
     throw new BadRequestException('Invalid Email!');

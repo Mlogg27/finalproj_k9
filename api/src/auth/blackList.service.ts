@@ -5,7 +5,6 @@ import {BlacklistTokens} from './blackList.entity';
 import * as jwt from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
 import { JwtPayload } from 'jsonwebtoken';
-import { JwtService } from '@nestjs/jwt';
 
 
 @Injectable()
@@ -39,7 +38,6 @@ export class BlacklistService {
       return { message: 'Logout Successfully', error: error.message };
     }
   }
-
 
   async isTokenBlacklisted(token: string): Promise<boolean> {
     const entry = await this.blacklistRepository.findOne({ where: { token } });

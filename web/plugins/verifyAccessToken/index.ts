@@ -1,11 +1,11 @@
 import { getNewAccessToken } from "@/ulties/axios";
 
-const checkAndRefreshToken = async () => {
+const checkAndRefreshToken = async (accType: string) => {
   const isTokenValid = checkToken();
   if (isTokenValid) {
     return localStorage.getItem("accessToken");
   } else {
-    const res = await getNewAccessToken();
+    const res = await getNewAccessToken(accType);
     if(res.status === 200) localStorage.setItem('accessToken', res.data['access_token']);
     return res.data['access_token'];
   }

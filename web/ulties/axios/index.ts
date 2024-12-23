@@ -7,9 +7,9 @@ const apiClient = axios.create({
     "Content-Type" : "application/json"
   }
 });
-const login = async  (email: string, password:string) =>{
+const login = async  (email: string, password:string, accType: string) =>{
     try {
-      const res = await apiClient.post('/auth/login', { email, password });
+      const res = await apiClient.post(`/${accType}/login`, { email, password });
       return res;
     } catch (e) {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -29,12 +29,12 @@ const register = async  (email:string, phoneNumber: string, password:  string) =
   }
 }
 
-const getNewAccessToken = async ()=>{
+const getNewAccessToken = async (accType: string)=>{
   const rfToken = localStorage.getItem('refreshToken');
   if(rfToken){
     try {
       const res= await apiClient.post(
-        '/auth/rf-token',{},
+        `/${accType}/rf-token`,{},
         {
           headers: {
             Authorization: `Bearer ${rfToken}`,
@@ -54,7 +54,7 @@ const getNewAccessToken = async ()=>{
 }
 
 const sendOtp = async ( ) =>{
-  const accessToken = await checkAndRefreshToken();
+  const accessToken = await checkAndRefreshToken('driver');
   if(accessToken){
     try {
       const res = await apiClient.get(
@@ -75,7 +75,7 @@ const sendOtp = async ( ) =>{
 };
 
 const verifyOtp = async (otp : string ) =>{
-  const accessToken = await checkAndRefreshToken();
+  const accessToken = await checkAndRefreshToken('driver');
   if(accessToken){
     try {
       const res = await apiClient.post(
@@ -98,9 +98,9 @@ const verifyOtp = async (otp : string ) =>{
   } else return false;
 };
 
-const getMailRFPassword = async (email: string)=>{
+const getMailRFPassword = async (email: string, accType: string)=>{
   try {
-    const res= await apiClient.post('auth/rf-pass', {
+    const res= await apiClient.post(`${accType}/rf-pass`, {
       email: email
     });
     return res;
@@ -112,7 +112,7 @@ const getMailRFPassword = async (email: string)=>{
 }
 
 const uploadImg = async (images: {payload: string, isIdentity: boolean}[])=>{
-  const accessToken = await checkAndRefreshToken();
+  const accessToken = await checkAndRefreshToken('driver');
 
   if(accessToken){
     try {
@@ -137,7 +137,7 @@ const uploadImg = async (images: {payload: string, isIdentity: boolean}[])=>{
 }
 
 const verifyInfo= async (payload :any)=>{
-  const accessToken = await checkAndRefreshToken();
+  const accessToken = await checkAndRefreshToken('driver');
 
   if(accessToken){
     try {

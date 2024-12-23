@@ -9,6 +9,8 @@ import { AuthModule } from '../auth/auth.module';
 import { MailModule } from '../mailer/module';
 import { ImagesModule } from '../images/module';
 import { Images } from '../images/entity';
+import { RFTokenMiddleware } from '../middleware/rfToken.middleware';
+import { AuthService } from '../auth/auth.service';
 
 
 @Module({
@@ -19,16 +21,19 @@ import { Images } from '../images/entity';
     ImagesModule
   ],
   controllers: [DriverController],
-  providers: [DriverService],
+  providers: [DriverService, AuthService],
 })
 export class DriverModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(LoggerMiddleware)
-      .forRoutes('driver/register');
+      .forRoutes('driver/register', 'driver/login');
     consumer
       .apply(AccessTokenMiddleware)
       .forRoutes('driver/sendOtp', 'driver/verifyOtp', 'driver/verifyInfo' );
+    consumer
+      .apply(RFTokenMiddleware)
+      .forRoutes('driver/rf-token');
   }
 
 }

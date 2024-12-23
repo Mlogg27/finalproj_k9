@@ -29,7 +29,7 @@ export default function LoginPage() {
     const { email, password } = inputtingValue;
 
     await handleSubmit({
-      apiCall: (payload : any) => login(payload.email, payload.password),
+      apiCall: (payload : any) => login(payload.email, payload.password, 'driver'),
       payload: { email, password },
       necessaryFields: ['email', 'password'],
       setStateHandlers: { setLoading, setOpen, setAlertMessage, setAlertSeverity},

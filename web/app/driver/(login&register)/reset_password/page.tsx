@@ -40,7 +40,7 @@ export default function ResetPassPage() {
     const { email } = inputtingValue;
 
     await handleSubmit({
-      apiCall: (payload : any) => getMailRFPassword(payload.email),
+      apiCall: (payload : any) => getMailRFPassword(payload.email, 'driver'),
       payload: { email },
       necessaryFields: ['email'],
       setStateHandlers: { setLoading, setOpen, setAlertMessage, setAlertSeverity},

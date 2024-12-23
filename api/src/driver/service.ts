@@ -5,6 +5,7 @@ import {InjectRepository} from "@nestjs/typeorm";
 import * as bcrypt from 'bcrypt';
 import { MailerService } from '../mailer/service';
 import { ImagesService } from '../images/service';
+import { AuthService } from '../auth/auth.service';
 
 
 @Injectable()
@@ -13,8 +14,10 @@ export class DriverService{
   constructor(@InjectRepository(DriverAcc) protected driverAccRepository: Repository<DriverAcc>,
               private  mailerService: MailerService,
               @InjectRepository(DriverInfo) protected driverRepository: Repository<DriverInfo>,
-              private imagesService: ImagesService
+              private imagesService: ImagesService,
+              private authService: AuthService
   ) {}
+
 
   async register(account:any ){
     const userEmail = account.email.toLowerCase()
@@ -37,26 +40,19 @@ export class DriverService{
   async sendOTP(req){
     const otp = this.mailerService.generateOtp();
     const userEmail = req['user'].email.toLowerCase();
-    const existingAcc = await this.driverAccRepository.findOne({
-      where: { email: userEmail},
-    });
-    if (!existingAcc || existingAcc.active === false) {
-      throw new UnauthorizedException('Incorrect Email!');
+    const existingAcc = await this.authService.validateUser(userEmail, 'driver');
+
+    if(existingAcc){
+      const expiresAt = Date.now() + 5 * 60 * 1000;
+      this.otpStore.set(userEmail, { otp, expiresAt });
+      return this.mailerService.sendOTP(userEmail, otp);
     }
-    const expiresAt = Date.now() + 5 * 60 * 1000;
-    this.otpStore.set(userEmail, { otp, expiresAt });
-    return this.mailerService.sendOTP(userEmail, otp);
   }
 
   async verifyOtp( body, req){
     const userEmail = req['user'].email.toLowerCase();
 
-    const existingAcc = await this.driverAccRepository.findOne({
-      where: { email: userEmail },
-    });
-    if (!existingAcc || existingAcc.active === false) {
-      throw new UnauthorizedException('Incorrect Email!');
-    }
+    const existingAcc = await this.authService.validateUser(userEmail, 'driver');
 
     const otpDataSaved = this.otpStore.get(userEmail);
     if (!otpDataSaved) throw new UnauthorizedException('Missing OTP. Please get a new one');
@@ -84,14 +80,9 @@ export class DriverService{
 
   async verifyInfo (body, req){
     const userEmail = req['user'].email.toLowerCase();
-    const existingAcc = await this.driverAccRepository.findOne({
-      where: { email: userEmail},
-    });
-    if (!existingAcc || existingAcc.active === false) {
-      throw new UnauthorizedException('Incorrect Email!');
-    }
+    const existingAcc = await this.authService.validateUser(userEmail, 'driver');
     const {fullName, dob, gstNumber, address, city, country, frontID, backID}= body.payload;
-    await this.driverRepository.save({
+    const infoSaved = await this.driverRepository.save({
       identity_id: gstNumber,
       name: fullName,
       dob: dob,
@@ -102,9 +93,10 @@ export class DriverService{
       back_id: backID
     })
     existingAcc.verify = 'verified';
+    existingAcc.driver_id = infoSaved.id
     await this.driverAccRepository.save(existingAcc);
-    await this.imagesService.updateImageaStatus(frontID);
-    await this.imagesService.updateImageaStatus(backID);
+    await this.imagesService.updateImageStatus(frontID);
+    await this.imagesService.updateImageStatus(backID);
     return {
       message: 'Verify information successfully'
     }

@@ -49,7 +49,7 @@ export default function EmailVerifyPage() {
     await handleSubmit({
       apiCall: (payload : any) => verifyOtp(payload.otp),
       payload: { otp },
-      necessaryFields: ['email', 'password'],
+      necessaryFields: ['otp'],
       setStateHandlers: { setLoading, setOpen, setAlertMessage, setAlertSeverity},
       dispatch,
       handlers: {

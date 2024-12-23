@@ -42,7 +42,6 @@ export class ImagesService extends BaseService{
 
   async createImg(images: any, req: any) {
     const userEmail = req['user'].email.toLowerCase();
-    console.log(images);
 
     const existingAcc = await this.driverAccRepository.findOne({
       where: { email: userEmail },
@@ -117,7 +116,7 @@ export class ImagesService extends BaseService{
     };
   }
 
-  async updateImageaStatus (id){
+  async updateImageStatus (id){
     const image =await this.imagesRepository.findOne({
       where: { id: id },
     });
