@@ -23,15 +23,20 @@ export default function IdentityInformationPage(){
   >("success");
 
   useEffect(() => {
-    const rawData = localStorage.getItem('frontInfo');
-    if (rawData) {
-      const infoData = JSON.parse(rawData).info;
+    const frontJSONData = localStorage.getItem('frontInfo');
+    const backJSONData = localStorage.getItem('backInfo');
+    if (frontJSONData && backJSONData) {
+      const frontData = JSON.parse(frontJSONData);
+      const backData = JSON.parse(backJSONData)
+      const infoData = frontData.info;
       const [day, month, year] = infoData.dob.split("/");
       infoData.dob = `${year}-${month}-${day}`;
       dispatch(inputtingSlice.actions.input({name: 'fullName', value: infoData.name}));
       dispatch(inputtingSlice.actions.input({name: 'dob', value: infoData.dob}));
       dispatch(inputtingSlice.actions.input({name: 'gstNumber', value: infoData.id}));
-      dispatch(inputtingSlice.actions.input({name: 'address', value: infoData.placeOfResidence }));
+      dispatch(inputtingSlice.actions.input({name: 'address', value: infoData.placeOfResidence}));
+      dispatch(inputtingSlice.actions.input({name: 'frontID', value: frontData.id}));
+      dispatch(inputtingSlice.actions.input({name: 'backID', value: backData.id}));
     } else{
       router.push('/driver/verify_setup/identity/upload');
     }
@@ -46,17 +51,21 @@ export default function IdentityInformationPage(){
   }
 
   const onSubmit =async () => {
-    const {fullName, dob, gstNumber, address, city, country} =inputtingValue;
+    const {fullName, dob, gstNumber, address, city, country, frontID, backID} =inputtingValue;
 
     await handleSubmit({
       apiCall: (payload : any) => verifyInfo(payload),
-      payload: {fullName, dob, gstNumber, address, city, country},
+      payload: {fullName, dob, gstNumber, address, city, country, frontID, backID},
       necessaryFields: ['fullName', 'dob', 'gstNumber', 'address', 'city', 'country'],
       setStateHandlers: { setLoading, setOpen, setAlertMessage, setAlertSeverity},
       dispatch,
       handlers: {
         onSuccess: (res : any) => {
-          console.log('hehe')
+          dispatch(inputtingSlice.actions.reset({}));
+          localStorage.setItem('verifyStatus', 'step3');
+          localStorage.removeItem('backInfo');
+          localStorage.removeItem('frontInfo');
+          router.push('/driver/verify_setup/vehicle');
         },
         onError: (res: any) =>{
           const {data}=res;

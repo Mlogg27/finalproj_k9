@@ -67,10 +67,10 @@ export class DriverInfo extends Base {
   @Column({
     nullable: false,
   })
-  frond_id: string;
+  front_id: number;
 
   @Column({
     nullable: false,
   })
-  back_id: string;
+  back_id: number;
 }

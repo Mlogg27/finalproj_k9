@@ -18,6 +18,7 @@ import { ImagesCron } from './cron';
   ],
   controllers: [ImagesController],
   providers: [ImagesService, VisionService, ImagesCron],
+  exports: [ImagesService]
 })
 export class ImagesModule {
   configure(consumer: MiddlewareConsumer) {

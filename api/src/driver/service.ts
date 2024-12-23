@@ -1,16 +1,19 @@
 import { BadRequestException, ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { DriverAcc } from './entity';
+import { DriverAcc, DriverInfo } from './entity';
 import {InjectRepository} from "@nestjs/typeorm";
 import * as bcrypt from 'bcrypt';
 import { MailerService } from '../mailer/service';
+import { ImagesService } from '../images/service';
 
 
 @Injectable()
-export class DriverService {
+export class DriverService{
   private otpStore = new Map<string, { otp: string; expiresAt: number }>();
   constructor(@InjectRepository(DriverAcc) protected driverAccRepository: Repository<DriverAcc>,
               private  mailerService: MailerService,
+              @InjectRepository(DriverInfo) protected driverRepository: Repository<DriverInfo>,
+              private imagesService: ImagesService
   ) {}
 
   async register(account:any ){
@@ -87,7 +90,25 @@ export class DriverService {
     if (!existingAcc || existingAcc.active === false) {
       throw new UnauthorizedException('Incorrect Email!');
     }
-    console.log(body)
-    return null;
+    const {fullName, dob, gstNumber, address, city, country, frontID, backID}= body.payload;
+    await this.driverRepository.save({
+      identity_id: gstNumber,
+      name: fullName,
+      dob: dob,
+      address: address,
+      city: city,
+      country: country,
+      front_id: frontID,
+      back_id: backID
+    })
+    existingAcc.verify = 'verified';
+    await this.driverAccRepository.save(existingAcc);
+    await this.imagesService.updateImageaStatus(frontID);
+    await this.imagesService.updateImageaStatus(backID);
+    return {
+      message: 'Verify information successfully'
+    }
   }
 }
+
+

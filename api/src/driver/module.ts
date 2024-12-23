@@ -7,13 +7,16 @@ import { LoggerMiddleware } from '../middleware/logger.middleware';
 import { AccessTokenMiddleware } from '../middleware/accessToken.middleware';
 import { AuthModule } from '../auth/auth.module';
 import { MailModule } from '../mailer/module';
+import { ImagesModule } from '../images/module';
+import { Images } from '../images/entity';
 
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([DriverAcc, DriverInfo]),
+    TypeOrmModule.forFeature([DriverAcc, DriverInfo, Images]),
     AuthModule,
-    MailModule
+    MailModule,
+    ImagesModule
   ],
   controllers: [DriverController],
   providers: [DriverService],

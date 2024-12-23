@@ -7,7 +7,6 @@ import { VisionService } from './vision.service';
 import { writeFile } from 'fs'
 import {v4} from "uuid";
 import { DriverAcc } from '../driver/entity';
-import { getStrippedPath } from 'tsconfig-paths/lib/try-path';
 
 
 @Injectable()
@@ -117,4 +116,13 @@ export class ImagesService extends BaseService{
       message: 'Upload Successfully'
     };
   }
+
+  async updateImageaStatus (id){
+    const image =await this.imagesRepository.findOne({
+      where: { id: id },
+    });
+    image.status = 'approved';
+    await this.imagesRepository.save(image);
+  }
+
 }

@@ -11,7 +11,6 @@ export class ImagesCron {
     @InjectRepository(Images)
     private readonly imageRepository: Repository<Images>,
   ) {}
-
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async deleteExpiredImages() {
     console.log('Checking for expired images...');
