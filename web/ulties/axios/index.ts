@@ -161,4 +161,29 @@ const verifyInfo= async (payload :any)=>{
   }
 }
 
-export {login, getNewAccessToken, register, sendOtp, verifyOtp, getMailRFPassword, uploadImg, verifyInfo};
+const setUpVehicle= async (payload :any)=>{
+  const accessToken = await checkAndRefreshToken('driver');
+
+  if(accessToken){
+    try {
+      const res = await apiClient.post(
+        'vehicle/createOrUpdate',
+        {
+          payload: payload,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      return res;
+    } catch(e){
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      return e.response
+    }
+  }
+}
+
+export {login, getNewAccessToken, register, sendOtp, verifyOtp, getMailRFPassword, uploadImg, verifyInfo, setUpVehicle};

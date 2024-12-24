@@ -20,9 +20,9 @@ export class VehicleService extends BaseService {
   async createOrUpdateVehicle (req, body) {
     const userEmail = req['user'].email;
     const account = await this.authService.validateUser(userEmail, 'driver');
-    const {plateNumber, color, image, rc_number} = body;
+    const {plateNumber, color, image, rc_number} = body.payload;
     if(image.id === null){
-      const res = await this.imagesService.createImg([{payload:image.payload, isIdentity: false }], req);
+      const res = await this.imagesService.createImg([{payload: image.payload, isIdentity: false }], req);
       await super.create({
         plateNumber: plateNumber,
         color: color,
@@ -30,7 +30,12 @@ export class VehicleService extends BaseService {
         rc_number: rc_number,
         driver_id: account.driver_id
       })
+      account.verify = 'verified';
+      await this.driverAccRepository.save(account);
+      return {
+        message: 'Setup Vehicle Successfully',
+        verify: account.verify,
+      }
     }
   }
-
 }

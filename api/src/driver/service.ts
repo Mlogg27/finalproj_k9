@@ -70,7 +70,10 @@ export class DriverService{
       this.otpStore.delete(userEmail);
       existingAcc.verify = 'step2';
       await this.driverAccRepository.save(existingAcc);
-      return {message: 'Verified OTP Successfully'};
+      return {
+        message: 'Verified OTP Successfully',
+        verify: 'step2'
+      };
     }
     throw new BadRequestException({
       message: 'Invalid OTP',
@@ -92,13 +95,14 @@ export class DriverService{
       front_id: frontID,
       back_id: backID
     })
-    existingAcc.verify = 'verified';
+    existingAcc.verify = 'step3';
     existingAcc.driver_id = infoSaved.id
     await this.driverAccRepository.save(existingAcc);
     await this.imagesService.updateImageStatus(frontID);
     await this.imagesService.updateImageStatus(backID);
     return {
-      message: 'Verify information successfully'
+      message: 'Verify information successfully',
+      verify: 'step3'
     }
   }
 }

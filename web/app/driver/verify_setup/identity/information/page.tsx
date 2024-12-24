@@ -8,7 +8,8 @@ import { useEffect } from "react";
 import { inputtingSlice } from "@/lib/features";
 import CircularProgress from "@mui/material/CircularProgress";
 import handleSubmit from "@plugins/handleSubmit";
-import { login, verifyInfo } from "@/ulties/axios";
+import { verifyInfo } from "@/ulties/axios";
+import { useNavigateBasedOnVerification } from "@plugins/navigateBasedOnVerification";
 
 export default function IdentityInformationPage(){
   const [openAlert, setOpenAlert] = React.useState(false);
@@ -21,6 +22,7 @@ export default function IdentityInformationPage(){
   const [alertSeverity, setAlertSeverity] = React.useState<
     "success" | "warning" | "error" | 'info'
   >("success");
+  const routerOnVerifyStatus = useNavigateBasedOnVerification();
 
   useEffect(() => {
     const frontJSONData = localStorage.getItem('frontInfo');
@@ -62,14 +64,18 @@ export default function IdentityInformationPage(){
       handlers: {
         onSuccess: (res : any) => {
           dispatch(inputtingSlice.actions.reset({}));
-          localStorage.setItem('verifyStatus', 'step3');
+          localStorage.setItem('verifyStatus', res.data['verify']);
           localStorage.removeItem('backInfo');
           localStorage.removeItem('frontInfo');
           router.push('/driver/verify_setup/vehicle');
         },
         onError: (res: any) =>{
-          const {data}=res;
+          const {data, status}=res;
           dispatch(inputtingSlice.actions.reset({name: data.reset}));
+          if(status === 401){
+            localStorage.clear();
+            routerOnVerifyStatus('login');
+          }
         }
       },
     });

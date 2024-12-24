@@ -43,11 +43,7 @@ export default function UploadIdentityPage () {
       dispatch,
       handlers: {
         onSuccess: (res : any) => {
-          const {status, data}=res;
-          if(status === 401){
-            localStorage.clear();
-            routerOnVerifyStatus('login');
-          }
+          const {data}=res;
           const frontSideIdentityInfo = data.results.find((imageDetail: any) => imageDetail.name === 'frontSide');
           const backSideIdentityInfo = data.results.find((imageDetail: any) => imageDetail.name === 'backSide');
           router.push('/driver/verify_setup/identity/information');

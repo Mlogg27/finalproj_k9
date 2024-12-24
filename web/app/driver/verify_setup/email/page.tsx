@@ -56,11 +56,11 @@ export default function EmailVerifyPage() {
         onSuccess: (res : any) => {
           const {data}=res;
           dispatch(inputtingSlice.actions.reset({}));
-          localStorage.setItem('verifyStatus', 'step2');
+          localStorage.setItem('verifyStatus', data['verify']);
           router.push('/driver/verify_setup/identity/upload');
         },
         onError: (res: any) =>{
-          const {status, data}=res;
+          const {data, status}=res;
           dispatch(inputtingSlice.actions.reset({name: data.reset}));
           if(status === 401){
             localStorage.clear();

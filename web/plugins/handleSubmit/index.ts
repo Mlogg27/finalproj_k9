@@ -56,7 +56,7 @@ const handleSubmit = async ({
         onSuccess(res);
       } else {
         setAlertSeverity('warning');
-        if (status === 404) setAlertMessage('Server Not Found');
+        if (status === 404) setAlertMessage('Server Not Found')
         onError(res);
   }}
 };
