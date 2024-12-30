@@ -5,6 +5,8 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { DriverAcc } from '../driver/entity';
 import { MailerService } from '../mailer/service';
+import { Vendor } from '../vendor/entity';
+import { Store } from '../store/entity';
 
 @Injectable()
 export class AuthService {
@@ -14,17 +16,17 @@ export class AuthService {
     private readonly jwtService: JwtService,
     @InjectRepository(DriverAcc)
     private readonly driverAccRepository: Repository<DriverAcc>,
-    // @InjectRepository(VendorAcc)
-    // private readonly vendorAccRepository: Repository<VendorAcc>,
-    // @InjectRepository(AdminAcc)
-    // private readonly adminAccRepository: Repository<AdminAcc>,
+    @InjectRepository(Vendor)
+    private readonly vendorRepository: Repository<Vendor>,
+    @InjectRepository(Store)
+    private readonly storeRepository: Repository<Store>,
 
     private mailerService: MailerService
   ) {
     this.accountRepositories = {
       driver: this.driverAccRepository,
-      // vendor: this.vendorAccRepository,
-      // admin: this.adminAccRepository,
+      vendor: this.vendorRepository,
+      store: this.storeRepository,
     };
   }
 

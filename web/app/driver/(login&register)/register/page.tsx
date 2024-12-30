@@ -32,12 +32,12 @@ export default function RegisterPage() {
   }, []);
 
   const onClick =async ()=>{
-    const { email, password, phoneNumber } = inputtingValue;
+    const { email, password,"phone number": phoneNumber } = inputtingValue;
 
     await handleSubmit({
       apiCall: (payload : any) => register(payload.email, payload.phoneNumber,payload.password),
-      payload: { email, password, phoneNumber },
-      necessaryFields: ['email', 'password', 'phoneNumber'],
+      payload: { email, password, "phone number": phoneNumber },
+      necessaryFields: ['email', 'password', 'phone number'],
       setStateHandlers: { setLoading, setOpen, setAlertMessage, setAlertSeverity},
       dispatch,
       handlers: {
@@ -62,7 +62,7 @@ export default function RegisterPage() {
                    label={"Email"}
                    autocomplete={"Email"} />
       <CustomInput type={"tel"}
-                   name={"phoneNumber"}
+                   name={"phone number"}
                    isPassword={false}
                    placeholder={"Your phone number"}
                    label={"Phone Number"}

@@ -6,17 +6,20 @@ import * as bcrypt from 'bcrypt';
 import { MailerService } from '../mailer/service';
 import { ImagesService } from '../images/service';
 import { AuthService } from '../auth/auth.service';
+import { BaseService } from '../base/service';
 
 
 @Injectable()
-export class DriverService{
+export class DriverService extends BaseService{
   private otpStore = new Map<string, { otp: string; expiresAt: number }>();
   constructor(@InjectRepository(DriverAcc) protected driverAccRepository: Repository<DriverAcc>,
               private  mailerService: MailerService,
               @InjectRepository(DriverInfo) protected driverRepository: Repository<DriverInfo>,
               private imagesService: ImagesService,
               private authService: AuthService
-  ) {}
+  ) {
+    super(driverRepository)
+  }
 
 
   async register(account:any ){

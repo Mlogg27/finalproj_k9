@@ -13,6 +13,12 @@ import { MailModule } from './mailer/module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { VehicleModule } from './vehicle/module';
 import { Vehicle } from './vehicle/entity';
+import { VendorModule } from './vendor/module';
+import { Vendor } from './vendor/entity';
+import { RequestModule } from './request/module';
+import { Requests } from './request/entity';
+import { StoreModule } from './store/module';
+import { Store } from './store/entity';
 
 @Module({
   imports: [
@@ -23,14 +29,21 @@ import { Vehicle } from './vehicle/entity';
       username: 'postgres',
       password: 'postgres',
       database: 'default',
-      entities: [DriverAcc, BlacklistTokens, Images, DriverInfo, Vehicle],
+      entities: [DriverAcc, BlacklistTokens, Images, DriverInfo, Vehicle, Vendor, Requests, Store],
       synchronize: true,
     }),
     ConfigModule.forRoot({
       isGlobal: true,
     }),
     ScheduleModule.forRoot(),
-    DriverModule, AuthModule, ImagesModule, MailModule, VehicleModule
+    DriverModule,
+    AuthModule,
+    ImagesModule,
+    MailModule,
+    VehicleModule,
+    VendorModule,
+    RequestModule,
+    StoreModule
   ],
   controllers: [AppController],
   providers: [AppService],

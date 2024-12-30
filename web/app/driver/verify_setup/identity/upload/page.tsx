@@ -37,8 +37,8 @@ export default function UploadIdentityPage () {
 
     await handleSubmit({
       apiCall: ()=> uploadImg([{payload: firstImg, isIdentity: true}, {payload: secondImg, isIdentity: true}]),
-      payload: { firstImg, secondImg },
-      necessaryFields: ['firstImg', 'secondImg'],
+      payload: { "first image": firstImg, "second image": secondImg },
+      necessaryFields: ['first image', 'second image'],
       setStateHandlers: { setLoading, setOpen, setAlertMessage, setAlertSeverity},
       dispatch,
       handlers: {

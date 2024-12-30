@@ -1,9 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
-import inputtingSlice from "@/lib/features/inputtingSlice";
+import { requestsSlice, inputtingSlice } from "./features";
 
 const store = configureStore({
   reducer: {
     inputting: inputtingSlice.reducer,
+    requests: requestsSlice.reducer
   },
 });
 

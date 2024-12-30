@@ -11,11 +11,13 @@ import { ImagesModule } from '../images/module';
 import { Images } from '../images/entity';
 import { RFTokenMiddleware } from '../middleware/rfToken.middleware';
 import { AuthService } from '../auth/auth.service';
+import { Vendor } from '../vendor/entity';
+import { Store } from '../store/entity';
 
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([DriverAcc, DriverInfo, Images]),
+    TypeOrmModule.forFeature([DriverAcc, DriverInfo, Images, Vendor, Store]),
     AuthModule,
     MailModule,
     ImagesModule

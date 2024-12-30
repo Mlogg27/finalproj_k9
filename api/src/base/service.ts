@@ -44,6 +44,28 @@ export class BaseService {
   softDelete(id) {
     return this.updateOne(id, {active: false})
   }
+
+  generateSecureString(): string {
+    const lowerCase = 'abcdefghijklmnopqrstuvwxyz';
+    const upperCase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const numbers = '0123456789';
+    const specialChars = '!@#$%^&*()_+-=[]{}|;:,.<>?';
+
+    const allChars = lowerCase + upperCase + numbers + specialChars;
+
+    let result = '';
+    result += lowerCase[Math.floor(Math.random() * lowerCase.length)];
+    result += upperCase[Math.floor(Math.random() * upperCase.length)];
+    result += numbers[Math.floor(Math.random() * numbers.length)];
+    result += specialChars[Math.floor(Math.random() * specialChars.length)];
+
+    for (let i = result.length; i < 10; i++) {
+      result += allChars[Math.floor(Math.random() * allChars.length)];
+    }
+
+    result = result.split('').sort(() => Math.random() - 0.5).join('');
+    return result;
+  }
 }
 
 

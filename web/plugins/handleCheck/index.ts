@@ -12,6 +12,7 @@ const handleCheck =async (
                       setAlertSeverity : React.Dispatch<SetStateAction<'success' | 'error' | 'info' | 'warning'>>,
                       dispatch: any) =>{
   const resultValid = validateInputs(inputs, necessaryFields );
+  console.log(resultValid);
   if (!resultValid.valid && resultValid.message && resultValid.severity && resultValid.name) {
         setLoading(false);
         setOpen(true);
