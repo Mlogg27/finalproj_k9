@@ -19,7 +19,6 @@ export class Requests extends Base {
 
   @Column({
     nullable: false,
-    unique: true
   })
   phone: string;
   @Column({

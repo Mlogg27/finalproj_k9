@@ -186,4 +186,42 @@ const setUpVehicle= async (payload :any)=>{
   }
 }
 
-export {login, getNewAccessToken, register, sendOtp, verifyOtp, getMailRFPassword, uploadImg, verifyInfo, setUpVehicle};
+const sendRequest= async (payload: any) =>{
+  try {
+    const res = await apiClient.post(
+      'request/create',
+      {
+        payload
+      },
+    );
+    return res;
+  } catch(e){
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    return e.response
+  }
+}
+
+const getRequest= async (type: string) =>{
+  const accessToken = await checkAndRefreshToken(type);
+
+  if(accessToken){
+    try {
+      const res = await apiClient.get(
+        'request/',
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          }
+        },
+      );
+      return res;
+    } catch(e){
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      return e.response
+    }
+  }
+}
+
+export {login, getNewAccessToken, register, sendOtp, verifyOtp, getMailRFPassword, uploadImg, verifyInfo, setUpVehicle, sendRequest, getRequest};

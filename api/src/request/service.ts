@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
 import { BaseService } from '../base/service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Requests } from './entity';
@@ -20,7 +20,7 @@ export class RequestService extends BaseService {
   }
 
   async validateEmail(type: string, email: string): Promise<void> {
-    let repository;
+    let repository =null;
 
     switch (type) {
       case "vendor":
@@ -40,9 +40,16 @@ export class RequestService extends BaseService {
   }
 
   async create (body){
-    const {name, email, phone, type} =body;
+    const {name, email, phone, type} = body.payload;
 
-    await this.validateEmail(type, email);
+    await this.validateEmail(type, email.toLowerCase());
+
+    const existingRequest = await this.requestRepository.findOne({
+      where: {email: email.toLowerCase()}
+    })
+    if(existingRequest){
+      throw new BadRequestException('You have already submitted a request using this email. Please wait for our staff to contact you for verification!')
+    }
 
     await super.create({
       name: name,

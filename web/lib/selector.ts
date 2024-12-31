@@ -1,4 +1,6 @@
 import {RootState} from './store'
 const getInputting = (state :RootState ) => state.inputting;
 
-export {getInputting};
+const getRequests = (state: RootState) => state.requests;
+
+export {getInputting, getRequests};

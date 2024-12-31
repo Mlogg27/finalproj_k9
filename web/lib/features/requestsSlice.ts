@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { getRequest } from "@/ulties/axios";
 
 interface Request {
   id: string;
@@ -31,5 +32,12 @@ const RequestsSlice = createSlice({
     },
   },
 });
+
+// export function fetchTodoById(todoId) {
+//   return async function fetchTodoByIdThunk(dispatch, getState) {
+//     const response = await getRequest();
+//     dispatch(todosLoaded(response.todos))
+//   }
+// }
 
 export default RequestsSlice;

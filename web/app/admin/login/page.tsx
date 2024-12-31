@@ -1,12 +1,16 @@
 "use client"
 import { CustomInput , CustomButton} from "@/components";
 import { useRouter } from "next/navigation";
+import { useSelector } from "react-redux";
+import { getInputting } from "@/lib/selector";
 
 export default function HomePage () {
   const router = useRouter();
+  const inputtingValue = useSelector(getInputting);
 
   const onSubmit = () =>{
-    router.push("/admin/home/requests");
+    const {email, password} = inputtingValue;
+
   }
 
   return (

@@ -10,7 +10,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { useDispatch, useSelector } from "react-redux";
 import { getInputting } from "@/lib/selector";
 import handleSubmit from "@plugins/handleSubmit";
-import { login } from "@/ulties/axios";
+import { sendRequest } from "@/ulties/axios";
 import { inputtingSlice } from "@/lib/features";
 import { useState } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -24,6 +24,7 @@ export default function HomePage () {
   const [loading, setLoading] = useState(false);
   const inputtingValue = useSelector(getInputting);
   const dispatch = useDispatch();
+  console.log(inputtingValue);
 
   const handleClose = () => {
     setOpenDialog(false);
@@ -39,20 +40,19 @@ export default function HomePage () {
   }
 
   const onSubmit = async () =>{
-    const { emailRQ, "phone number": phone, name } = inputtingValue;
+    const { emailRQ: email, "phone number": phone, name } = inputtingValue;
     await handleSubmit({
-      apiCall: (payload : any) => login(payload.email, payload.password, 'driver'),
-      payload: { emailRQ ,"phone number": phone, name },
+      apiCall: () => sendRequest({email, phone, name, type: 'vendor'}),
+      payload: { "emailRQ": email ,"phone number": phone, name },
       necessaryFields: ['name','emailRQ', 'phone number'],
       setStateHandlers: { setLoading, setOpen, setAlertMessage, setAlertSeverity},
       dispatch,
       handlers: {
         onSuccess: (res : any) => {
-          const {data}=res;
+          dispatch(inputtingSlice.actions.reset({}));
         },
         onError: (res: any) =>{
-          const {data}=res;
-          dispatch(inputtingSlice.actions.reset({name: data.reset}));
+          dispatch(inputtingSlice.actions.reset({}));
         }
       },
     });
@@ -90,7 +90,7 @@ export default function HomePage () {
             </DialogContentText>
             <CustomInput label='Name' name='name' type='text' placeholder='Your Vendor Name' autocomplete=''
                          isPassword={false} />
-            <CustomInput label='Email' name='emailRQ' type='text' placeholder='Your Email' autocomplete='current-email'
+            <CustomInput label='Email' name='emailRQ' type='text' placeholder='Your Email' autocomplete='email'
                          isPassword={false} />
             <CustomInput label='Phone Number' name='phone number' type='tel' placeholder='Your Phone Number'
                          autocomplete='tel' isPassword={false} />

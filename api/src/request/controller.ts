@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get } from '@nestjs/common';
+import { Controller, Post, Body, Get, Query } from '@nestjs/common';
 import { RequestService } from './service';
 import { CreateDto } from './dto';
 
@@ -13,7 +13,7 @@ export class RequestController {
     return this.requestService.create(body);
   }
   @Get('/')
-  getList(){
-    return this.requestService.getList();
+  getList(@Query() query){
+    return this.requestService.getList(query);
   }
 }
