@@ -7,6 +7,7 @@ import { DriverAcc } from '../driver/entity';
 import { MailerService } from '../mailer/service';
 import { Vendor } from '../vendor/entity';
 import { Store } from '../store/entity';
+import { Admin_acc } from '../admin/entity';
 
 @Injectable()
 export class AuthService {
@@ -20,6 +21,8 @@ export class AuthService {
     private readonly vendorRepository: Repository<Vendor>,
     @InjectRepository(Store)
     private readonly storeRepository: Repository<Store>,
+    @InjectRepository(Admin_acc)
+    private readonly adminRepository: Repository<Admin_acc>,
 
     private mailerService: MailerService
   ) {
@@ -27,6 +30,7 @@ export class AuthService {
       driver: this.driverAccRepository,
       vendor: this.vendorRepository,
       store: this.storeRepository,
+      admin: this.adminRepository
     };
   }
 

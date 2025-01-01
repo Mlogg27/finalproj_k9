@@ -9,10 +9,11 @@ import { AuthService } from '../auth/auth.service';
 import { DriverAcc } from '../driver/entity';
 import { MailModule } from '../mailer/module';
 import { Store } from '../store/entity';
+import { Admin_acc } from '../admin/entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Vendor, DriverAcc, Store]),
+    TypeOrmModule.forFeature([Vendor, DriverAcc, Store, Admin_acc]),
     AuthModule,
     MailModule
   ],

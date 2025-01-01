@@ -19,6 +19,8 @@ import { RequestModule } from './request/module';
 import { Requests } from './request/entity';
 import { StoreModule } from './store/module';
 import { Store } from './store/entity';
+import { AdminModule } from './admin/module';
+import { Admin_acc } from './admin/entity';
 
 @Module({
   imports: [
@@ -29,7 +31,7 @@ import { Store } from './store/entity';
       username: 'postgres',
       password: 'postgres',
       database: 'default',
-      entities: [DriverAcc, BlacklistTokens, Images, DriverInfo, Vehicle, Vendor, Requests, Store],
+      entities: [DriverAcc, BlacklistTokens, Images, DriverInfo, Vehicle, Vendor, Requests, Store, Admin_acc],
       synchronize: true,
     }),
     ConfigModule.forRoot({
@@ -43,7 +45,8 @@ import { Store } from './store/entity';
     VehicleModule,
     VendorModule,
     RequestModule,
-    StoreModule
+    StoreModule,
+    AdminModule
   ],
   controllers: [AppController],
   providers: [AppService],

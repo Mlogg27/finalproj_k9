@@ -8,10 +8,11 @@ import { Store } from './entity';
 import { StoreService } from './service';
 import { AuthService } from '../auth/auth.service';
 import { StoreController } from './controller';
+import { Admin_acc } from '../admin/entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Vendor, DriverAcc, Store]),
+    TypeOrmModule.forFeature([Vendor, DriverAcc, Store, Admin_acc]),
     AuthModule,
     MailModule],
   controllers: [StoreController],

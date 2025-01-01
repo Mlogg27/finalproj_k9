@@ -9,11 +9,12 @@ import { BlacklistService } from './blackList.service';
 import { MailModule } from 'src/mailer/module';
 import { Vendor } from 'src/vendor/entity';
 import { Store } from '../store/entity';
+import { Admin_acc } from '../admin/entity';
 
 @Module({
   imports: [
     ConfigModule,
-    TypeOrmModule.forFeature([DriverAcc, BlacklistTokens, Vendor, Store]),
+    TypeOrmModule.forFeature([DriverAcc, BlacklistTokens, Vendor, Store, Admin_acc]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
