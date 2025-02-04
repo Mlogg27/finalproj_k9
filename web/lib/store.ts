@@ -1,12 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { requestsSlice, inputtingSlice } from "./features";
+import { inputtingSlice } from "./features";
 
 const store = configureStore({
   reducer: {
     inputting: inputtingSlice.reducer,
-    requests: requestsSlice.reducer
   },
 });
 
 export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
+
 export default store;

@@ -1,18 +1,50 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { getRequest } from "@/ulties/axios";
+import { AppDispatch } from "@/lib/store";
+import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { getRequests } from "@/ulties/axios";
 
 export default function HomePage() {
-  const [optValue, setOptValue] = React.useState(null)
+  const router = useRouter()
+  const [choice, setChoice] = React.useState(null);
+  const [requests, setRequests] = React.useState([]);
+  const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
+    const isLogin = localStorage.getItem("accessToken");
+    if(!isLogin) {
+      router.push("/admin/login");
+    }
+    const fetchRequests = async () => {
+      const res = await getRequests('admin');
+      const {data, status} = res;
+      if(status === 401){
+        localStorage.clear();
+        router.push('/admin/login');
+      }
+      if(status === 200){
+        setRequests(data);
+      }
+    };
+    fetchRequests().then();
   }, []);
 
+  const columns =[
+    { field: 'ID', headerName: 'ID', width: 70 },
+    { field: 'name', headerName: 'Name', width: 130 },
+    { field: 'email', headerName: 'Email', width: 130 },
+    { field: 'phone', headerName: 'Phone', width: 130 },
+    { field: 'type', headerName: 'Type', width: 130 },
+    { field: 'active', headerName: 'Active', width: 130 },
+    { field: 'action', headerName: 'Action', width: 70 },
+  ]
   const onChange =(e: any ) =>{
-    setOptValue(e.target?.value || null)
-  }
-  
+    setChoice(e.target?.value || null)
+  };
+
+
   return (
     <div className={"flex flex-col mx-[20px] mt-[-50px] w-full h-full"}>
       <div className={"flex flex-col gap-y-[20px]"}>
@@ -30,3 +62,5 @@ export default function HomePage() {
     </div>
   );
 }
+
+

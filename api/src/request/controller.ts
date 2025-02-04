@@ -19,10 +19,4 @@ export class RequestController {
     return this.requestService.getList(query);
   }
 
-  @Post('rf-token')
-  @HttpCode(200)
-  getNewAcToken(@Request() req) {
-    const user = req['user'];
-    return this.authService.getAcTokenFormRfToken(user.email, 'admin');
-  }
 }

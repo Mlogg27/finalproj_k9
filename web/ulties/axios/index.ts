@@ -202,7 +202,7 @@ const sendRequest= async (payload: any) =>{
   }
 }
 
-const getRequest= async (type: string) =>{
+const getRequests= async (type: string) =>{
   const accessToken = await checkAndRefreshToken(type);
 
   if(accessToken){
@@ -224,4 +224,4 @@ const getRequest= async (type: string) =>{
   }
 }
 
-export {login, getNewAccessToken, register, sendOtp, verifyOtp, getMailRFPassword, uploadImg, verifyInfo, setUpVehicle, sendRequest, getRequest};
+export {login, getNewAccessToken, register, sendOtp, verifyOtp, getMailRFPassword, uploadImg, verifyInfo, setUpVehicle, sendRequest, getRequests};

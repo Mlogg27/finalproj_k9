@@ -11,7 +11,6 @@ import { AuthService } from '../auth/auth.service';
 import { Store } from 'src/store/entity';
 import { Admin_acc } from '../admin/entity';
 import { AccessTokenMiddleware } from '../middleware/accessToken.middleware';
-import { RFTokenMiddleware } from '../middleware/rfToken.middleware';
 
 @Module({
   imports: [
@@ -27,8 +26,5 @@ export class RequestModule {
     consumer
       .apply(AccessTokenMiddleware)
       .forRoutes({ path: 'request', method: RequestMethod.GET });
-    consumer
-      .apply(RFTokenMiddleware)
-      .forRoutes('request/rf-token');
   }
 }
