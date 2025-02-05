@@ -8,6 +8,7 @@ import { MailerService } from '../mailer/service';
 import { Vendor } from '../vendor/entity';
 import { Store } from '../store/entity';
 import { Admin_acc } from '../admin/entity';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
@@ -24,7 +25,8 @@ export class AuthService {
     @InjectRepository(Admin_acc)
     private readonly adminRepository: Repository<Admin_acc>,
 
-    private mailerService: MailerService
+    private mailerService: MailerService,
+    protected readonly configService: ConfigService,
   ) {
     this.accountRepositories = {
       driver: this.driverAccRepository,
@@ -52,6 +54,7 @@ export class AuthService {
     return {
       access_token: this.jwtService.sign(payload),
       refresh_token: this.jwtService.sign(payload, {
+        secret: this.configService.get<string>('JWT_SECRET_RF'),
         expiresIn: '7d',
       }),
     };
@@ -75,7 +78,7 @@ export class AuthService {
 
   async getAcTokenFormRfToken (email: string, accountType: string){
     const user = await this.validateUser(email, accountType);
-    const payload = { email: user.email};
+    const payload = { email: user.email };
     return {
       access_token: this.jwtService.sign(payload)
     }

@@ -24,6 +24,6 @@ export class AdminModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(RFTokenMiddleware)
-      .forRoutes('admin/rf-token');
+      .forRoutes('/admin/rf-token');
   }
 }

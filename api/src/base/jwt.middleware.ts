@@ -27,6 +27,7 @@ export abstract class BaseJwtMiddleware {
   protected checkBlacklist(token: string) {
     return this.blackListService.isTokenBlacklisted(token);
   }
+
   protected verifyToken(token: string, secretKey: string): any {
     try {
       return this.jwtService.verify(token, {

@@ -9,7 +9,6 @@ export class RFTokenMiddleware extends BaseJwtMiddleware implements NestMiddlewa
     if(isInBlackList){
       throw new UnauthorizedException("Invalid Refresh Token");
     }
-
     const decoded = super.verifyToken(token, 'JWT_SECRET_RF');
     req.user = decoded;
     next();

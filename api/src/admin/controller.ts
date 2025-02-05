@@ -19,6 +19,7 @@ export class AdminController{
   @HttpCode(200)
   getNewAcToken(@Request() req) {
     const user = req['user'];
+    console.log(user);
     return this.authService.getAcTokenFormRfToken(user.email, 'admin');
   }
 }

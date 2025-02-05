@@ -6,7 +6,6 @@ export class AccessTokenMiddleware extends BaseJwtMiddleware implements NestMidd
   async use(req: any, res: any, next: () => void) {
     const token = super.extractToken(req.headers.authorization);
     const decoded = super.verifyToken(token, 'JWT_SECRET');
-
     req.user = decoded;
     next();
   }
