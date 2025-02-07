@@ -1,50 +1,46 @@
 import React from "react";
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
-import Button from '@mui/material/Button';
 
 interface Props {
   rows: Record<any, any>[];
   columns: GridColDef[];
   paginationModel: Record<any, any>;
+  onApprove: (e: any) => void;
+  onRemove: (e: any) => void
 }
 
-const TableContent: React.FC<Props> = ({ rows, columns, paginationModel }) => {
-  const enhancedColumns: GridColDef[] = [
-    ...columns,
-    {
-      field: 'actions',
-      headerName: 'Actions',
-      width: 150,
-      renderCell: (params: GridRenderCellParams) => (
-        <>
-          <Button
-            variant="contained"
-            color="primary"
-            size="small"
-            onClick={() => console.log('Edit:', params.row.id)}
-            sx={{ marginRight: 1 }}
-          >
-            Edit
-          </Button>
-          <Button
-            variant="contained"
-            color="error"
-            size="small"
-            onClick={() => console.log('Remove:', params.row.id)}
-          >
-            Remove
-          </Button>
-        </>
-      ),
-      sortable: false,
-      filterable: false,
-    },
-  ];
+const TableContent: React.FC<Props> = ({ rows, columns, paginationModel, onApprove, onRemove }) => {
+  const enhancedColumns: GridColDef[] = columns.map((col) => ({
+    ...col,
+    headerAlign: 'center',
+    align: 'center'
+  })) as GridColDef[];
+
+  enhancedColumns.push({
+    field: 'actions',
+    headerName: 'Actions',
+    width: 150,
+    headerAlign: 'center',
+    renderCell: (params: GridRenderCellParams) => (
+      <div className='flex h-full gap-x-[8px] justify-center items-center'>
+        <button className={'max-h-[35px] px-[1px] flex justify-center items-center bg-[#2c2c2c] text-white rounded-[3px]'}
+                onClick={() =>{
+                  onApprove(params.row)
+                }}>Approve</button>
+        <button className={'max-h-[35px] px-[1px] flex justify-center items-center bg-[#2c2c2c] text-white rounded-[3px]'}
+                onClick={()=>{
+                  onRemove(params.row)
+                }}>Remove</button>
+      </div>
+    ),
+    sortable: false,
+    filterable: false,
+  } as GridColDef);
 
   return (
     <>
-      <Paper sx={{ height: 400, width: '100%' }}>
+      <Paper sx={{ height: 400, width: '1260px' }}>
         <DataGrid
           rows={rows}
           columns={enhancedColumns}
