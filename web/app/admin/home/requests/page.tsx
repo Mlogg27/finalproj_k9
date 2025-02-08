@@ -5,7 +5,7 @@ import { AppDispatch } from "@/lib/store";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { getRequests } from "@/ulties/axios";
-import { TableContent } from "@/components";
+import {  TableContent } from "@/components";
 
 export default function HomePage() {
   const router = useRouter();
@@ -34,12 +34,13 @@ export default function HomePage() {
   }, []);
 
   const columns = [
-    { field: "id", headerName: "ID", width: 100 },
-    { field: "name", headerName: "Name", width: 230 },
-    { field: "email", headerName: "Email", width: 230 },
-    { field: "phone", headerName: "Phone", width: 150 },
+    { field: "id", headerName: "ID", width: 70 },
+    { field: "name", headerName: "Name", width: 200 },
+    { field: "email", headerName: "Email", width: 200 },
+    { field: "phone", headerName: "Phone", width: 130 },
     { field: "type", headerName: "Type", width: 120 },
-    { field: "createTime", headerName: "Create Time", width: 230 },
+    { field: "location", headerName: "Location", width: 190 },
+    { field: "createTime", headerName: "Create Time", width: 150 },
   ];
 
   const rows = requests.map((request) => {
@@ -50,6 +51,7 @@ export default function HomePage() {
       email: request.Requests_email,
       phone: request.Requests_phone,
       type: request.Requests_type,
+      location: request.Requests_location,
       createTime: createDate.toLocaleString("en-US"),
     };
   });

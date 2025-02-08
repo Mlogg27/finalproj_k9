@@ -14,9 +14,10 @@ interface CustomInputProps {
   isPassword: boolean;
   name: string;
   autocomplete?: string;
+  key?: string
 }
 
-const CustomInput: React.FC<CustomInputProps> = ({ label, placeholder, isPassword, type, name, autocomplete }) => {
+const CustomInput: React.FC<CustomInputProps> = ({ label, placeholder, isPassword, type, name, autocomplete, key }) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(!isPassword);
   const dispatch = useDispatch();
   const inputting = useSelector(getInputting);
@@ -31,6 +32,7 @@ const CustomInput: React.FC<CustomInputProps> = ({ label, placeholder, isPasswor
     <label className="relative flex flex-col w-[90%] justify-center mt-[25px]">
       <span className="text-sm font-semibold">{label}</span>
       <input
+        key={key}
         className="text-sm border rounded-[6px] outline-none px-[10px] py-[5px]"
         type={type === "password" && isPasswordVisible ? 'text' : type}
         placeholder={placeholder || "Enter your information"}

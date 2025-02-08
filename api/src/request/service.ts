@@ -41,7 +41,7 @@ export class RequestService extends BaseService {
   async validateEmail(type: string, email: string): Promise<void> {
     const  repository = this.setRepositoryByType(type);
 
-    const existingAccount = await repository.findOne({ where: {email: email, status: 'pending' } });
+    const existingAccount = await repository.findOne({ where: {email: email.toLowerCase() } });
     if (existingAccount) {
       throw new ConflictException('Email have been used');
     }
@@ -84,10 +84,10 @@ export class RequestService extends BaseService {
     const {name, email, phone, type} = body.payload;
 
     await this.validateEmail(type, email.toLowerCase());
-
+    const request = this.requestRepository.findOne({where: {email: email.toLowerCase()}})
     await super.create({
       name: name,
-      email: email,
+      email: email.toLowerCase(),
       phone: phone,
       type: type
     })

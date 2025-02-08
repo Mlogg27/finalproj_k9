@@ -50,6 +50,7 @@ export default function HomePage () {
       handlers: {
         onSuccess: (res : any) => {
           dispatch(inputtingSlice.actions.reset({}));
+          setOpenDialog(false);
         },
         onError: (res: any) =>{
           dispatch(inputtingSlice.actions.reset({}));

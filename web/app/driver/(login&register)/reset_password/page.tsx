@@ -1,5 +1,5 @@
 'use client'
-import { AlertDialog, CustomAlert, CustomButton, CustomInput } from "@/components";
+import { CustomDialog, CustomAlert, CustomButton, CustomInput } from "@/components";
 import Link from "next/link";
 import * as React from "react";
 import SendIcon from '@mui/icons-material/Send';
@@ -13,7 +13,6 @@ import handleSubmit from "@/plugins/handleSubmit";
 import fetchStatus from "@plugins/fetchStatus";
 import { useNavigateBasedOnVerification } from "@plugins/navigateBasedOnVerification";
 
-
 export default function ResetPassPage() {
   const [openAlert, setOpenAlert] = React.useState(false);
   const [isFillEmail, setIsFillEmail] = React.useState(false);
@@ -24,7 +23,6 @@ export default function ResetPassPage() {
   const inputtingValue = useSelector(getInputting);
   const dispatch = useDispatch();
   const routerOnVerifyStatus = useNavigateBasedOnVerification();
-
 
   useEffect(() => {
     const status = fetchStatus();
@@ -91,7 +89,7 @@ export default function ResetPassPage() {
         </Link>
       </span>
 
-        <AlertDialog title={"You definitely want to resend the email?"}
+        <CustomDialog title={"You definitely want to resend the email?"}
                      content={""}
                      open={openAlert}
                      setOpen={setOpenAlert}

@@ -6,7 +6,21 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import { CustomInput } from "@/components";
 
+type Inputs = {
+  type: "text" | "password" | "email" | "number";
+  placeholder?: string
+  isPassword: boolean;
+  label: string;
+  name: string;
+  autocomplete?: string;
+}
+
+type Selects = {
+  value: string;
+  name: string;
+}
 
 interface Props {
   open: boolean;
@@ -14,9 +28,11 @@ interface Props {
   title: string;
   content?: string;
   handleAgree: () => void;
+  inputs?: Inputs[];
+  selects?: Selects[];
 }
 
-const AlertDialog : React.FC<Props> = ({open, setOpen, title, content, handleAgree}) =>{
+const CustomAlert : React.FC<Props> = ({open, setOpen, title, content, handleAgree, inputs, selects}) =>{
   const handleDisagree =() => {
     setOpen(false);
   }
@@ -36,11 +52,24 @@ const AlertDialog : React.FC<Props> = ({open, setOpen, title, content, handleAgr
             <DialogContentText id="alert-dialog-description">
               {content}
             </DialogContentText>
+            {inputs?.map((input, idx)=>{
+              return <CustomInput type={input.type}
+                                  label={input.label}
+                                  isPassword={input.isPassword}
+                                  name={input.name} placeholder={input.placeholder}
+                                  autocomplete={input.autocomplete}
+                                  key={`input-${idx}`}/>
+            })}
+            {selects && <select>
+              {selects.map((option, idx) => {
+                return <option key={`opt-${idx}`} value={option.value}>{option.name}</option>
+              })}
+            </select>}
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleDisagree}>Disagree</Button>
+            <Button onClick={handleDisagree}>Cancel</Button>
             <Button onClick={handleAgree} autoFocus>
-              Agree
+              Subscribe
             </Button>
           </DialogActions>
         </Dialog>
@@ -49,4 +78,4 @@ const AlertDialog : React.FC<Props> = ({open, setOpen, title, content, handleAgr
   )
 }
 
-export default React.memo(AlertDialog);
+export default React.memo(CustomAlert);

@@ -208,7 +208,7 @@ const getRequests= async (type: string) =>{
   if(accessToken){
     try {
       const res = await apiClient.get(
-        'request/?active=true',
+        'request/?status=pending',
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -224,4 +224,31 @@ const getRequests= async (type: string) =>{
   }
 }
 
-export {login, getNewAccessToken, register, sendOtp, verifyOtp, getMailRFPassword, uploadImg, verifyInfo, setUpVehicle, sendRequest, getRequests};
+const createOrDeleteAccountByAdmin= async (type: string, id: number, isCreate: boolean, reason ?: string) =>{
+  const accessToken = await checkAndRefreshToken(type);
+  const path = isCreate ? `createAcc/${id}` : `/${id}`;
+  const method = isCreate ? "post": "delete" ;
+
+  if(accessToken){
+    try {
+      const res = await apiClient[method](
+        `request/${path}`,
+        {
+          reason: reason
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          }
+        },
+      );
+      return res;
+    } catch(e){
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      return e.response
+    }
+  }
+}
+
+export {login, getNewAccessToken, register, sendOtp, verifyOtp, getMailRFPassword, uploadImg, verifyInfo, setUpVehicle, sendRequest, getRequests, createOrDeleteAccountByAdmin};
