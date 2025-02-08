@@ -208,7 +208,7 @@ const getRequests= async (type: string) =>{
   if(accessToken){
     try {
       const res = await apiClient.get(
-        'request/',
+        'request/?active=true',
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,

@@ -25,5 +25,17 @@ export class Requests extends Base {
     nullable: false,
   })
   type: string;
+  @Column({
+    nullable: true,
+    default: 'none',
+  })
+  location: string;
+
+  @Column({
+    type: 'enum',
+    enum: [ 'pending', 'approved', 'rejected'],
+    default: 'pending'
+  })
+  status: 'pending' | 'approved' | 'rejected';
 }
 

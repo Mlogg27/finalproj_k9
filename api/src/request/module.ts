@@ -25,6 +25,6 @@ export class RequestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(AccessTokenMiddleware)
-      .forRoutes({ path: 'request', method: RequestMethod.GET });
+      .forRoutes({ path: 'request', method: RequestMethod.GET }, 'request/:id');
   }
 }

@@ -43,9 +43,9 @@ export class AuthService {
     }
 
     const emailLower = email.toLowerCase();
-    const account = await repository.findOne({ where: { email: emailLower } });
-    if (!account || !account.active) {
-      throw new BadRequestException('Incorrect email or inactive account');
+    const account = await repository.findOne({ where: { email: emailLower, active: true} });
+    if (!account) {
+      throw new BadRequestException('Incorrect email');
     }
     return account;
   }

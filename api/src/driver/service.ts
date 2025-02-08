@@ -24,10 +24,10 @@ export class DriverService extends BaseService{
 
   async register(account:any ){
     const userEmail = account.email.toLowerCase()
-    const exstingAcc = await this.driverAccRepository.findOne({
-      where: {email: userEmail}
+    const existingAcc = await this.driverAccRepository.findOne({
+      where: {email: userEmail, active: true}
     })
-    if (exstingAcc) {
+    if (existingAcc) {
       throw new ConflictException('Email has been used');
     } else if (!account.phoneNumber) {
       throw new BadRequestException('Missing PhoneNumber');

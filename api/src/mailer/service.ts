@@ -31,7 +31,7 @@ export class MailerService {
     }
   }
 
-  async sendRegisterMessage(email: string) {
+  async sendRegisterMessage(email: string, password?: string) {
     try {
       await this.mailerService.sendMail({
         to: email,
@@ -41,6 +41,7 @@ export class MailerService {
                    <h2 style="color: #4CAF50;">Hello, the new member of Scrap Plans!</h2>
                    <p>Congratulations, you have successfully registered with your email:</p>
                    <p style="font-size: 16px; color: #000;"><strong>${email}</strong></p>
+                   <p style="font-size: 16px; color: #000;">Your Password:<strong>${password}</strong></p>
                    <p>We are excited to have you on board. Start exploring and enjoy the features we offer!</p>
                    <p>Best regards,</p>
                    <p><strong>The Scrap Plan Team</strong></p>
@@ -73,4 +74,25 @@ export class MailerService {
       throw new Error('Can\'t send the email: ' + error.message);
     }
   }
+
+  async sendRejectAccountEmail(email: string, reason: string) {
+    try {
+      await this.mailerService.sendMail({
+        to: email,
+        subject: 'Account Registration Request Denied',
+        html: `
+      <h2>Account Registration Request Denied</h2>
+      <p>Hi,</p>
+      <p>We regret to inform you that your request to create an account has been denied because:</p>
+      <p><strong>${reason}</strong></p>
+      <p>If you believe this is a mistake or would like more information, please contact our support team.</p>
+      <p>Best regards,<br/>The Scrap Plan Team</p>
+    `,
+      });
+      return { message: 'Send Email Successfully' };
+    } catch (error) {
+      throw new Error('Can\'t send the email: ' + error.message);
+    }
+  }
+
 }
