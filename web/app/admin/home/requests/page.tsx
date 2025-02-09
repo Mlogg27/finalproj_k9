@@ -1,18 +1,24 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { AppDispatch } from "@/lib/store";
 import { useRouter } from "next/navigation";
-import { useDispatch } from "react-redux";
-import { getRequests } from "@/ulties/axios";
-import {  TableContent } from "@/components";
+import { createOrDeleteAccountByAdmin, getRequests } from "@/ulties/axios";
+import { CustomAlert, CustomDialog, TableContent } from "@/components";
+import CircularProgress from "@mui/material/CircularProgress";
 
 export default function HomePage() {
   const router = useRouter();
-  const dispatch = useDispatch<AppDispatch>();
   const [requests, setRequests] = useState<any[]>([]);
   const [filterType, setFilterType] = useState<string>("none");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [openDialogApprove, setOpenDialogApprove] = useState<boolean>(false);
+  const [openDialogRemove, setOpenDialogRemove] = useState<boolean>(false);
+  const selectedRequest = React.useRef<Record<any, any>>({});
+  const [open, setOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState<string>("");
+  const [alertSeverity, setAlertSeverity] = useState<'success' | 'error' | 'info' | 'warning'>("success");
+  const [loading, setLoading] = useState(false);
+
 
   useEffect(() => {
     const isLogin = localStorage.getItem("accessToken");
@@ -70,13 +76,40 @@ export default function HomePage() {
     setSearchQuery(e.target.value);
   };
 
-  const onApprove = (e: any) => {
-    console.log(e);
+  const onApprove = (e :any) => {
+    setOpenDialogApprove(true);
+    selectedRequest.current= e;
+  };
+  const onRemove = (e :any) => {
+    setOpenDialogRemove(true);
+    selectedRequest.current= e;
   };
 
-  const onRemove = () => {
-    console.log("not hehe");
-  };
+  const handleApprove = async () =>{
+    setLoading(true);
+    const id = parseInt(selectedRequest.current.id);
+    const res = await createOrDeleteAccountByAdmin('admin', id, true);
+    setOpen(true);
+    setAlertMessage(res.data.message);
+    setAlertSeverity('warning');
+
+    if(res.status === 401) {
+      setLoading(false);
+      localStorage.clear();
+      router.push('/admin/home');
+    }
+    if(res.status === 201) {
+      setAlertSeverity('success');
+      setRequests(prevRequests => prevRequests.filter(req => req.Requests_id !== id));
+      setLoading(false);
+    }
+
+    setLoading(false);
+    setOpenDialogApprove(false);
+    selectedRequest.current ={};
+  }
+
+  console.log(document.activeElement);
 
   return (
     <div className="flex flex-col mx-[20px] mt-[-50px] w-full h-full">
@@ -108,6 +141,28 @@ export default function HomePage() {
           onRemove={onRemove}
         />
       </div>
+      <CustomDialog open={openDialogApprove}
+                    setOpen={setOpenDialogApprove}
+                    title={"Confirm Account Approval"}
+                    content={'Are you sure you want to approve this request? This action cannot be undone.'}
+                    handleAgree={handleApprove}/>
+      <CustomDialog open={openDialogRemove}
+                    setOpen={setOpenDialogRemove}
+                    title={"Confirm Account Approval"}
+                    content={'Are you sure you want to approve this request? This action cannot be undone.'}
+                    handleAgree={handleApprove}/>
+
+      <CustomAlert
+        setOpen={setOpen}
+        alertSeverity={alertSeverity}
+        alertMessage={alertMessage}
+        open={open} />
+
+      {loading && (
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+          <CircularProgress style={{ color: "black" }} />
+        </div>
+      )}
     </div>
   );
 }

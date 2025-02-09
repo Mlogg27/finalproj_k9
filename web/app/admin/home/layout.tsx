@@ -16,8 +16,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const defaultStyle = 'bg-transparent text-black';
 
   return (
-    <div className='flex mx-[10px] mt-[20px]'>
-      <ul className='flex flex-col gap-y-[10px] w-[200px]'>
+    <div className='flex mx-[10px] mt-[20px] justify-center items-center'>
+      <ul className='flex flex-col gap-y-[10px] min-w-[13rem]'>
         <li>
           <Link
             href={'/admin/home/requests'}

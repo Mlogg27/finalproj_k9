@@ -13,7 +13,6 @@ export class Requests extends Base {
 
   @Column({
     nullable: false,
-    unique: true
   })
   email: string;
 

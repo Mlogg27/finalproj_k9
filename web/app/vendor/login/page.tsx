@@ -1,12 +1,7 @@
 "use client"
-import { CustomInput, CustomButton, CustomAlert } from "@/components";
+import { CustomInput, CustomButton, CustomAlert, CustomDialog } from "@/components";
 import { useRouter } from "next/navigation";
 import * as React from "react";
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
 import { useDispatch, useSelector } from "react-redux";
 import { getInputting } from "@/lib/selector";
 import handleSubmit from "@plugins/handleSubmit";
@@ -24,11 +19,12 @@ export default function HomePage () {
   const [loading, setLoading] = useState(false);
   const inputtingValue = useSelector(getInputting);
   const dispatch = useDispatch();
-  console.log(inputtingValue);
 
-  const handleClose = () => {
-    setOpenDialog(false);
-  };
+  const inputs = [
+    {label: 'Name', type: "text",name: 'name', placeholder: 'Your Vendor Name', isPassword: false},
+    {label: 'Email', type: "text",name: 'emailRQ', placeholder: 'Your Email', isPassword: false, autocomplete: 'email'},
+    {label: 'Phone Number', type: "tel",name: 'phone number', placeholder: 'Your Phone Number', isPassword: false, autocomplete: 'tel'},
+  ]
 
   const onLogin = () =>{
     router.push("/store/home");
@@ -78,37 +74,19 @@ export default function HomePage () {
         <span onClick={onRegister} className={'underline'}>Register here!</span>
       </div>
 
-      <div>
-        <Dialog
-          open={openDialog}
-          onClose={handleClose}
-        >
-          <DialogTitle>Request</DialogTitle>
-          <DialogContent>
-            <DialogContentText>
-              To subscribe to this website, please enter your vendor information. We
-              will send updates occasionally.
-            </DialogContentText>
-            <CustomInput label='Name' name='name' type='text' placeholder='Your Vendor Name' autocomplete=''
-                         isPassword={false} />
-            <CustomInput label='Email' name='emailRQ' type='text' placeholder='Your Email' autocomplete='email'
-                         isPassword={false} />
-            <CustomInput label='Phone Number' name='phone number' type='tel' placeholder='Your Phone Number'
-                         autocomplete='tel' isPassword={false} />
-          </DialogContent>
-          <DialogActions>
-            <button onClick={handleClose}>Cancel</button>
-            <button onClick={onSubmit}>Subscribe</button>
-          </DialogActions>
-        </Dialog>
-      </div>
+      <CustomDialog open={openDialog}
+                    setOpen={setOpenDialog}
+                    title={"Request"}
+                    content={'To subscribe to this website, please enter your vendor information. We will send updates occasionally.'}
+                    handleAgree={onSubmit}
+                    inputs={inputs}/>
 
       <CustomAlert
         setOpen={setOpen}
         alertSeverity={alertSeverity}
         alertMessage={alertMessage}
-        open={open}
-      />
+        open={open} />
+
       {loading && (
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
           <CircularProgress style={{ color: "black" }} />

@@ -7,7 +7,6 @@ import { Base } from '../base/entity';
 })
 export class Vendor extends Base {
   @Column({
-    unique: true,
     nullable: false
   })
   name: string;
@@ -20,7 +19,6 @@ export class Vendor extends Base {
 
   @Column({
     nullable: false,
-    unique: true
   })
   phone: string;
   @Column({

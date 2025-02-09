@@ -24,6 +24,7 @@ export class RequestController {
   }
   @Post("createAcc/:id")
   async createAcc( @Request() req, @Param('id') id){
+    console.log(req['user']);
     const adminAcc =await this.authService.validateUser(req['user'].email.toLowerCase(), 'admin');
     return this.requestService.createAcc(id, adminAcc);
   }

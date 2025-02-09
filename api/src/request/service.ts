@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { BaseService } from '../base/service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Requests } from './entity';
@@ -8,12 +8,14 @@ import { Vendor } from '../vendor/entity';
 import { Admin_acc } from '../admin/entity';
 import * as bcrypt from 'bcrypt';
 import { MailerService } from '../mailer/service';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable()
 export class RequestService extends BaseService {
   constructor(
     @InjectRepository(Requests) private requestRepository: Repository<Requests>,
     private mailService: MailerService,
+    private authService: AuthService,
     @InjectRepository(Store) private storeRepository: Repository<Store>,
     @InjectRepository(Vendor) private vendorRepository: Repository<Vendor>,
     @InjectRepository(Admin_acc) private adminRepository: Repository<Admin_acc>,
@@ -36,15 +38,6 @@ export class RequestService extends BaseService {
         throw new BadRequestException('Invalid type');
     }
     return repository;
-  }
-
-  async validateEmail(type: string, email: string): Promise<void> {
-    const  repository = this.setRepositoryByType(type);
-
-    const existingAccount = await repository.findOne({ where: {email: email.toLowerCase() } });
-    if (existingAccount) {
-      throw new ConflictException('Email have been used');
-    }
   }
 
   getRandomChar(charset) {
@@ -83,22 +76,24 @@ export class RequestService extends BaseService {
   async create (body){
     const {name, email, phone, type} = body.payload;
 
-    await this.validateEmail(type, email.toLowerCase());
-    const request = this.requestRepository.findOne({where: {email: email.toLowerCase()}})
+    const acc = await this.authService.validateEmail(email.toLowerCase(), type);
+    if (acc) throw new BadRequestException('This email has already been used to create an account.');
+
+    const request = await this.requestRepository.findOne({where: {email: email.toLowerCase(), status: 'pending'}});
+    if(request) throw new BadRequestException('You have already used this email to submit a request. Please wait for us to contact you!');
     await super.create({
       name: name,
       email: email.toLowerCase(),
       phone: phone,
       type: type
     })
-
     return {
       message: "Your request has been sent. We will contact you to verify as soon as possible!"
     };
   }
 
   async createAcc (id, adminAcc){
-    const request =await this.requestRepository.findOne({where: {id: id, status: 'pending'}})
+    const request =await this.requestRepository.findOne({where: {id: parseInt(id), status: 'pending'}})
 
     if(request){
       const pass = await this.generateRandomString(10);
@@ -123,7 +118,7 @@ export class RequestService extends BaseService {
   }
 
   async removeRequest (id, adminAcc, body){
-    const request = await this.requestRepository.findOne({where: {id: id, status: 'pending'}});
+    const request = await this.requestRepository.findOne({where: {id: parseInt(id), status: 'pending'}});
     if(request){
       this.mailService.sendRejectAccountEmail(request.email, body.reason);
       super.updateOne(id, {status: 'rejected', deletedBy: adminAcc.id, deletedAt: new Date() });

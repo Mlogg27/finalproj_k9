@@ -25,6 +25,6 @@ export class RequestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(AccessTokenMiddleware)
-      .forRoutes({ path: 'request', method: RequestMethod.GET }, 'createAcc/:id',{ path: 'request/:id', method: RequestMethod.DELETE } );
+      .forRoutes({ path: 'request', method: RequestMethod.GET }, 'request/createAcc/:id',{ path: 'request/:id', method: RequestMethod.DELETE } );
   }
 }

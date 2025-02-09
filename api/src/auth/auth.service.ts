@@ -36,14 +36,19 @@ export class AuthService {
     };
   }
 
-  async validateUser(email: string, accountType: string) {
-    const repository = this.accountRepositories[accountType];
+  async validateEmail(email:string, type: string) {
+    const repository = this.accountRepositories[type];
     if (!repository) {
       throw new BadRequestException('Invalid account type');
     }
 
     const emailLower = email.toLowerCase();
     const account = await repository.findOne({ where: { email: emailLower, active: true} });
+    return account;
+  }
+
+   validateUser(email: string, accountType: string) {
+    const account = this.validateEmail(email, accountType);
     if (!account) {
       throw new BadRequestException('Incorrect email');
     }
