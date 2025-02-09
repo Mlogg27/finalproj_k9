@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { BaseService } from '../base/service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Vehicle } from './entity';
@@ -20,6 +20,8 @@ export class VehicleService extends BaseService {
   async createOrUpdateVehicle (req, body) {
     const userEmail = req['user'].email;
     const account = await this.authService.validateUser(userEmail, 'driver');
+    if(!account) throw new BadRequestException('Incorrect Email') ;
+
     const {plateNumber, color, image, rc_number} = body.payload;
     if(image.id === null){
       const res = await this.imagesService.createImg([{payload: image.payload, isIdentity: false }], req);

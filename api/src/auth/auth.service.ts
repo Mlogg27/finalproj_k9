@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -43,16 +43,34 @@ export class AuthService {
     }
 
     const emailLower = email.toLowerCase();
-    const account = await repository.findOne({ where: { email: emailLower, active: true} });
-    return account;
+
+    const accountByEmail = await repository.findOne({
+      where: { email: emailLower }
+    });
+
+    return  accountByEmail ;
   }
 
-   validateUser(email: string, accountType: string) {
-    const account = this.validateEmail(email, accountType);
-    if (!account) {
-      throw new BadRequestException('Incorrect email');
+  async validateUser(email: string, accountType: string, phone?: string) {
+    const repository = this.accountRepositories[accountType];
+    if (!repository) {
+      throw new BadRequestException('Invalid account type');
     }
-    return account;
+
+    const accountByEmail = await this.validateEmail(email, accountType);
+
+    if(phone){
+      const accountByPhone = await repository.findOne({
+        where: { phone: phone }
+      })
+      if (accountByPhone && accountByPhone.email.toLowerCase() !== accountByEmail?.email) {
+        throw new BadRequestException('Phone number is already in use by another account');
+      }
+
+    }
+
+    if(accountByEmail?.active === false) throw new UnauthorizedException('Your email has been locked for some reason. Please contact us via email for support.')
+    return accountByEmail;
   }
 
   generateTokens(payload: object) {
@@ -65,9 +83,29 @@ export class AuthService {
     };
   }
 
+  generatePassword(length = 8) {
+    const lower = "abcdefghijklmnopqrstuvwxyz";
+    const upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const numbers = "0123456789";
+    const special = "!@#$%^&*(),.?\":{}|<>";
+    const allChars = lower + upper + numbers + special;
+
+    let password = "";
+    password += lower[Math.floor(Math.random() * lower.length)];
+    password += upper[Math.floor(Math.random() * upper.length)];
+    password += numbers[Math.floor(Math.random() * numbers.length)];
+    password += special[Math.floor(Math.random() * special.length)];
+
+    for (let i = 4; i < length; i++) {
+      password += allChars[Math.floor(Math.random() * allChars.length)];
+    }
+
+    return password.split("").sort(() => Math.random() - 0.5).join("");
+  }
+
   async login(email: string, password: string, accountType: string) {
     const user = await this.validateUser(email, accountType);
-
+    if(!user) throw new BadRequestException('Incorrect Email') ;
     const isPasswordMatch = await bcrypt.compare(password, user.password);
     if (!isPasswordMatch) {
       throw new BadRequestException('Incorrect password');
@@ -83,6 +121,7 @@ export class AuthService {
 
   async getAcTokenFormRfToken (email: string, accountType: string){
     const user = await this.validateUser(email, accountType);
+    if(!user) throw new BadRequestException('Incorrect Email') ;
     const payload = { email: user.email };
     return {
       access_token: this.jwtService.sign(payload)

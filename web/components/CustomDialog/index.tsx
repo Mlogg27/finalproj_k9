@@ -26,13 +26,14 @@ interface Props {
   setOpen: React.Dispatch<SetStateAction<boolean>>;
   title: string;
   content?: string;
-  handleAgree: () => void;
+  handleAgree: (e :any) => void;
   inputs?: Inputs[];
   selects?: Selects[];
   selectedRequest?: Record<any, any>;
 }
 
-const CustomAlert : React.FC<Props> = ({open, setOpen, title, content, handleAgree, inputs, selects, selectedRequest}) =>{
+const CustomDialog : React.FC<Props> = ({open, setOpen, title, content, handleAgree, inputs, selects, selectedRequest}) =>{
+  const [option, setOption ] = React.useState<string>('');
   const handleDisagree =() => {
     setOpen(false);
     if(selectedRequest){
@@ -63,7 +64,7 @@ const CustomAlert : React.FC<Props> = ({open, setOpen, title, content, handleAgr
                                   autocomplete={input.autocomplete}
                                   key={`input-${idx}`}/>
             })}
-            {selects && <select>
+            {selects && <select className="w-[420px] mt-[30px] border border-gray-400 rounded-[4px] h-[30px] outline-none" value={option} onChange={(e)=> {setOption(e.target.value)}}>
               {selects.map((option, idx) => {
                 return <option key={`opt-${idx}`} value={option.value}>{option.name}</option>
               })}
@@ -71,7 +72,7 @@ const CustomAlert : React.FC<Props> = ({open, setOpen, title, content, handleAgr
           </DialogContent>
           <DialogActions sx={{width: 200, marginRight: 2, marginLeft: "auto"}}>
             <CustomButton name={"Cancel"} bgColor={"#2c2c2c"} tColor={"#fff"} onClick={handleDisagree}/>
-            <CustomButton name={"Approve"} bgColor={"#2c2c2c"} tColor={"#fff"} onClick={handleAgree}/>
+            <CustomButton name={"Approve"} bgColor={"#2c2c2c"} tColor={"#fff"} onClick={()=>{handleAgree(option)}}/>
           </DialogActions>
         </Dialog>
       </React.Fragment>
@@ -79,4 +80,4 @@ const CustomAlert : React.FC<Props> = ({open, setOpen, title, content, handleAgr
   )
 }
 
-export default React.memo(CustomAlert);
+export default React.memo(CustomDialog);

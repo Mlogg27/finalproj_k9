@@ -36,9 +36,13 @@ export default function HomePage() {
         setRequests(res.data);
       }
     };
-    fetchRequests().then();
-  }, []);
 
+    fetchRequests().then();
+
+    const interval = setInterval(fetchRequests, 300000);
+
+    return () => clearInterval(interval);
+  }, []);
   const columns = [
     { field: "id", headerName: "ID", width: 70 },
     { field: "name", headerName: "Name", width: 200 },
@@ -68,10 +72,26 @@ export default function HomePage() {
     return matchesType && matchesSearch;
   });
 
+  const options = [
+    { name: "Choose a reason to reject this request", value: "none" },
+    { name: "Account already exists", value: "account_exists" },
+    { name: "Invalid email address", value: "invalid_email" },
+    { name: "Incomplete information", value: "incomplete_info" },
+    { name: "Violation of terms of service", value: "terms_violation" },
+    { name: "Unable to contact", value: "unable_to_contact" },
+    { name: "False information provided", value: "false_information" },
+    { name: "Negotiation failed", value: "negotiation_failed" },
+    { name: "Duplicate request", value: "duplicate_request" },
+    { name: "Unverified identity", value: "unverified_identity" },
+    { name: "Suspicious activity detected", value: "suspicious_activity" },
+    { name: "Not eligible for an account", value: "not_eligible" },
+    { name: "Request withdrawn by user", value: "user_withdrawn" },
+    { name: "Policy restrictions", value: "policy_restrictions" },
+  ]
+
   const onChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setFilterType(e.target.value.toLowerCase());
   };
-
   const onSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
   };
@@ -109,7 +129,9 @@ export default function HomePage() {
     selectedRequest.current ={};
   }
 
-  console.log(document.activeElement);
+  const handleRemove = async (e :any) =>{
+    console.log(e)
+  }
 
   return (
     <div className="flex flex-col mx-[20px] mt-[-50px] w-full h-full">
@@ -148,9 +170,10 @@ export default function HomePage() {
                     handleAgree={handleApprove}/>
       <CustomDialog open={openDialogRemove}
                     setOpen={setOpenDialogRemove}
-                    title={"Confirm Account Approval"}
-                    content={'Are you sure you want to approve this request? This action cannot be undone.'}
-                    handleAgree={handleApprove}/>
+                    title={"Confirm Account Removal"}
+                    content={'Are you sure you want to remove this request? This action cannot be undone.'}
+                    selects={options}
+                    handleAgree={handleRemove}/>
 
       <CustomAlert
         setOpen={setOpen}

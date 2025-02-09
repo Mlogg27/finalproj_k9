@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Query, Delete, Param, Request } from '@nestjs/common';
+import { Controller, Post, Body, Get, Query, Delete, Param, Request, UnauthorizedException } from '@nestjs/common';
 import { RequestService } from './service';
 import { CreateDto } from './dto';
 import { AuthService } from '../auth/auth.service';
@@ -20,12 +20,13 @@ export class RequestController {
   @Delete('/:id')
   async removeRequest(@Param('id') id, @Request() req, @Body() body){
     const adminAcc =await this.authService.validateUser(req['user'].email.toLowerCase(), 'admin');
+    if(!adminAcc) throw new UnauthorizedException("Incorrect Admin Email");
     return this.requestService.removeRequest(id, adminAcc, body);
   }
   @Post("createAcc/:id")
   async createAcc( @Request() req, @Param('id') id){
-    console.log(req['user']);
     const adminAcc =await this.authService.validateUser(req['user'].email.toLowerCase(), 'admin');
+    if(!adminAcc) throw new UnauthorizedException("Incorrect Admin Email");
     return this.requestService.createAcc(id, adminAcc);
   }
 }

@@ -52,31 +52,9 @@ export class RequestService extends BaseService {
     return array;
   }
 
-  generateRandomString(length = 8) {
-    const uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    const lowercase = "abcdefghijklmnopqrstuvwxyz";
-    const digits = "0123456789";
-    const specialChars = "!@#$%^&*()_+-=[]{}|;:'\",.<>?/";
-    const allChars = uppercase + lowercase + digits + specialChars;
-
-    const result = [
-      this.getRandomChar(uppercase),
-      this.getRandomChar(lowercase),
-      this.getRandomChar(digits),
-      this.getRandomChar(specialChars)
-    ];
-
-    for (let i = result.length; i < length; i++) {
-      result.push(this.getRandomChar(allChars));
-    }
-
-    return this.shuffleArray(result).join('');
-  }
-
   async create (body){
     const {name, email, phone, type} = body.payload;
-
-    const acc = await this.authService.validateEmail(email.toLowerCase(), type);
+    const acc = await this.authService.validateUser(email.toLowerCase(), type, phone);
     if (acc) throw new BadRequestException('This email has already been used to create an account.');
 
     const request = await this.requestRepository.findOne({where: {email: email.toLowerCase(), status: 'pending'}});
@@ -96,7 +74,7 @@ export class RequestService extends BaseService {
     const request =await this.requestRepository.findOne({where: {id: parseInt(id), status: 'pending'}})
 
     if(request){
-      const pass = await this.generateRandomString(10);
+      const pass =  this.authService.generatePassword();
       const hashPass = await bcrypt.hash(pass, 10);
       const repository = this.setRepositoryByType(request.type);
 

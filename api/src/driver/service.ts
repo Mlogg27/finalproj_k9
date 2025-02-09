@@ -25,7 +25,7 @@ export class DriverService extends BaseService{
   async register(account:any ){
     const userEmail = account.email.toLowerCase()
     const existingAcc = await this.driverAccRepository.findOne({
-      where: {email: userEmail, active: true}
+      where: {email: userEmail}
     })
     if (existingAcc) {
       throw new ConflictException('Email has been used');
@@ -49,6 +49,8 @@ export class DriverService extends BaseService{
       const expiresAt = Date.now() + 5 * 60 * 1000;
       this.otpStore.set(userEmail, { otp, expiresAt });
       return this.mailerService.sendOTP(userEmail, otp);
+    } else{
+      throw new BadRequestException('Incorrect Email');
     }
   }
 
@@ -56,6 +58,7 @@ export class DriverService extends BaseService{
     const userEmail = req['user'].email.toLowerCase();
 
     const existingAcc = await this.authService.validateUser(userEmail, 'driver');
+    if(!existingAcc) throw new BadRequestException('Incorrect Email') ;
 
     const otpDataSaved = this.otpStore.get(userEmail);
     if (!otpDataSaved) throw new UnauthorizedException('Missing OTP. Please get a new one');
@@ -87,6 +90,8 @@ export class DriverService extends BaseService{
   async verifyInfo (body, req){
     const userEmail = req['user'].email.toLowerCase();
     const existingAcc = await this.authService.validateUser(userEmail, 'driver');
+    if(!existingAcc) throw new BadRequestException('Incorrect Email');
+
     const {fullName, dob, gstNumber, address, city, country, frontID, backID}= body.payload;
     const infoSaved = await this.driverRepository.save({
       identity_id: gstNumber,
