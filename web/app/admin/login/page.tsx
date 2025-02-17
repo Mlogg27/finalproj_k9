@@ -10,7 +10,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import * as React from "react";
 import { useEffect, useState } from "react";
 
-export default function HomePage () {
+export default function LoginPage () {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [alertMessage, setAlertMessage] = useState<string>("");

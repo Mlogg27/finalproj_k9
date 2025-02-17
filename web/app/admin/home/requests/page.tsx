@@ -43,6 +43,7 @@ export default function HomePage() {
 
     return () => clearInterval(interval);
   }, []);
+
   const columns = [
     { field: "id", headerName: "ID", width: 70 },
     { field: "name", headerName: "Name", width: 200 },
@@ -52,7 +53,6 @@ export default function HomePage() {
     { field: "location", headerName: "Location", width: 190 },
     { field: "createTime", headerName: "Create Time", width: 150 },
   ];
-
   const rows = requests.map((request) => {
     const createDate = new Date(request.Requests_created_at);
     return {
@@ -65,7 +65,6 @@ export default function HomePage() {
       createTime: createDate.toLocaleString("en-US"),
     };
   });
-
   const filteredRows = rows.filter((row) => {
     const matchesType = filterType === "none" || row.type === filterType;
     const matchesSearch = row.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -105,10 +104,12 @@ export default function HomePage() {
     selectedRequest.current= e;
   };
 
-  const handleApprove = async () =>{
+  const handleApprove = async (e ?:string) =>{
     setLoading(true);
+
+    const isCreate :boolean = e === null ;
     const id = parseInt(selectedRequest.current.id);
-    const res = await createOrDeleteAccountByAdmin('admin', id, true);
+    const res = await createOrDeleteAccountByAdmin('admin', id, isCreate, e);
     setOpen(true);
     setAlertMessage(res.data.message);
     setAlertSeverity('warning');
@@ -116,12 +117,17 @@ export default function HomePage() {
     if(res.status === 401) {
       setLoading(false);
       localStorage.clear();
-      router.push('/admin/home');
+      setOpenDialogApprove(false);
+      setOpenDialogRemove(false);
+      router.push('/admin/login');
+
     }
-    if(res.status === 201) {
+    if(res.status === 201 || res.status === 200) {
       setAlertSeverity('success');
       setRequests(prevRequests => prevRequests.filter(req => req.Requests_id !== id));
       setLoading(false);
+      setOpenDialogApprove(false);
+      setOpenDialogRemove(false);
     }
 
     setLoading(false);
@@ -129,9 +135,6 @@ export default function HomePage() {
     selectedRequest.current ={};
   }
 
-  const handleRemove = async (e :any) =>{
-    console.log(e)
-  }
 
   return (
     <div className="flex flex-col mx-[20px] mt-[-50px] w-full h-full">
@@ -173,7 +176,7 @@ export default function HomePage() {
                     title={"Confirm Account Removal"}
                     content={'Are you sure you want to remove this request? This action cannot be undone.'}
                     selects={options}
-                    handleAgree={handleRemove}/>
+                    handleAgree={handleApprove}/>
 
       <CustomAlert
         setOpen={setOpen}

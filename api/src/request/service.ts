@@ -100,7 +100,7 @@ export class RequestService extends BaseService {
     if(request){
       this.mailService.sendRejectAccountEmail(request.email, body.reason);
       super.updateOne(id, {status: 'rejected', deletedBy: adminAcc.id, deletedAt: new Date() });
-      return {message: `Remove request's ${id} successfully`};
+      return {message: `Remove request ${id} successfully`};
     } else{
       throw new BadRequestException(`Don't have any request from this email`);
     }

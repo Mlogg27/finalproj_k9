@@ -26,7 +26,7 @@ interface Props {
   setOpen: React.Dispatch<SetStateAction<boolean>>;
   title: string;
   content?: string;
-  handleAgree: (e :any) => void;
+  handleAgree: (a ?: any) => void;
   inputs?: Inputs[];
   selects?: Selects[];
   selectedRequest?: Record<any, any>;
@@ -72,7 +72,9 @@ const CustomDialog : React.FC<Props> = ({open, setOpen, title, content, handleAg
           </DialogContent>
           <DialogActions sx={{width: 200, marginRight: 2, marginLeft: "auto"}}>
             <CustomButton name={"Cancel"} bgColor={"#2c2c2c"} tColor={"#fff"} onClick={handleDisagree}/>
-            <CustomButton name={"Approve"} bgColor={"#2c2c2c"} tColor={"#fff"} onClick={()=>{handleAgree(option)}}/>
+            <CustomButton name={"Approve"} bgColor={"#2c2c2c"} tColor={"#fff"} onClick={()=>{
+              handleAgree(option);
+              setOption('none')}}/>
           </DialogActions>
         </Dialog>
       </React.Fragment>
