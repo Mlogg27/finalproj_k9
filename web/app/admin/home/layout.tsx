@@ -9,12 +9,16 @@ import FindInPageIcon from '@mui/icons-material/FindInPage';
 import Link from "next/link";
 import { usePathname } from 'next/navigation';
 import React from "react";
-import {  SideBar } from "@/components";
+import { CustomInput, SideBar } from "@/components";
+import { useSelector } from "react-redux";
+import { getInputting } from "@/lib/selector";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [open, setOpen] = React.useState(false);
   const [showChangePass, setShowChangePass] = React.useState(false);
+  const inputtingValue = useSelector(getInputting);
+
 
   const onClick = () =>{
     console.log('hehe');
@@ -25,7 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   const sideBarEle = (): React.JSX.Element =>{
     return (
-      <div className={'absolute top-[30px] mx-auto flex flex-col justify-center items-center gap-y-[25px]'}>
+      <div className={'absolute top-[50px] mx-auto flex flex-col justify-center items-center gap-y-[25px]'}>
         <div className={"flex gap-x-[25px] justify-center items-center"}>
           <span className="text-center cursor-pointer border-b-2 border-transparent hover:border-white pb-1"
                 onClick={() => setShowChangePass(false)}>
@@ -41,8 +45,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </div>
         {!showChangePass &&
           <div className={"w-[240px] flex flex-col gap-y-[5px] justify-center items-center"}>
-            <input type="text" disabled={true} className={"w-full rounded-[6px]"} value={""} />
-            <input type="text" disabled={true} className={"w-full mt-[5px] rounded-[6px]"} value={""} />
+            <label htmlFor={"email"} className={'text-[#fff]'}>Email</label>
+            <input id={"email"} type="text" disabled={true} className={"w-full rounded-[6px] text-center px-[2px] py-[5px]"} value={inputtingValue.email} />
+          </div>
+        }
+
+        {
+          showChangePass &&
+          <div className={"text-[#000] flex flex-col justify-center items-center w-[240px]"}>
+            <label className={'text-white font-semibold'}>Your Old Password</label>
+            <CustomInput isPassword={true} type={"password"} name={"prevPass"} placeholder={"Your old password"} />
+            <label className={'text-white font-semibold mt-[25px]'}>Your New Password</label>
+            <CustomInput isPassword={true} type={"password"} name={"newPass"} placeholder={"Your new password"} />
+            <label className={'text-white font-semibold mt-[25px]'}>Confirm Your Password</label>
+            <CustomInput isPassword={true} type={"password"} name={"cfPass"} placeholder={"Confirm your password"} />
           </div>
         }
       </div>

@@ -6,8 +6,10 @@ const checkAndRefreshToken = async (accType: string) => {
     return localStorage.getItem("accessToken");
   } else {
     const res = await getNewAccessToken(accType);
-    if(res.status === 200) localStorage.setItem('accessToken', res.data['access_token']);
-    return res.data['access_token'];
+    if(res.status === 200) {
+      localStorage.setItem('accessToken', res.data['access_token']);
+      return res.data['access_token'];
+    }
   }
 };
 

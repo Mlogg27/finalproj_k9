@@ -63,10 +63,9 @@ export class AuthService {
       const accountByPhone = await repository.findOne({
         where: { phone: phone }
       })
-      if (accountByPhone && accountByPhone.email.toLowerCase() !== accountByEmail?.email) {
+      if (accountByPhone && accountByEmail && accountByPhone.email !== accountByEmail.email) {
         throw new BadRequestException('Phone number is already in use by another account');
       }
-
     }
 
     if(accountByEmail?.active === false) throw new UnauthorizedException('Your email has been locked for some reason. Please contact us via email for support.')
@@ -115,7 +114,8 @@ export class AuthService {
     return {
       ...this.generateTokens(payload),
       message: 'Login successfully',
-      verify: user.verify
+      ...(user.verify && { verify: user.verify }),
+      email: email,
     };
   }
 
@@ -137,4 +137,14 @@ export class AuthService {
     }
     throw new BadRequestException('Invalid Email!');
   }
+
+  async changePassword(email:string, prevPass:string, newPass: string, accountType: string) {
+      const user = await this.validateUser(email, accountType);
+      if(!user) throw new BadRequestException('Incorrect Email') ;
+      const isPasswordMatch = await bcrypt.compare(prevPass, user.password);
+      if (!isPasswordMatch) throw new BadRequestException('Incorrect password');
+      user.password = await bcrypt.hash(newPass, 10);
+      this.accountRepositories[accountType].save(user);
+  }
+
 }

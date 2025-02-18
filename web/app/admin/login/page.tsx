@@ -38,8 +38,9 @@ export default function LoginPage () {
         onSuccess: (res : any) => {
           const {data} =res;
           dispatch(inputtingSlice.actions.reset({}));
-          localStorage.setItem('accessToken', data['access_token'] )
-          localStorage.setItem('refreshToken', data['refresh_token'] )
+          localStorage.setItem('accessToken', data['access_token'] );
+          localStorage.setItem('refreshToken', data['refresh_token'] );
+          dispatch(inputtingSlice.actions.input({name:"email", value: data.email}));
           router.push('/admin/home/requests');
         },
         onError: (res: any) =>{

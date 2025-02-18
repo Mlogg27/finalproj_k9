@@ -7,6 +7,7 @@ const apiClient = axios.create({
     "Content-Type" : "application/json"
   }
 });
+
 const login = async  (email: string, password:string, accType: string) =>{
     try {
       const res = await apiClient.post(`/${accType}/login`, { email, password });

@@ -55,24 +55,26 @@ export default function RegisterPage() {
 
   return (
     <>
-      <CustomInput type={"email"}
-                   name={"email"}
-                   isPassword={false}
-                   placeholder={"Your Email"}
-                   label={"Email"}
-                   autocomplete={"Email"} />
-      <CustomInput type={"tel"}
-                   name={"phone number"}
-                   isPassword={false}
-                   placeholder={"Your phone number"}
-                   label={"Phone Number"}
-                   autocomplete={"tel"} />
-      <CustomInput type={"password"}
-                   name={"password"}
-                   isPassword={true}
-                   placeholder={"Your password"}
-                   label={"Password"}
-                   autocomplete={"current-password"} />
+      <div className={'flex w-full flex-col gap-y-[25px] mt-[25px] justify-center items-center'}>
+        <CustomInput type={"email"}
+                     name={"email"}
+                     isPassword={false}
+                     placeholder={"Your Email"}
+                     label={"Email"}
+                     autocomplete={"Email"} />
+        <CustomInput type={"tel"}
+                     name={"phone number"}
+                     isPassword={false}
+                     placeholder={"Your phone number"}
+                     label={"Phone Number"}
+                     autocomplete={"tel"} />
+        <CustomInput type={"password"}
+                     name={"password"}
+                     isPassword={true}
+                     placeholder={"Your password"}
+                     label={"Password"}
+                     autocomplete={"current-password"} />
+      </div>
       <div className="text-gray-500 flex gap-x-[5px] my-[10px]">
         <span>Have an account?</span>
         <Link className="underline font-semibold" href="/driver/login">

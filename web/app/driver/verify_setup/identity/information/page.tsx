@@ -1,5 +1,5 @@
 'use client'
-import { CustomInput, CustomButton, AlertDialog, CustomAlert } from "@/components";
+import { CustomInput, CustomButton, CustomDialog, CustomAlert } from "@/components";
 import { useRouter } from "next/navigation";
 import * as React from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -83,7 +83,7 @@ export default function IdentityInformationPage(){
 
     return (
       <>
-        <div className='w-[100%] flex flex-col justify-center items-center gap-y-[5px] mb-[25px]'>
+        <div className='w-[100%] flex flex-col justify-center items-center gap-y-[25px] my-[25px]'>
           <CustomInput type={'text'} label={'Full name'} isPassword={false} name={'fullName'} placeholder={'Your full name'}/>
           <CustomInput type={'date'} label={'Date of Birth'} isPassword={false} name={'dob'} />
           <CustomInput type={'number'} label={'GST number'} isPassword={false} name={'gstNumber'} placeholder={'Your GST number'}/>
@@ -95,7 +95,7 @@ export default function IdentityInformationPage(){
           <CustomButton name={'Correct'} bgColor={'#2c2c2c'} tColor={'#fff'} onClick={onSubmit}/>
           <CustomButton name={'Retake'} bgColor={'#EEEFF3'} tColor={'#000'} onClick={onRetake}/>
 
-        <AlertDialog title={"You definitely want to retake your identity?"}
+        <CustomDialog title={"You definitely want to retake your identity?"}
                      content={""}
                      open={openAlert}
                      setOpen={setOpenAlert}

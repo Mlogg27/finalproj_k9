@@ -40,18 +40,20 @@ export default function RfPassPage (){
   return(
     <div className='flex flex-col w-[100%] justify-center items-center'>
       <h1 className='mt-[80px] font-medium text-[22px]'>Reset Password</h1>
-      <CustomInput label={'Password'}
-                   isPassword={true}
-                   name={'password'}
-                   placeholder={'Your password'}
-                   autocomplete={'none'}
-                   type={'password'}/>
-      <CustomInput label={'Confirm Password'}
-                   isPassword={true}
-                   name={'confirmPassword'}
-                   placeholder={'Confirm your password'}
-                   autocomplete={'none'}
-                   type={'password'}/>
+      <div className={'flex flex-col justify-center items-center w-full gap-y-[25px] mt-[25px]'}>
+        <CustomInput label={'Password'}
+                     isPassword={true}
+                     name={'password'}
+                     placeholder={'Your password'}
+                     autocomplete={'none'}
+                     type={'password'}/>
+        <CustomInput label={'Confirm Password'}
+                     isPassword={true}
+                     name={'confirmPassword'}
+                     placeholder={'Confirm your password'}
+                     autocomplete={'none'}
+                     type={'password'}/>
+      </div>
       <div className='w-full flex justify-center items-center mt-[20px]'>
         <CustomButton name={'Continue'}
                       onClick={onSubmit}

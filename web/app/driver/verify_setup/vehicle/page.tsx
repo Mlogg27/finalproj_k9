@@ -75,9 +75,11 @@ export default function UploadIdentityPage () {
       <span className="mb-[40px] text-center flex justify-center items-center text-[#9E9E9E] text-sm">
         Please upload information of you vehicle
       </span>
+     ]<div className={'w-full flex flex-col justify-center items-center gap-y-[25px] mt-[25px]'}>
       <CustomInput type={'text'} label={'Vehicle Plate Number'} isPassword={false} name={'plateNumber'} placeholder={'Your Vehicle Plate Number'}/>
       <CustomInput type={'text'} label={'Color'} isPassword={false} name={'color'} placeholder={'Your Vehicle Color'}/>
       <CustomInput type={'text'} label={'Vehicle RC Number'} isPassword={false} name={'rc_number'} placeholder={'Your Vehicle RC Number'}/>
+    </div>
       <div className='flex flex-col gap-y-[20px] justify-center items-center w-full mt-[25px]'>
         <UploadImageBox onChange={setVehicleImg} width={'90%'} height={200} image={vehicleImg} name={'firstImg'}/>
         <CustomButton name={'Save & Continue'} bgColor={'#2c2c2c'} tColor={'#fff'} onClick={onSubmit}/>

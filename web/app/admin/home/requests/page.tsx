@@ -6,6 +6,7 @@ import { createOrDeleteAccountByAdmin, getRequests } from "@/ulties/axios";
 import { CustomAlert, CustomDialog, TableContent } from "@/components";
 import CircularProgress from "@mui/material/CircularProgress";
 
+
 export default function HomePage() {
   const router = useRouter();
   const [requests, setRequests] = useState<any[]>([]);
@@ -24,24 +25,25 @@ export default function HomePage() {
     const isLogin = localStorage.getItem("accessToken");
     if (!isLogin) {
       router.push("/admin/login");
+    } else{
+
+      const fetchRequests = async () => {
+        const res = await getRequests("admin");
+        if (res.status === 401) {
+          localStorage.clear();
+          router.push("/admin/login");
+        }
+        if (res.status === 200) {
+          setRequests(res.data);
+        }
+      };
+      fetchRequests().then();
+
+      const interval = setInterval(fetchRequests, 300000);
+
+      return () => clearInterval(interval);
+
     }
-
-    const fetchRequests = async () => {
-      const res = await getRequests("admin");
-      if (res.status === 401) {
-        localStorage.clear();
-        router.push("/admin/login");
-      }
-      if (res.status === 200) {
-        setRequests(res.data);
-      }
-    };
-
-    fetchRequests().then();
-
-    const interval = setInterval(fetchRequests, 300000);
-
-    return () => clearInterval(interval);
   }, []);
 
   const columns = [

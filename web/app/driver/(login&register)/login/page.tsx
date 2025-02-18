@@ -75,7 +75,7 @@ export default function LoginPage() {
 
   return (
     <div className="flex flex-col items-center w-full relative">
-      <form className="w-full flex flex-col justify-center items-center">
+      <form className="w-full flex flex-col justify-center items-center gap-y-[25px] mt-[25px]">
         <CustomInput
           label="Email"
           type="email"

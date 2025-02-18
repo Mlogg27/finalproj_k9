@@ -56,14 +56,16 @@ const CustomDialog : React.FC<Props> = ({open, setOpen, title, content, handleAg
             <DialogContentText id="alert-dialog-description" sx={{textAlign: 'center', fontSize: '14px'}}>
               {content}
             </DialogContentText>
-            {inputs?.map((input, idx)=>{
-              return <CustomInput type={input.type}
-                                  label={input.label}
-                                  isPassword={input.isPassword}
-                                  name={input.name} placeholder={input.placeholder}
-                                  autocomplete={input.autocomplete}
-                                  key={`input-${idx}`}/>
-            })}
+            <div className={'w-full flex flex-col justify-center items-center mt-[25px] gap-y-[25px]'}>
+              {inputs?.map((input, idx)=>{
+                return <CustomInput type={input.type}
+                                    label={input.label}
+                                    isPassword={input.isPassword}
+                                    name={input.name} placeholder={input.placeholder}
+                                    autocomplete={input.autocomplete}
+                                    key={`input-${idx}`}/>
+              })}
+            </div>
             {selects && <select className="w-[420px] mt-[30px] border border-gray-400 rounded-[4px] h-[30px] outline-none" value={option} onChange={(e)=> {setOption(e.target.value)}}>
               {selects.map((option, idx) => {
                 return <option key={`opt-${idx}`} value={option.value}>{option.name}</option>

@@ -10,7 +10,7 @@ import React from "react";
 interface CustomInputProps {
   placeholder?: string;
   type: string;
-  label: string;
+  label?: string;
   isPassword: boolean;
   name: string;
   autocomplete?: string;
@@ -29,7 +29,7 @@ const CustomInput: React.FC<CustomInputProps> = ({ label, placeholder, isPasswor
     setIsPasswordVisible((prev :boolean):boolean => !prev);
   };
   return (
-    <label className="relative flex flex-col w-[90%] justify-center mt-[25px]">
+    <label className="relative flex flex-col w-[90%] justify-center">
       <span className="text-sm font-semibold">{label}</span>
       <input
         key={key}
@@ -43,7 +43,7 @@ const CustomInput: React.FC<CustomInputProps> = ({ label, placeholder, isPasswor
       />
       {type === "password" && (
         <span
-          className="cursor-pointer absolute top-[65%] right-[10px] transform -translate-y-1/2"
+          className="cursor-pointer absolute top-[55%] right-[10px] transform -translate-y-1/2"
           onClick={togglePasswordVisibility}
         >
           {isPasswordVisible  ? <VisibilityIcon style={{color: '#B9B9B9'}} /> : <VisibilityOffIcon style={{color: '#B9B9B9'}}/>}
