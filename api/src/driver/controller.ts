@@ -46,13 +46,7 @@ export class DriverController {
     const user = req['user'];
     return this.authService.getAcTokenFormRfToken(user.email, 'driver');
   }
-
-  @Post('logout')
-  @HttpCode(200)
-  logOut(@Request() req){
-    return this.blackListService.addToBlacklist(req)
-  }
-
+  
   @Post('rf-pass')
   @HttpCode(200)
   getMailRFPass(@Body () user){

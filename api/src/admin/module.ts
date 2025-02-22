@@ -10,6 +10,7 @@ import { Vendor } from '../vendor/entity';
 import { AuthService } from '../auth/auth.service';
 import { Store } from 'src/store/entity';
 import { RFTokenMiddleware } from 'src/middleware/rfToken.middleware';
+import { AccessTokenMiddleware } from '../middleware/accessToken.middleware';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ export class AdminModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(RFTokenMiddleware)
-      .forRoutes('/admin/rf-token');
+      .forRoutes('/admin/rf-token', '/admin/logout');
   }
+
 }

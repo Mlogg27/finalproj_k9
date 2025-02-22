@@ -38,6 +38,16 @@ const validateInputs = (data: Record<string, string>, requiredFields: string[]):
     }
 
     if (validators[field] && !validators[field](data[field])) {
+
+      if (field === 'password'){
+        return {
+          valid: false,
+          name: field,
+          message: `The password must have at least 8 characters, including 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character!`,
+          severity: "warning",
+        }
+      }
+
       return {
         valid: false,
         name: field,

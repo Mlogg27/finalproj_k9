@@ -9,7 +9,7 @@ import { AuthService } from '../auth/auth.service';
 export class AdminService extends BaseService{
   constructor(
     @InjectRepository(Admin_acc) adminRepository: Repository<Admin_acc>,
-    private authService: AuthService
+    private authService: AuthService,
   ) {
     super(adminRepository);
   }

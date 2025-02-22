@@ -9,6 +9,7 @@ import { Vendor } from '../vendor/entity';
 import { Store } from '../store/entity';
 import { Admin_acc } from '../admin/entity';
 import { ConfigService } from '@nestjs/config';
+import { BlacklistService } from './blackList.service';
 
 @Injectable()
 export class AuthService {
@@ -27,6 +28,7 @@ export class AuthService {
 
     private mailerService: MailerService,
     protected readonly configService: ConfigService,
+    private blackListService: BlacklistService
   ) {
     this.accountRepositories = {
       driver: this.driverAccRepository,
@@ -117,6 +119,10 @@ export class AuthService {
       ...(user.verify && { verify: user.verify }),
       email: email,
     };
+  }
+
+  logout(req: any) {
+    return this.blackListService.addToBlacklist(req);
   }
 
   async getAcTokenFormRfToken (email: string, accountType: string){

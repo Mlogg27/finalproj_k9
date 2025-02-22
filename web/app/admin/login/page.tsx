@@ -57,8 +57,10 @@ export default function LoginPage () {
       <h1 className=' font-semibold text-[46px]'>Welcome to Scrap Plan</h1>
       <span className=' text-[#9E9E9E] text-[20px]'>Please log in to join your orders</span>
 
-      <CustomInput label='Email' name='email' type='text' placeholder='Your Email' autocomplete='email' isPassword={false}/>
-      <CustomInput label='Password' name='password' type='password' placeholder='Your Password' autocomplete='current-password' isPassword={true}/>
+      <div className={'flex flex-col justify-center items-center w-full gap-y-[25px]'}>
+        <CustomInput label='Email' name='email' type='text' placeholder='Your Email' autocomplete='email' isPassword={false}/>
+        <CustomInput label='Password' name='password' type='password' placeholder='Your Password' autocomplete='current-password' isPassword={true}/>
+      </div>
 
       <span className={'flex w-full justify-center items-center mt-[20px]'}>
         <CustomButton name='Continue' onClick={onSubmit} tColor={'#fff'} bgColor={'#2c2c2c'}/>

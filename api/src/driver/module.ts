@@ -38,5 +38,4 @@ export class DriverModule {
       .apply(RFTokenMiddleware)
       .forRoutes('driver/rf-token');
   }
-
 }

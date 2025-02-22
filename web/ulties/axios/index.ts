@@ -247,4 +247,18 @@ const createOrDeleteAccountByAdmin = async (type: string, id: number, isCreate: 
   }
 };
 
-export {login, getNewAccessToken, register, sendOtp, verifyOtp, getMailRFPassword, uploadImg, verifyInfo, setUpVehicle, sendRequest, getRequests, createOrDeleteAccountByAdmin};
+const logout = async (accountType: string) =>{
+  const rfToken = localStorage.getItem('refreshToken');
+  try{
+      return await apiClient.post(`/${accountType}/logout`, {}, {
+        headers: { Authorization: `Bearer ${rfToken}` },
+      });
+  } catch (e){
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      return e.response
+  }
+
+}
+
+export {login, getNewAccessToken, register, sendOtp, verifyOtp, getMailRFPassword, uploadImg, verifyInfo, setUpVehicle, sendRequest, getRequests, createOrDeleteAccountByAdmin, logout};
