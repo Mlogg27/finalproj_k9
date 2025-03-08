@@ -29,21 +29,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const [openDialogLogout, setOpenDialogLogout] = React.useState(false);
   const [openDialogChangePass, setOpenDialogChangePass] = React.useState(false);
   const dispatch : any = useDispatch();
-  const [isCheckingAuth, setIsCheckingAuth] = useState(false);
-
+  const isLogin = localStorage.getItem('accessToken');
 
   useEffect(() => {
-    const isLogin = localStorage.getItem("accessToken");
     if (!isLogin) {
+      dispatch(inputtingSlice.actions.input({name: 'alert', value : 'Please log in to continue'}));
       router.replace("/admin/login");
       return;
-    }  else{
-      setIsCheckingAuth(true);
     }
   }, []);
 
-  if(!isCheckingAuth) return;
-
+  if(!isLogin) return null;
 
   const onClick1 = () =>{
     setOpenDialogLogout(true);

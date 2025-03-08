@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Query, Delete, Param, Request, UnauthorizedException } from '@nestjs/common';
+import { Controller, Post, Body, Get, Query, Delete, Param, Request } from '@nestjs/common';
 import { RequestService } from './service';
 import { CreateDto } from './dto';
 import { AuthService } from '../auth/auth.service';

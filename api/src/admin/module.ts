@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module } from '@nestjs/common';
+import {  Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AdminService } from './service';
 import { AdminController } from './controller';
@@ -9,8 +9,7 @@ import { DriverAcc } from '../driver/entity';
 import { Vendor } from '../vendor/entity';
 import { AuthService } from '../auth/auth.service';
 import { Store } from 'src/store/entity';
-import { RFTokenMiddleware } from 'src/middleware/rfToken.middleware';
-import { AccessTokenMiddleware } from '../middleware/accessToken.middleware';
+
 
 @Module({
   imports: [
@@ -22,10 +21,5 @@ import { AccessTokenMiddleware } from '../middleware/accessToken.middleware';
   providers: [AdminService, AuthService],
 })
 export class AdminModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(RFTokenMiddleware)
-      .forRoutes('/admin/rf-token', '/admin/logout');
-  }
 
 }

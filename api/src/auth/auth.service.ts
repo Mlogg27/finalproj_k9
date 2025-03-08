@@ -121,8 +121,11 @@ export class AuthService {
     };
   }
 
-  logout(req: any) {
-    return this.blackListService.addToBlacklist(req);
+  async logout(req: any) {
+    await this.blackListService.addToBlacklist(req);
+    return {
+      message: "Logout Successfully"
+    }
   }
 
   async getAcTokenFormRfToken (email: string, accountType: string){
@@ -149,7 +152,10 @@ export class AuthService {
       const isPasswordMatch = await bcrypt.compare(prevPass, user.password);
       if (!isPasswordMatch) throw new BadRequestException('Incorrect password');
       user.password = await bcrypt.hash(newPass, 10);
-      this.accountRepositories[accountType].save(user);
+      await this.accountRepositories[accountType].save(user);
+      return {
+        message: 'Change Password Successful'
+      }
   }
 
 }

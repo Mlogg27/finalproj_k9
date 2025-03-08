@@ -13,8 +13,5 @@ export class AdminService extends BaseService{
   ) {
     super(adminRepository);
   }
-  async login (body : any){
-    const {email, password} = body;
-    return this.authService.login(email.toLowerCase(), password, 'admin');
-  }
+
 }

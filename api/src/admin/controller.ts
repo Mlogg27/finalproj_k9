@@ -9,22 +9,6 @@ export class AdminController{
     private authService: AuthService
   ) {}
 
-  @Post('login')
-  @HttpCode(200)
-  login(@Body() body){
-    return this.adminService.login(body);
-  }
 
-  @Post('rf-token')
-  @HttpCode(200)
-  getNewAcToken(@Request() req) {
-    const user = req['user'];
-    return this.authService.getAcTokenFormRfToken(user.email, 'admin');
-  }
 
-  @Post('logout')
-  @HttpCode(200)
-  logout(@Request() req){
-    return this.authService.logout(req);
-  }
 }

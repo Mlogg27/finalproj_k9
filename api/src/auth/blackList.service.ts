@@ -19,7 +19,7 @@ export class BlacklistService {
     const token = req.headers['authorization']?.split(' ')[1];
 
     if (!token) {
-      return { message: 'Logout Successfully' };
+      return
     }
     try {
       const secretKeyRF = this.configService.get<string>('JWT_SECRET_RF');
@@ -33,9 +33,9 @@ export class BlacklistService {
       blacklistEntry.createdAt = new Date(decodedRF.iat*1000);
       blacklistEntry.expiresAt = new Date(decodedRF.exp * 1000);
       await this.blacklistRepository.save(blacklistEntry);
-      return { message: 'Logout Successfully' };
+      return ;
     } catch (error) {
-      return { message: 'Logout Successfully', error: error.message };
+      return { error: error.message };
     }
   }
 

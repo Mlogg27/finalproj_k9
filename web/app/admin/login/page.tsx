@@ -23,6 +23,12 @@ export default function LoginPage () {
 
   useEffect(() => {
       const isLogin = localStorage.getItem("accessToken");
+      if(inputtingValue.alert) {
+        setOpen(true);
+        setAlertSeverity('info');
+        setAlertMessage(inputtingValue.alert);
+        dispatch(inputtingSlice.actions.reset({}));
+      }
       if(isLogin){
         router.replace('/admin/home/requests');
         setIsCheckingAuth(true);

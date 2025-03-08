@@ -1,14 +1,11 @@
 import { Body, Controller, Request, Post, Get, HttpCode } from '@nestjs/common';
-import { LoginDto, RegisterDto } from './dto';
+import { RegisterDto } from './dto';
 import {DriverService} from "./service";
-import { AuthService } from '../auth/auth.service';
-import { BlacklistService } from '../auth/blackList.service';
 
 @Controller('driver')
 export class DriverController {
   constructor(
     private driverService: DriverService,
-    private authService: AuthService,
   ) {}
 
 
@@ -33,7 +30,5 @@ export class DriverController {
   async verifyInfo(@Body() body, @Request() req){
     return this.driverService.verifyInfo(body, req);
   }
-
-
 
 }

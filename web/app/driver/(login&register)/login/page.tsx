@@ -8,7 +8,6 @@ import { login } from "@/ulties/axios";
 import CircularProgress from "@mui/material/CircularProgress";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 import { useNavigateBasedOnVerification } from "@plugins/navigateBasedOnVerification";
 import fetchStatus from "@plugins/fetchStatus";
 import handleSubmit from "@/plugins/handleSubmit";
@@ -19,13 +18,10 @@ export default function LoginPage() {
   const [alertMessage, setAlertMessage] = useState<string>("");
   const [alertSeverity, setAlertSeverity] = useState<'success' | 'error' | 'info' | 'warning'>("success");
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
-  const searchParams = useSearchParams();
   const dispatch = useDispatch();
   const inputtingValue = useSelector(getInputting);
   const routerOnVerifyStatus = useNavigateBasedOnVerification();
   const status = fetchStatus();
-
 
   const handleLogin =async ()=>{
     const { email, password } = inputtingValue;
@@ -54,25 +50,14 @@ export default function LoginPage() {
   }
 
   useEffect(() => {
-    const alertQuery = searchParams.get("alert");
-
-    if(status !== 'login') {
-      routerOnVerifyStatus(status);
-      return;
-    }
-
-    if (alertQuery === "true") {
+    if(inputtingValue.alert) {
       setOpen(true);
-      setAlertMessage("Please log in to continue.");
-      setAlertSeverity("info");
-
-      const currentPath = window.location.pathname;
-      const restQueries = new URLSearchParams(searchParams.toString());
-      restQueries.delete("alert");
-
-      router.replace(`${currentPath}?${restQueries.toString()}`);
+      setAlertSeverity('info');
+      setAlertMessage(inputtingValue.alert);
+      dispatch(inputtingSlice.actions.reset({}));
     }
-  }, [searchParams, router]);
+    routerOnVerifyStatus(status);
+  }, []);
 
   if(status !== 'login') return null;
 

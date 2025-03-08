@@ -1,7 +1,10 @@
 import { useRouter } from 'next/navigation';
+import { useDispatch } from "react-redux";
+import { inputtingSlice } from "@/lib/features";
 
 export const useNavigateBasedOnVerification = () => {
   const router = useRouter();
+  const dispatch = useDispatch();
 
   return  (verifyStatus:string) => {
     switch (verifyStatus) {
@@ -18,7 +21,8 @@ export const useNavigateBasedOnVerification = () => {
         router.replace('/driver/home');
         break;
       default:
-        router.replace('/driver/login?alert=true');
+        dispatch(inputtingSlice.actions.input({name: 'alert', value: 'Please login to continue'}));
+        router.replace('/driver/login');
         break;
     }
   };
