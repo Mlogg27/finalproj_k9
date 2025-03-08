@@ -20,13 +20,11 @@ export class RequestController {
   @Delete('/:id')
   async removeRequest(@Param('id') id, @Request() req, @Body() body){
     const adminAcc =await this.authService.validateUser(req['user'].email.toLowerCase(), 'admin');
-    if(!adminAcc) throw new UnauthorizedException("Incorrect Admin Email");
     return this.requestService.removeRequest(id, adminAcc, body);
   }
   @Post("createAcc/:id")
   async createAcc( @Request() req, @Param('id') id){
     const adminAcc =await this.authService.validateUser(req['user'].email.toLowerCase(), 'admin');
-    if(!adminAcc) throw new UnauthorizedException("Incorrect Admin Email");
     return this.requestService.createAcc(id, adminAcc);
   }
 }

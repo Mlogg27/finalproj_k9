@@ -42,6 +42,7 @@ export default function EmailVerifyPage() {
     } else return;
   }, []);
 
+  if(status === 'login') return;
 
   const onClick =async ()=>{
     const { otp } = inputtingValue;

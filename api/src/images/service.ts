@@ -36,7 +36,6 @@ export class ImagesService extends BaseService{
       "dob": dobMatch ? dobMatch[1] : "",
       "id": noMatch ? noMatch[1] : "",
     };
-    console.log(result);
     return result;
   }
 

@@ -58,7 +58,6 @@ export class DriverService extends BaseService{
     const userEmail = req['user'].email.toLowerCase();
 
     const existingAcc = await this.authService.validateUser(userEmail, 'driver');
-    if(!existingAcc) throw new BadRequestException('Incorrect Email') ;
 
     const otpDataSaved = this.otpStore.get(userEmail);
     if (!otpDataSaved) throw new UnauthorizedException('Missing OTP. Please get a new one');
@@ -90,7 +89,6 @@ export class DriverService extends BaseService{
   async verifyInfo (body, req){
     const userEmail = req['user'].email.toLowerCase();
     const existingAcc = await this.authService.validateUser(userEmail, 'driver');
-    if(!existingAcc) throw new BadRequestException('Incorrect Email');
 
     const {fullName, dob, gstNumber, address, city, country, frontID, backID}= body.payload;
     const infoSaved = await this.driverRepository.save({

@@ -22,11 +22,6 @@ export default function HomePage() {
 
 
   useEffect(() => {
-    const isLogin = localStorage.getItem("accessToken");
-    if (!isLogin) {
-      router.push("/admin/login");
-    } else{
-
       const fetchRequests = async () => {
         const res = await getRequests("admin");
         if (res.status === 401) {
@@ -42,9 +37,8 @@ export default function HomePage() {
       const interval = setInterval(fetchRequests, 300000);
 
       return () => clearInterval(interval);
-
-    }
   }, []);
+
 
   const columns = [
     { field: "id", headerName: "ID", width: 70 },
@@ -106,37 +100,51 @@ export default function HomePage() {
     selectedRequest.current= e;
   };
 
-  const handleApprove = async (e ?:string) =>{
-    setLoading(true);
+  const handleApprove = async (e?: string) => {
+    try {
+      setLoading(true);
 
-    const isCreate :boolean = e === null ;
-    const id = parseInt(selectedRequest.current.id);
-    const res = await createOrDeleteAccountByAdmin('admin', id, isCreate, e);
-    setOpen(true);
-    setAlertMessage(res.data.message);
-    setAlertSeverity('warning');
+      if (!selectedRequest.current?.id) {
+        setLoading(false);
+        return;
+      }
 
-    if(res.status === 401) {
+      const isCreate: boolean = !e;
+      const id = parseInt(selectedRequest.current.id);
+
+      const res = await createOrDeleteAccountByAdmin('admin', id, isCreate, e);
+
+      if (!res) {
+        setLoading(false);
+        return;
+      }
+
+      if (res.status === 401) {
+        localStorage.clear();
+        setOpenDialogApprove(false);
+        setOpenDialogRemove(false);
+        router.push('/admin/login');
+        return;
+      }
+
+      setAlertMessage(res.data?.message || 'Operation completed');
+      setAlertSeverity(res.status === 200 || res.status === 201 ? 'success' : 'warning');
+
+      if (res.status === 200 || res.status === 201) {
+        setRequests(prevRequests => prevRequests.filter(req => req.Requests_id !== id));
+      }
+
+    } catch (error) {
+      console.error('Error in handleApprove:', error);
+      setAlertMessage('An error occurred. Please try again.');
+      setAlertSeverity('error');
+    } finally {
       setLoading(false);
-      localStorage.clear();
       setOpenDialogApprove(false);
       setOpenDialogRemove(false);
-      router.push('/admin/login');
-
+      selectedRequest.current = {};
     }
-    if(res.status === 201 || res.status === 200) {
-      setAlertSeverity('success');
-      setRequests(prevRequests => prevRequests.filter(req => req.Requests_id !== id));
-      setLoading(false);
-      setOpenDialogApprove(false);
-      setOpenDialogRemove(false);
-    }
-
-    setLoading(false);
-    setOpenDialogApprove(false);
-    selectedRequest.current ={};
-  }
-
+  };
 
   return (
     <div className="flex flex-col mx-[20px] mt-[-50px] w-full h-full">

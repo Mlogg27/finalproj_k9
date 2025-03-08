@@ -8,7 +8,7 @@ import RequestPageIcon from '@mui/icons-material/RequestPage';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { CustomAlert, CustomButton, CustomDialog, CustomInput, SideBar } from "@/components";
 import { useDispatch, useSelector } from "react-redux";
 import { getInputting } from "@/lib/selector";
@@ -29,6 +29,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const [openDialogLogout, setOpenDialogLogout] = React.useState(false);
   const [openDialogChangePass, setOpenDialogChangePass] = React.useState(false);
   const dispatch : any = useDispatch();
+  const [isCheckingAuth, setIsCheckingAuth] = useState(false);
+
+
+  useEffect(() => {
+    const isLogin = localStorage.getItem("accessToken");
+    if (!isLogin) {
+      router.replace("/admin/login");
+      return;
+    }  else{
+      setIsCheckingAuth(true);
+    }
+  }, []);
+
+  if(!isCheckingAuth) return;
+
 
   const onClick1 = () =>{
     setOpenDialogLogout(true);
@@ -53,25 +68,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   const onLogout = async () => {
     setLoading(true);
-    setOpen(true)
-    const res = await logout('admin');
-    setAlertMessage(res?.data.message);
-    if (res.status === 401){
-      setAlertSeverity('warning');
-    }
-    if(res.status === 200){
-      setAlertSeverity('success');
-    }
+    await logout('admin');
     localStorage.clear();
     setLoading(false);
-    router.push('/admin/login');
+    dispatch(inputtingSlice.actions.reset({}));
+    router.replace('/admin/login');
   };
-
   const onChangePass = () =>{
     setLoading(true);
     setOpen(true);
-
-
   }
 
   const activeStyle = 'bg-[#2c2c2c] text-white rounded-[6px]';
@@ -96,7 +101,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {!showChangePass &&
           <div className={"w-[240px] flex flex-col gap-y-[5px] justify-center items-center"}>
             <label htmlFor={"email"} className={'text-[#fff]'}>Email</label>
-            <input id={"email"} type="text" disabled={true} className={"w-full rounded-[6px] text-center px-[2px] py-[5px]"} value={inputtingValue.email} />
+            <input id={"email"} type="text" disabled={true} className={"w-full rounded-[6px] text-center px-[2px] py-[5px]"} value={inputtingValue?.email || ''} />
           </div>
         }
 

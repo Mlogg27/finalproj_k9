@@ -3,262 +3,64 @@ import { checkAndRefreshToken } from "@plugins/verifyAccessToken";
 
 const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
-  headers: {
-    "Content-Type" : "application/json"
-  }
+  headers: { "Content-Type": "application/json" },
 });
 
-const login = async  (email: string, password:string, accType: string) =>{
-    try {
-      const res = await apiClient.post(`/${accType}/login`, { email, password });
-      return res;
-    } catch (e) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      return e.response;
-    }
-}
-
-const register = async  (email:string, phoneNumber: string, password:  string) =>{
+const handleRequest = async (method: "get" | "post" | "delete", url: string, data?: any, accType?: string) => {
+  const headers = accType ? await getAuthHeaders(accType) : {};
   try {
-    const res = await apiClient.post('/driver/register', { email, phoneNumber, password });
-    return res;
+    return await apiClient({ method, url, data, headers });
   } catch (e) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
+    // @ts-ignore
     return e.response;
   }
-}
-
-const getNewAccessToken = async (accType: string)=>{
-  const rfToken = localStorage.getItem('refreshToken');
-  if(rfToken){
-    try {
-      const res= await apiClient.post(
-        `/${accType}/rf-token`,{},
-        {
-          headers: {
-            Authorization: `Bearer ${rfToken}`,
-          },
-        }
-      );
-      return res;
-    } catch (e) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      return e.response;
-    }
-  }
-  else{
-    return false;
-  }
-}
-
-const sendOtp = async ( ) =>{
-  const accessToken = await checkAndRefreshToken('driver');
-  if(accessToken){
-    try {
-      const res = await apiClient.get(
-        '/driver/sendOtp',
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
-      return res;
-    } catch (e) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      return e.response;
-    }
-  } else return false;
 };
 
-const verifyOtp = async (otp : string ) =>{
-  const accessToken = await checkAndRefreshToken('driver');
-  if(accessToken){
-    try {
-      const res = await apiClient.post(
-        '/driver/verifyOtp',
-        {
-          "otp": otp,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
-      return res
-    } catch (e) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      return e.response;
-    }
-  } else return false;
+const getAuthHeaders = async (accType: string) => {
+  const token: string = await checkAndRefreshToken(accType);
+  return token ? { Authorization: `Bearer ${token}` } : {};
 };
 
-const getMailRFPassword = async (email: string, accType: string)=>{
-  try {
-    const res= await apiClient.post(`${accType}/rf-pass`, {
-      email: email
-    });
-    return res;
-  } catch(e){
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    return e.response
-  }
-}
+const login = (email: string, password: string, type: string) => handleRequest("post", `/auth/login`, { email, password, type });
 
-const uploadImg = async (images: {payload: string, isIdentity: boolean}[])=>{
-  const accessToken = await checkAndRefreshToken('driver');
+const register = (email: string, phoneNumber: string, password: string) => handleRequest("post", "/driver/register", { email, phoneNumber, password });
 
-  if(accessToken){
-    try {
-      const res = await apiClient.post(
-        'images/',
-        {
-          images: images
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            },
-        }
-      );
-      return res;
-    } catch(e){
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      return e.response
-    }
-  }
-}
+const getNewAccessToken = (type: string) => handleRequest("post", `/auth/rf-token`, {type}, type);
 
-const verifyInfo= async (payload :any)=>{
-  const accessToken = await checkAndRefreshToken('driver');
+const sendOtp = () => handleRequest("get", "/driver/sendOtp", {}, "driver");
 
-  if(accessToken){
-    try {
-      const res = await apiClient.post(
-        'driver/verifyInfo',
-        {
-          payload: payload,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
-      return res;
-    } catch(e){
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      return e.response
-    }
-  }
-}
+const verifyOtp = (otp: string) => handleRequest("post", "/driver/verifyOtp", { otp }, "driver");
 
-const setUpVehicle= async (payload :any)=>{
-  const accessToken = await checkAndRefreshToken('driver');
+const getMailRFPassword = (email: string, type: string) => handleRequest("post", `/auth/rf-pass`, { email, type });
 
-  if(accessToken){
-    try {
-      const res = await apiClient.post(
-        'vehicle/createOrUpdate',
-        {
-          payload: payload,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
-      return res;
-    } catch(e){
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      return e.response
-    }
-  }
-}
+const uploadImg = (images: { payload: string; isIdentity: boolean }[]) => handleRequest("post", "images/", { images }, "driver");
 
-const sendRequest= async (payload: any) =>{
-  try {
-    const res = await apiClient.post(
-      'request/create',
-      {
-        payload
-      },
-    );
-    return res;
-  } catch(e){
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    return e.response
-  }
-}
+const verifyInfo = (payload: any) => handleRequest("post", "driver/verifyInfo", { payload }, "driver");
 
-const getRequests= async (type: string) =>{
-  const accessToken = await checkAndRefreshToken(type);
+const setUpVehicle = (payload: any) => handleRequest("post", "vehicle/createOrUpdate", { payload }, "driver");
 
-  if(accessToken){
-    try {
-      const res = await apiClient.get(
-        'request/?status=pending',
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          }
-        },
-      );
-      return res;
-    } catch(e){
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      return e.response
-    }
-  }
-}
+const sendRequest = (payload: any) => handleRequest("post", "request/create", { payload });
 
-const createOrDeleteAccountByAdmin = async (type: string, id: number, isCreate: boolean, reason?: string) => {
-  const accessToken = await checkAndRefreshToken(type);
-  if (!accessToken) return false;
+const getRequests = (type: string) => handleRequest("get", "request/?status=pending", {}, type);
 
-  try {
-    if (isCreate) {
-      return await apiClient.post(`request/createAcc/${id}`, {}, {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
-    } else {
-      return await apiClient.delete(`request/${id}`, {
-        data: { reason },
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
-    }
-  } catch (e) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    return e.response;
-  }
+const createOrDeleteAccountByAdmin = (type: string, id: number, isCreate: boolean, reason?: string) => {
+  const url = isCreate ? `request/createAcc/${id}` : `request/${id}`;
+  const method = isCreate ? "post" : "delete";
+  return handleRequest(method, url, isCreate ? {} : { reason }, type);
 };
 
 const logout = async (accountType: string) =>{
   const rfToken = localStorage.getItem('refreshToken');
   try{
-      return await apiClient.post(`/${accountType}/logout`, {}, {
-        headers: { Authorization: `Bearer ${rfToken}` },
-      });
+    return await apiClient.post(`/${accountType}/logout`, {}, {
+      headers: { Authorization: `Bearer ${rfToken}` },
+    });
   } catch (e){
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      return e.response
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    return e.response
   }
+};
 
-}
 
-export {login, getNewAccessToken, register, sendOtp, verifyOtp, getMailRFPassword, uploadImg, verifyInfo, setUpVehicle, sendRequest, getRequests, createOrDeleteAccountByAdmin, logout};
+export { login, getNewAccessToken, register, sendOtp, verifyOtp, getMailRFPassword, uploadImg, verifyInfo, setUpVehicle, sendRequest, getRequests, createOrDeleteAccountByAdmin, logout };

@@ -23,11 +23,13 @@ export default function ResetPassPage() {
   const inputtingValue = useSelector(getInputting);
   const dispatch = useDispatch();
   const routerOnVerifyStatus = useNavigateBasedOnVerification();
+  const status = fetchStatus();
 
   useEffect(() => {
-    const status = fetchStatus();
     if(status !== 'login') routerOnVerifyStatus(status);
   }, []);
+
+  if(status !== 'login') return null;
 
   const onSubmitResendEmail = () => {
     setOpenAlert(true);

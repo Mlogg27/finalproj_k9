@@ -40,22 +40,18 @@ export class RequestService extends BaseService {
     return repository;
   }
 
-  getRandomChar(charset) {
-    return charset[Math.floor(Math.random() * charset.length)];
-  }
-
-  shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-  }
-
   async create (body){
     const {name, email, phone, type} = body.payload;
-    const acc = await this.authService.validateUser(email.toLowerCase(), type, phone);
-    if (acc) throw new BadRequestException('This email has already been used to create an account.');
+    const reposity = this.setRepositoryByType(type);
+
+    const accByEmail = await reposity.findOne({
+      where: {email: email}
+    })
+    const accByPhone = await reposity.findOne({
+      where: {phone: phone}
+    })
+    if(accByEmail) throw new BadRequestException('This email has already been used to create an account');
+    if(accByPhone) throw new BadRequestException('This phone number has already been used to create an account');
 
     const request = await this.requestRepository.findOne({where: {email: email.toLowerCase(), status: 'pending'}});
     if(request) throw new BadRequestException('You have already used this email to submit a request. Please wait for us to contact you!');
@@ -63,7 +59,8 @@ export class RequestService extends BaseService {
       name: name,
       email: email.toLowerCase(),
       phone: phone,
-      type: type
+      type: type,
+      location : body.payload?.location,
     })
     return {
       message: "Your request has been sent. We will contact you to verify as soon as possible!"

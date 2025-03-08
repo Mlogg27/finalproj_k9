@@ -6,19 +6,19 @@ export const useNavigateBasedOnVerification = () => {
   return  (verifyStatus:string) => {
     switch (verifyStatus) {
       case 'unverified':
-        router.push('/driver/verify_setup/email');
+        router.replace('/driver/verify_setup/email');
         break;
       case 'step2':
-        router.push('/driver/verify_setup/identity/upload');
+        router.replace('/driver/verify_setup/identity/upload');
         break;
       case 'step3':
-        router.push('/driver/verify_setup/vehicle');
+        router.replace('/driver/verify_setup/vehicle');
         break;
       case 'verified':
-        router.push('/driver/home');
+        router.replace('/driver/home');
         break;
       default:
-        router.push('/driver/login?alert=true');
+        router.replace('/driver/login?alert=true');
         break;
     }
   };

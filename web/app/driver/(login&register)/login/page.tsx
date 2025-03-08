@@ -24,6 +24,8 @@ export default function LoginPage() {
   const dispatch = useDispatch();
   const inputtingValue = useSelector(getInputting);
   const routerOnVerifyStatus = useNavigateBasedOnVerification();
+  const status = fetchStatus();
+
 
   const handleLogin =async ()=>{
     const { email, password } = inputtingValue;
@@ -54,7 +56,6 @@ export default function LoginPage() {
   useEffect(() => {
     const alertQuery = searchParams.get("alert");
 
-    const status = fetchStatus();
     if(status !== 'login') {
       routerOnVerifyStatus(status);
       return;
@@ -72,6 +73,8 @@ export default function LoginPage() {
       router.replace(`${currentPath}?${restQueries.toString()}`);
     }
   }, [searchParams, router]);
+
+  if(status !== 'login') return null;
 
   return (
     <div className="flex flex-col items-center w-full relative">

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -10,6 +10,10 @@ import { MailModule } from 'src/mailer/module';
 import { Vendor } from 'src/vendor/entity';
 import { Store } from '../store/entity';
 import { Admin_acc } from '../admin/entity';
+import { AuthController } from './auth.controller';
+import { LoggerMiddleware } from '../middleware/logger.middleware';
+import { AccessTokenMiddleware } from '../middleware/accessToken.middleware';
+import { RFTokenMiddleware } from '../middleware/rfToken.middleware';
 
 @Module({
   imports: [
@@ -25,7 +29,16 @@ import { Admin_acc } from '../admin/entity';
     }),
     MailModule
   ],
-  controllers: [],
+  controllers: [AuthController],
   providers: [AuthService, BlacklistService],
   exports: [JwtModule, BlacklistService, AuthService] })
-export class AuthModule {}
+export class AuthModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(LoggerMiddleware)
+      .forRoutes('driver/login');
+    consumer
+      .apply(RFTokenMiddleware)
+      .forRoutes('auth/rf-token');
+  }
+}

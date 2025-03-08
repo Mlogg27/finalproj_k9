@@ -60,12 +60,13 @@ export class AuthService {
     }
 
     const accountByEmail = await this.validateEmail(email, accountType);
+    if(!accountByEmail) throw new BadRequestException('Incorrect Email')
 
     if(phone){
       const accountByPhone = await repository.findOne({
         where: { phone: phone }
       })
-      if (accountByPhone && accountByEmail && accountByPhone.email !== accountByEmail.email) {
+      if (accountByPhone && accountByPhone.email !== accountByEmail.email ) {
         throw new BadRequestException('Phone number is already in use by another account');
       }
     }
@@ -106,7 +107,6 @@ export class AuthService {
 
   async login(email: string, password: string, accountType: string) {
     const user = await this.validateUser(email, accountType);
-    if(!user) throw new BadRequestException('Incorrect Email') ;
     const isPasswordMatch = await bcrypt.compare(password, user.password);
     if (!isPasswordMatch) {
       throw new BadRequestException('Incorrect password');
@@ -127,7 +127,6 @@ export class AuthService {
 
   async getAcTokenFormRfToken (email: string, accountType: string){
     const user = await this.validateUser(email, accountType);
-    if(!user) throw new BadRequestException('Incorrect Email') ;
     const payload = { email: user.email };
     return {
       access_token: this.jwtService.sign(payload)

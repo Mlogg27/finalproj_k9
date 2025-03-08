@@ -18,13 +18,19 @@ export default function LoginPage () {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const inputtingValue = useSelector(getInputting);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(false);
+
 
   useEffect(() => {
       const isLogin = localStorage.getItem("accessToken");
       if(isLogin){
-        router.push('/admin/home/requests');
+        router.replace('/admin/home/requests');
+        setIsCheckingAuth(true);
+        return;
       }
   }, []);
+
+  if(isCheckingAuth) return null;
 
   const onSubmit = async () =>{
     const {email, password} = inputtingValue;
@@ -41,7 +47,7 @@ export default function LoginPage () {
           localStorage.setItem('accessToken', data['access_token'] );
           localStorage.setItem('refreshToken', data['refresh_token'] );
           dispatch(inputtingSlice.actions.input({name:"email", value: data.email}));
-          router.push('/admin/home/requests');
+          router.replace('/admin/home/requests');
         },
         onError: (res: any) =>{
           const {data}=res;
@@ -53,7 +59,7 @@ export default function LoginPage () {
   }
 
   return (
-    <div className='mt-[20px] justify-center items-center flex-col flex'>
+    <div className='mt-[20px] justify-center items-center flex-col flex w-full'>
       <h1 className=' font-semibold text-[46px]'>Welcome to Scrap Plan</h1>
       <span className=' text-[#9E9E9E] text-[20px]'>Please log in to join your orders</span>
 

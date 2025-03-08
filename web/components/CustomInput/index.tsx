@@ -31,24 +31,31 @@ const CustomInput: React.FC<CustomInputProps> = ({ label, placeholder, isPasswor
   return (
     <label className="relative flex flex-col w-[90%] justify-center">
       <span className="text-sm font-semibold">{label}</span>
-      <input
-        key={key}
-        className="text-sm border rounded-[6px] outline-none px-[10px] py-[5px]"
-        type={type === "password" && isPasswordVisible ? 'text' : type}
-        placeholder={placeholder || "Enter your information"}
-        name={name}
-        value={inputting[name] || ''}
-        onChange={(e)=>{onInput(e)}}
-        autoComplete={autocomplete}
-      />
-      {type === "password" && (
-        <span
-          className="cursor-pointer absolute top-[55%] right-[10px] transform -translate-y-1/2"
-          onClick={togglePasswordVisibility}
-        >
-          {isPasswordVisible  ? <VisibilityIcon style={{color: '#B9B9B9'}} /> : <VisibilityOffIcon style={{color: '#B9B9B9'}}/>}
-        </span>
-      )}
+
+      <div className="relative">
+        <input
+          className="text-sm border rounded-[6px] outline-none px-[10px] py-[5px] w-full"
+          type={type === "password" && isPasswordVisible ? "text" : type}
+          placeholder={placeholder || "Enter your information"}
+          name={name}
+          value={inputting[name] || ""}
+          onChange={(e) => onInput(e)}
+          autoComplete={autocomplete}
+        />
+
+        {type === "password" && (
+          <span
+            className="cursor-pointer absolute top-1/2 right-[10px] transform -translate-y-1/2"
+            onClick={togglePasswordVisibility}
+          >
+        {isPasswordVisible ? (
+          <VisibilityIcon style={{ color: "#B9B9B9" }} />
+        ) : (
+          <VisibilityOffIcon style={{ color: "#B9B9B9" }} />
+        )}
+      </span>
+        )}
+      </div>
     </label>
   );
 };

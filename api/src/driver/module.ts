@@ -30,12 +30,9 @@ export class DriverModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(LoggerMiddleware)
-      .forRoutes('driver/register', 'driver/login');
+      .forRoutes('driver/register');
     consumer
       .apply(AccessTokenMiddleware)
       .forRoutes('driver/sendOtp', 'driver/verifyOtp', 'driver/verifyInfo' );
-    consumer
-      .apply(RFTokenMiddleware)
-      .forRoutes('driver/rf-token');
   }
 }

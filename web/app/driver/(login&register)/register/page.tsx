@@ -25,11 +25,13 @@ export default function RegisterPage() {
   const dispatch = useDispatch();
   const routerOnVerifyStatus = useNavigateBasedOnVerification();
   const router = useRouter();
+  const status = fetchStatus();
 
   useEffect(() => {
-    const status = fetchStatus();
-    if(status !== 'login')routerOnVerifyStatus(status);
+    if(status !== 'login') routerOnVerifyStatus(status);
   }, []);
+
+  if(status !== 'login') return null;
 
   const onClick =async ()=>{
     const { email, password,"phone number": phoneNumber } = inputtingValue;
