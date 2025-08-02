@@ -16,10 +16,7 @@ type Inputs = {
   autocomplete?: string;
 };
 
-type Selects = {
-  value: string;
-  name: string;
-}
+
 
 interface Props {
   open: boolean;
@@ -28,11 +25,11 @@ interface Props {
   content?: string;
   handleAgree: (a ?: any) => void;
   inputs?: Inputs[];
-  selects?: Selects[];
+  isReason: boolean;
   selectedRequest?: Record<any, any>;
 }
 
-const CustomDialog : React.FC<Props> = ({open, setOpen, title, content, handleAgree, inputs, selects, selectedRequest}) =>{
+const CustomDialog : React.FC<Props> = ({open, setOpen, title, content, handleAgree, inputs, isReason, selectedRequest}) =>{
   const [option, setOption ] = React.useState<string>('');
   const handleDisagree =() => {
     setOpen(false);
@@ -66,11 +63,11 @@ const CustomDialog : React.FC<Props> = ({open, setOpen, title, content, handleAg
                                     key={`input-${idx}`}/>
               })}
             </div>
-            {selects && <select className="w-[420px] mt-[30px] border border-gray-400 rounded-[4px] h-[30px] outline-none" value={option} onChange={(e)=> {setOption(e.target.value)}}>
-              {selects.map((option, idx) => {
-                return <option key={`opt-${idx}`} value={option.value}>{option.name}</option>
-              })}
-            </select>}
+            {isReason && <CustomInput type={'text'}
+                                      label={'Reason'}
+                                      isPassword={false}
+                                      name={'reason'}
+                                      placeholder={'Your Reason'} />}
           </DialogContent>
           <DialogActions sx={{width: 200, marginRight: 2, marginLeft: "auto"}}>
             <CustomButton name={"Cancel"} bgColor={"#2c2c2c"} tColor={"#fff"} onClick={handleDisagree}/>

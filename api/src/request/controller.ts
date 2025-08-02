@@ -17,6 +17,7 @@ export class RequestController {
   getList(@Query() query){
     return this.requestService.getList(query);
   }
+
   @Delete('/:id')
   async removeRequest(@Param('id') id, @Request() req, @Body() body){
     const adminAcc =await this.authService.validateUser(req['user'].email.toLowerCase(), 'admin');

@@ -3,11 +3,20 @@ import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 
 interface Props {
-  rows: Record<any, any>[];
-  columns: GridColDef[];
-  paginationModel: Record<any, any>;
+  columns: { field: string; headerName: string; width: number }[];
+  rows: {
+    id: any;
+    name: any;
+    email: any;
+    phone: any;
+    type: any;
+    location: any;
+    createTime: string;
+  }[];
+  paginationModel: { page: number; pageSize: number };
   onApprove: (e: any) => void;
-  onRemove: (e: any) => void
+  onRemove: (e: any) => void;
+  showEdit: boolean;
 }
 
 const TableContent: React.FC<Props> = ({ rows, columns, paginationModel, onApprove, onRemove }) => {

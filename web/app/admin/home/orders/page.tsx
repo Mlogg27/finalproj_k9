@@ -1,7 +1,11 @@
-export default function OrdersPage() {
+'use client'
+
+import { DesktopPages } from "@/components";
+
+export default function RequestPage() {
   return (
-    <div className='mt-[-25px]'>
-      <h2>orders</h2>
-    </div>
+    <>
+      <DesktopPages typeOfLists={"order"} query={'active=true'} title={'Orders'}/>
+    </>
   )
 }

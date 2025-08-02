@@ -24,6 +24,7 @@ export default function HomePage () {
     {label: 'Name', type: "text",name: 'name', placeholder: 'Your Vendor Name', isPassword: false},
     {label: 'Email', type: "text",name: 'emailRQ', placeholder: 'Your Email', isPassword: false, autocomplete: 'email'},
     {label: 'Phone Number', type: "tel",name: 'phone number', placeholder: 'Your Phone Number', isPassword: false, autocomplete: 'tel'},
+    {label: 'Location', type: "text",name: 'Location', placeholder: 'Vendor`s location', isPassword: false, autocomplete: ''},
   ]
 
   const onLogin = () =>{
@@ -31,14 +32,13 @@ export default function HomePage () {
   }
 
   const onRegister = () =>{
-    console.log("hehe");
     setOpenDialog(true);
   }
 
   const onSubmit = async () =>{
-    const { emailRQ: email, "phone number": phone, name } = inputtingValue;
+    const { emailRQ: email, "phone number": phone, name, location } = inputtingValue;
     await handleSubmit({
-      apiCall: () => sendRequest({email, phone, name, type: 'vendor'}),
+      apiCall: () => sendRequest({email, phone, name, location, type: 'vendor'}),
       payload: { "emailRQ": email ,"phone number": phone, name },
       necessaryFields: ['name','emailRQ', 'phone number'],
       setStateHandlers: { setLoading, setOpen, setAlertMessage, setAlertSeverity},
@@ -77,6 +77,7 @@ export default function HomePage () {
       <CustomDialog open={openDialog}
                     setOpen={setOpenDialog}
                     title={"Request"}
+                    isReason={false}
                     content={'To subscribe to this website, please enter your vendor information. We will send updates occasionally.'}
                     handleAgree={onSubmit}
                     inputs={inputs}/>

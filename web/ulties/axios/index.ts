@@ -41,7 +41,7 @@ const setUpVehicle = (payload: any) => handleRequest("post", "vehicle/createOrUp
 
 const sendRequest = (payload: any) => handleRequest("post", "request/create", { payload });
 
-const getRequests = (type: string) => handleRequest("get", "request/?status=pending", {}, type);
+const getLists = (validationType: string, query: string | '', lists: string) => handleRequest("get", `${lists}/?${query}`, {}, validationType);
 
 const createOrDeleteAccountByAdmin = (type: string, id: number, isCreate: boolean, reason?: string) => {
   const url = isCreate ? `request/createAcc/${id}` : `request/${id}`;
@@ -63,4 +63,6 @@ const logout = async (accountType: string) =>{
 };
 
 
-export { login, getNewAccessToken, register, sendOtp, verifyOtp, getMailRFPassword, uploadImg, verifyInfo, setUpVehicle, sendRequest, getRequests, createOrDeleteAccountByAdmin, logout };
+
+
+export { login, getNewAccessToken, register, sendOtp, verifyOtp, getMailRFPassword, uploadImg, verifyInfo, setUpVehicle, sendRequest, getLists, createOrDeleteAccountByAdmin, logout };

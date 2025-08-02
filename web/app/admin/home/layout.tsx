@@ -29,17 +29,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const [openDialogLogout, setOpenDialogLogout] = React.useState(false);
   const [openDialogChangePass, setOpenDialogChangePass] = React.useState(false);
   const dispatch : any = useDispatch();
-  const isLogin = localStorage.getItem('accessToken');
+
+  const [isClient, setIsClient] = useState(false);
+  const [isLogin, setIsLogin] = useState<boolean | null>(null);
 
   useEffect(() => {
-    if (!isLogin) {
-      dispatch(inputtingSlice.actions.input({name: 'alert', value : 'Please log in to continue'}));
+    setIsClient(true);
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      dispatch(inputtingSlice.actions.input({ name: 'alert', value: 'Please log in to continue' }));
       router.replace("/admin/login");
-      return;
+    } else {
+      setIsLogin(true);
     }
   }, []);
 
-  if(!isLogin) return null;
+  if (!isClient || isLogin === null) return null;
+
 
   const onClick1 = () =>{
     setOpenDialogLogout(true);
@@ -187,8 +193,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </div>
       )}
 
-      <CustomDialog open={openDialogLogout} setOpen={setOpenDialogLogout} content={"Are you sure you want to log out?"} title={'Confirm Dialog'} handleAgree={onLogout} />
-      <CustomDialog open={openDialogChangePass} setOpen={setOpenDialogChangePass} content={"Are you sure you want to change your password?"} title={'Confirm Dialog'} handleAgree={onChangePass} />
+      <CustomDialog open={openDialogLogout}
+                    setOpen={setOpenDialogLogout}
+                    content={"Are you sure you want to log out?"}
+                    title={'Confirm Dialog'}
+                    isReason={false}
+                    handleAgree={onLogout} />
+      <CustomDialog open={openDialogChangePass}
+                    setOpen={setOpenDialogChangePass}
+                    content={"Are you sure you want to change your password?"}
+                    isReason={false}
+                    title={'Confirm Dialog'}
+                    handleAgree={onChangePass} />
     </div>
   );
 }

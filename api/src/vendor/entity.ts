@@ -26,5 +26,9 @@ export class Vendor extends Base {
     nullable: false,
   })
   password: string;
+  @Column({
+    nullable: false,
+  })
+  location: string;
 }
 

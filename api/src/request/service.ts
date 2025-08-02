@@ -41,7 +41,7 @@ export class RequestService extends BaseService {
   }
 
   async create (body){
-    const {name, email, phone, type} = body.payload;
+    const {name, email, phone, type, location} = body.payload;
     const reposity = this.setRepositoryByType(type);
 
     const accByEmail = await reposity.findOne({
@@ -60,7 +60,7 @@ export class RequestService extends BaseService {
       email: email.toLowerCase(),
       phone: phone,
       type: type,
-      location : body.payload?.location,
+      location : location,
     })
     return {
       message: "Your request has been sent. We will contact you to verify as soon as possible!"
@@ -81,9 +81,9 @@ export class RequestService extends BaseService {
         phone: request.phone,
         password: hashPass,
         createdAt: new Date(),
-        createdBy: adminAcc.id
+        createdBy: adminAcc.id,
+        location: request.location
       })
-      if(request.type === 'store') repository.save({location: request.location});
       super.updateOne(id, {status: 'approved', modifiedAt: new Date(), modifiedBy: adminAcc.id});
       this.mailService.sendRegisterMessage(request.email, pass);
       return { message: `Create ${request.type} ${request.name}'s account successfully` };

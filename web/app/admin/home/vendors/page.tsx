@@ -1,7 +1,11 @@
-export default function HomePage() {
+'use client'
+
+import { DesktopPages } from "@/components";
+
+export default function RequestPage() {
   return (
     <>
-      <h2></h2>
+      <DesktopPages typeOfLists={"vendor"} query={'active=true'} title={'Vendors'}/>
     </>
   )
 }

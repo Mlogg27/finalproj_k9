@@ -1,4 +1,4 @@
-import { Body, Controller, Request, Post, Get, HttpCode } from '@nestjs/common';
+import { Body, Controller, Request, Post, Get, HttpCode, Query } from '@nestjs/common';
 import { RegisterDto } from './dto';
 import {DriverService} from "./service";
 
@@ -31,4 +31,8 @@ export class DriverController {
     return this.driverService.verifyInfo(body, req);
   }
 
+  @Get('/')
+  getList(@Query() query){
+    return this.driverService.getList(query);
+  }
 }
